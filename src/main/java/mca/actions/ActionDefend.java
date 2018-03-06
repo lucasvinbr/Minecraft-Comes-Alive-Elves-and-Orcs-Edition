@@ -232,19 +232,19 @@ public class ActionDefend extends AbstractAction {
 						}
 
 						try {
-							if(actor.attributes.getRaceEnum() == EnumRace.Elf) {
-								if(actor.attributes.getGender() == EnumGender.FEMALE) {
-									actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_attack_1 : SoundsMCA.heroic_female_attack_2, 1.0f, actor.getPitch());
-								} else {
-									actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_attack_1 : SoundsMCA.heroic_male_attack_2, 1.0f, actor.getPitch());
-								}
-							} else if(actor.attributes.getRaceEnum() == EnumRace.Orc) {
-								if(actor.attributes.getGender() == EnumGender.FEMALE) {
-									actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_attack_1 : SoundsMCA.evil_female_attack_2, 1.0f, actor.getPitch());
-								} else {
-									actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_attack_1 : SoundsMCA.evil_male_attack_2, 1.0f, actor.getPitch());
-								}
-							}
+//							if(actor.attributes.getRaceEnum() == EnumRace.Elf) {
+//								if(actor.attributes.getGender() == EnumGender.FEMALE) {
+//									actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_attack_1 : SoundsMCA.heroic_female_attack_2, 1.0f, actor.getPitch());
+//								} else {
+//									actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_attack_1 : SoundsMCA.heroic_male_attack_2, 1.0f, actor.getPitch());
+//								}
+//							} else if(actor.attributes.getRaceEnum() == EnumRace.Orc) {
+//								if(actor.attributes.getGender() == EnumGender.FEMALE) {
+//									actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_attack_1 : SoundsMCA.evil_female_attack_2, 1.0f, actor.getPitch());
+//								} else {
+//									actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_attack_1 : SoundsMCA.evil_male_attack_2, 1.0f, actor.getPitch());
+//								}
+//							}
 							MCA.getLog().debug("Applying damage");
 							int attackDamage = MCA.getConfig().villagerAttackDamage;
 							if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {

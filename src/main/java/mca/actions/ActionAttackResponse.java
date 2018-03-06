@@ -33,26 +33,26 @@ public class ActionAttackResponse extends AbstractAction {
 
 	@Override
 	public void onUpdateServer() {
-		if(actor.attributes.getRaceEnum() == EnumRace.Elf) {
-			if(actor.attributes.getGender() == EnumGender.FEMALE) {
-				actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2, 1.0f, actor.getPitch());
-			} else {
-				actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2, 1.0f, actor.getPitch());
-			}
-		} else if(actor.attributes.getRaceEnum() == EnumRace.Orc) {
-			if(actor.attributes.getGender() == EnumGender.FEMALE) {
-				actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2, 1.0f, actor.getPitch());
-			} else {
-				actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2, 1.0f, actor.getPitch());
-			}
-		} else {
-			if(actor.attributes.getGender() == EnumGender.FEMALE) {
-				actor.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2, 1.0f, actor.getPitch());
-			} else {
-				//					actor.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, actor.getPitch());
-				actor.playSound(SoundEvents.ENTITY_VILLAGER_DEATH, 1.0f, actor.getPitch());
-			}
-		}
+//		if(actor.attributes.getRaceEnum() == EnumRace.Elf) {
+//			if(actor.attributes.getGender() == EnumGender.FEMALE) {
+//				actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2, 1.0f, actor.getPitch());
+//			} else {
+//				actor.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2, 1.0f, actor.getPitch());
+//			}
+//		} else if(actor.attributes.getRaceEnum() == EnumRace.Orc) {
+//			if(actor.attributes.getGender() == EnumGender.FEMALE) {
+//				actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2, 1.0f, actor.getPitch());
+//			} else {
+//				actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2, 1.0f, actor.getPitch());
+//			}
+//		} else {
+//			if(actor.attributes.getGender() == EnumGender.FEMALE) {
+//				actor.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2, 1.0f, actor.getPitch());
+//			} else {
+//				//					actor.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, actor.getPitch());
+//				actor.playSound(SoundEvents.ENTITY_VILLAGER_DEATH, 1.0f, actor.getPitch());
+//			}
+//		}
 		if (!actor.attributes.getIsChild() &&
 				isRetaliating &&
 				actor.getHealth() > 0.0F &&
