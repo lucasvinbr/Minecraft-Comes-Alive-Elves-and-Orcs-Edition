@@ -179,11 +179,12 @@ public class EventHooksFML {
 						try {
 							if(villager.getProfession() == 5) {
 								//TODO: Let's see about finding a way to know what biome I'm in for this.
-								if(new Random().nextBoolean()) {
-									doOverwriteVillagerWithOrc(villager);
-								} else {
-									doOverwriteVillagerWithElf(villager);
-								}
+//								if(new Random().nextBoolean()) {
+								//									doOverwriteVillagerWithOrc(villager);
+								//								} else {
+								//									doOverwriteVillagerWithElf(villager);
+								//								}
+								doOverwriteVillagerWithOrc(villager);
 							} /*else if(villager.getProfession() > 6) {
 								doOverwriteVillagerWithElf(villager);
 							}*/ else if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {

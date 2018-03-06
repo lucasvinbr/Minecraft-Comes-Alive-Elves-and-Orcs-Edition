@@ -209,7 +209,7 @@ public class ActionDefend extends AbstractAction {
 										ItemBaby itemBrat = (ItemBaby) bratStack.getItem();
 										bratStack.getTagCompound().setInteger("age", MCA.getConfig().babyGrowUpTime);
 										itemBrat.onUpdate(bratStack, world, mcaVillager, 1, false);
-										actor.sayRaw("Delivering baby.", closestPlayer);
+//										actor.sayRaw("Delivering baby.", closestPlayer);
 										itemBrat.onItemUseByVillager(mcaVillager,
 												world,
 												bratStack,
@@ -217,18 +217,20 @@ public class ActionDefend extends AbstractAction {
 
 										mcaVillager.sayRaw("...", SoundEvents.ENTITY_CHICKEN_EGG, closestPlayer);
 
-										PotionEffect damage = new PotionEffect(Potion.getPotionById(7), 50);
-										mcaVillager.addPotionEffect(damage);
+//										PotionEffect damage = new PotionEffect(Potion.getPotionById(7), 50);
+//										mcaVillager.addPotionEffect(damage);
 										mcaVillager.swingArm(EnumHand.OFF_HAND);
 									}
 								}
 								if(mcaVillager.attributes.getRaceEnum() != EnumRace.Elf && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Guard && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Archer) {
-									reset();
-									return;
+									if(actor.attributes.getGender() == EnumGender.MALE) {
+										reset();
+										return;
+									}
 								}
-								MCA.getLog().debug("End of if I'm male");
+//								MCA.getLog().debug("End of if I'm male");
 							}// end if female
-							MCA.getLog().debug("End of if target is female");
+//							MCA.getLog().debug("End of if target is female");
 						}
 
 						try {
@@ -320,8 +322,8 @@ public class ActionDefend extends AbstractAction {
 							if (RadixLogic.getBooleanWithProbability(1)) {
 
 								EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
-								actor.sayRaw("Whacha lookin at?!", closestPlayer);
-								mcaVillager.sayRaw("Wha?  I wuzzint lookin at nuttin!", closestPlayer);
+//								actor.sayRaw("Whacha lookin at?!", closestPlayer);
+//								mcaVillager.sayRaw("Wha?  I wuzzint lookin at nuttin!", closestPlayer);
 							    possibleTargets.add(mcaVillager);
 							}
 						} else {
@@ -331,12 +333,12 @@ public class ActionDefend extends AbstractAction {
 									if (mcaVillager.attributes.getMarriageState() == EnumMarriageState.NOT_MARRIED) {
 										EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
 										actor.getJumpHelper().doJump();
-										PotionEffect poison = new PotionEffect(Potion.getPotionById(19), 200);
-										mcaVillager.addPotionEffect(poison);
+//										PotionEffect poison = new PotionEffect(Potion.getPotionById(19), 200);
+//										mcaVillager.addPotionEffect(poison);
 										actor.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mcaVillager));
-										actor.sayRaw("Letz git hitch'd!", SoundEvents.ENTITY_VILLAGER_YES, closestPlayer);
-										mcaVillager.addPotionEffect(poison);
-										mcaVillager.sayRaw("Yikes!", closestPlayer);
+//										actor.sayRaw("Letz git hitch'd!", SoundEvents.ENTITY_VILLAGER_YES, closestPlayer);
+//										mcaVillager.addPotionEffect(poison);
+//										mcaVillager.sayRaw("Yikes!", closestPlayer);
 									}
 								}
 							}
