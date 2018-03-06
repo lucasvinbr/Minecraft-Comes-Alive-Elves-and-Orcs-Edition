@@ -142,9 +142,9 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc ?
 				MCA.getConfig().guardMaxHealth :
 				MCA.getConfig().villagerMaxHealth;
-		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
-			this.maxSwingProgressTicks = 6;
-		}
+//		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
+//			this.maxSwingProgressTicks = 6;
+//		}
 		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
 		if (this.getHealth() > maxHealth || isProfessionSkinFighter(attributes.getProfessionSkinGroup())) {
 			this.setHealth(maxHealth);
