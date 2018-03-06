@@ -115,7 +115,124 @@ public class ActionDefend extends AbstractAction {
 						if (actor.onGround) {
 							actor.motionY += 0.45F;
 						}
+						if(target instanceof EntityVillagerMCA) {
+							EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
+							EntityVillagerMCA mcaVillager = (EntityVillagerMCA) target;
+							if (mcaVillager.attributes.getGender() == EnumGender.FEMALE) {
 
+								World world = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld();
+								if(actor.attributes.getGender() == EnumGender.MALE) {
+
+									if (!mcaVillager.attributes.getIsChild() && !actor.attributes.getIsChild()) {
+										if (mcaVillager.attributes.getBabyState() == EnumBabyState.NONE) {
+											if (mcaVillager.attributes.getSpouseUUID() != this.actor.getUniqueID()) {
+												actor.getJumpHelper().doJump();
+												//												PotionEffect poison = new PotionEffect(Potion.getPotionById(19), 200);
+												//												mcaVillager.addPotionEffect(poison);
+												actor.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mcaVillager));
+												//												actor.sayRaw("Letz git hitch'd!", SoundEvents.ENTITY_VILLAGER_YES, closestPlayer);
+												//												mcaVillager.addPotionEffect(poison);
+												//												mcaVillager.sayRaw("Yikes!", closestPlayer);
+											} else {
+												mcaVillager.getJumpHelper().doJump();
+												actor.swingArm(EnumHand.OFF_HAND);
+												actor.getBehaviors()
+														.getAction(ActionStoryProgression.class)
+														.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
+
+
+												actor.getBehaviors().getAction(ActionProcreate.class).onUpdateServer();
+												actor.swingArm(EnumHand.OFF_HAND);
+												mcaVillager.swingArm(EnumHand.MAIN_HAND);
+												mcaVillager.getBehaviors()
+														.getAction(ActionStoryProgression.class)
+														.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
+												mcaVillager.getBehaviors()
+														.getAction(ActionProcreate.class)
+														.onUpdateClient();
+
+												mcaVillager.sayRaw("", mcaVillager.attributes.getProfessionSkinGroup() ==
+														                       EnumProfessionSkinGroup.Orc ?
+												                       (new Random().nextBoolean() ?
+												                        SoundsMCA.femalehurt5 :
+												                        SoundsMCA.femalehurt6) :
+												                       (new Random().nextBoolean() ?
+												                        SoundsMCA.femalehurt2 :
+												                        SoundsMCA.femalehurt4), closestPlayer);
+
+												mcaVillager.swingArm(EnumHand.OFF_HAND);
+												mcaVillager.getJumpHelper().doJump();
+												if (RadixLogic.getBooleanWithProbability(33)) {
+													boolean isMale = RadixLogic.getBooleanWithProbability(25);
+													ItemStack babyStack = new ItemStack(isMale ? ItemsMCA.BABY_BOY : ItemsMCA.BABY_GIRL);
+													ItemBaby baby = (ItemBaby) babyStack.getItem();
+													baby.setFather(actor);
+													baby.setMother(mcaVillager);
+													mcaVillager.attributes.getInventory().addItem(babyStack);
+													//											mcaVillager.setHeldItem(baby);
+												}
+											}
+										} else {
+											if (mcaVillager.attributes.getSpouseUUID() == this.actor.getUniqueID()) {
+												ItemStack bratStack = mcaVillager.attributes.getInventory().getBestItemOfType(ItemBaby.class);
+												if (bratStack.getItem() instanceof ItemBaby) {
+													ItemBaby itemBrat = (ItemBaby) bratStack.getItem();
+													bratStack.getTagCompound().setInteger("age", MCA.getConfig().babyGrowUpTime);
+													itemBrat.onUpdate(bratStack, world, mcaVillager, 1, false);
+													//													actor.sayRaw("Delivering baby.", closestPlayer);
+													if(itemBrat.getIsBoy()) {
+														PotionEffect strength = new PotionEffect(Potion.getPotionById(5), 50);
+														mcaVillager.addPotionEffect(strength);
+													} else {
+														PotionEffect weakness = new PotionEffect(Potion.getPotionById(18), 50);
+														mcaVillager.addPotionEffect(weakness);
+													}
+													itemBrat.onItemUseByVillager(mcaVillager,
+															actor,
+															world,
+															bratStack,
+															mcaVillager.getPosition());
+
+													mcaVillager.sayRaw("...", SoundEvents.ENTITY_CHICKEN_EGG, closestPlayer);
+
+													//													PotionEffect damage = new PotionEffect(Potion.getPotionById(7), 50);
+													//													mcaVillager.addPotionEffect(damage);
+													mcaVillager.swingArm(EnumHand.OFF_HAND);
+												}
+											}
+										}
+									}//end if we're both not children
+								} else {
+									ItemStack bratStack = mcaVillager.attributes.getInventory().getBestItemOfType(ItemBaby.class);
+									if (bratStack.getItem() instanceof ItemBaby) {
+										ItemBaby itemBrat = (ItemBaby) bratStack.getItem();
+										bratStack.getTagCompound().setInteger("age", MCA.getConfig().babyGrowUpTime);
+										itemBrat.onUpdate(bratStack, world, mcaVillager, 1, false);
+										//										actor.sayRaw("Delivering baby.", closestPlayer);
+										itemBrat.onItemUseByVillager(mcaVillager,
+												world,
+												bratStack,
+												mcaVillager.getPosition());
+
+										mcaVillager.sayRaw("...", SoundEvents.ENTITY_CHICKEN_EGG, closestPlayer);
+
+										//										PotionEffect damage = new PotionEffect(Potion.getPotionById(7), 50);
+										//										mcaVillager.addPotionEffect(damage);
+										mcaVillager.swingArm(EnumHand.OFF_HAND);
+									}
+								}
+								if(actor.attributes.getGender() == EnumGender.MALE) {
+									reset();
+									return;
+								}
+								if(mcaVillager.attributes.getRaceEnum() != EnumRace.Elf && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Guard && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Archer) {
+									reset();
+									return;
+								}
+								//								MCA.getLog().debug("End of if I'm male");
+							}// end if female
+							//							MCA.getLog().debug("End of if target is female");
+						}
 						try {
 //							if(actor.attributes.getRaceEnum() == EnumRace.Elf) {
 //								if(actor.attributes.getGender() == EnumGender.FEMALE) {
@@ -130,6 +247,9 @@ public class ActionDefend extends AbstractAction {
 //									actor.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_attack_1 : SoundsMCA.evil_male_attack_2, 1.0f, actor.getPitch());
 //								}
 //							}
+							if(target instanceof  EntityVillagerMCA) {
+								((EntityVillagerMCA)target).playHurtSound();
+							}
 							MCA.getLog().debug("Applying damage");
 							int attackDamage = MCA.getConfig().villagerAttackDamage;
 							if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {
@@ -152,7 +272,6 @@ public class ActionDefend extends AbstractAction {
 						{
 							reset();
 						}
-
 						if(/*target instanceof EntityOrcMCA ||*/ target instanceof EntityVillagerMCA && ((EntityVillagerMCA) target).attributes.getRaceEnum() == EnumRace.Orc) {
 							if (RadixLogic.getBooleanWithProbability(33)) {
 								EntityVillagerMCA punk = (EntityVillagerMCA) target;
@@ -202,38 +321,21 @@ public class ActionDefend extends AbstractAction {
 				for (EntityVillager villager : villagers) {
 					if (villager instanceof EntityVillagerMCA) {
 						EntityVillagerMCA mcaVillager = (EntityVillagerMCA) villager;
+						if(mcaVillager.attributes.getGender() == EnumGender.MALE && actor.attributes.getGender() == EnumGender.MALE) {
+							if(mcaVillager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+								if (RadixLogic.getBooleanWithProbability(10)) {
 
-						if(mcaVillager.attributes.getIsInfected()) {
-							possibleTargets.add(mcaVillager);
-						} else if ((mcaVillager.attributes.getGender() == EnumGender.MALE &&
-								!mcaVillager.attributes.getIsChild()) &&
-								actor.attributes.getGender() == EnumGender.MALE) {
-							if (RadixLogic.getBooleanWithProbability(1)) {
-
-								EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
-//								actor.sayRaw("Whacha lookin at?!", closestPlayer);
-//								mcaVillager.sayRaw("Wha?  I wuzzint lookin at nuttin!", closestPlayer);
-							    possibleTargets.add(mcaVillager);
+									EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
+									//								actor.sayRaw("Whacha lookin at?!", closestPlayer);
+									//								mcaVillager.sayRaw("Wha?  I wuzzint lookin at nuttin!", closestPlayer);
+									possibleTargets.add(mcaVillager);
+								}
+							} else {
+								possibleTargets.add(mcaVillager);
 							}
 						} else {
 							possibleTargets.add(mcaVillager);
-							if (mcaVillager.attributes.getGender() == EnumGender.FEMALE) {
-								if(actor.attributes.getGender() == EnumGender.MALE) {
-									if (mcaVillager.attributes.getMarriageState() == EnumMarriageState.NOT_MARRIED) {
-										EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
-										actor.getJumpHelper().doJump();
-//										PotionEffect poison = new PotionEffect(Potion.getPotionById(19), 200);
-//										mcaVillager.addPotionEffect(poison);
-										actor.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mcaVillager));
-//										actor.sayRaw("Letz git hitch'd!", SoundEvents.ENTITY_VILLAGER_YES, closestPlayer);
-//										mcaVillager.addPotionEffect(poison);
-//										mcaVillager.sayRaw("Yikes!", closestPlayer);
-									}
-								}
-							}
 						}
-					} else {
-						possibleTargets.add(villager);
 					}
 				}
 			}
@@ -297,7 +399,7 @@ public class ActionDefend extends AbstractAction {
 		if (j > 0) {
 			entityarrow.setKnockbackStrength(j);
 		}
-
+		actor.swingItem();
 		shooter.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (shooter.getRNG().nextFloat() * 0.4F + 0.8F));
 		shooter.world.spawnEntity(entityarrow);
 	}

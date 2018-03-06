@@ -255,6 +255,29 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 		return true;
 	}
+	
+	public void playHurtSound() {
+		if(this.attributes.getRaceEnum() == EnumRace.Elf) {
+			if(this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2, 1.0f, this.getPitch());
+			} else {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2, 1.0f, this.getPitch());
+			}
+		} else if(this.attributes.getRaceEnum() == EnumRace.Orc) {
+			if(this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2, 1.0f, this.getPitch());
+			} else {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2, 1.0f, this.getPitch());
+			}
+		} else {
+			if(this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2, 1.0f, this.getPitch());
+			} else {
+				//					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, this.getPitch());
+				this.playSound(SoundEvents.ENTITY_VILLAGER_DEATH, 1.0f, this.getPitch());
+			}
+		}
+	}
 
 	@Override
 	public void onDeath(DamageSource damageSource) {

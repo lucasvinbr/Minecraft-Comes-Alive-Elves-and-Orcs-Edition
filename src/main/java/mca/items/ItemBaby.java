@@ -137,7 +137,7 @@ public class ItemBaby extends Item {
 		}
 
 		ItemStack stack = player.getHeldItem(hand);
-
+		EnumActionResult result = EnumActionResult.FAIL;
 		if(hasMother() && hasFather()) {
 			logger.debug("Has both NPC parents.");
 			MCA.getLog().debug("Has both NPC parents.");
@@ -152,7 +152,7 @@ public class ItemBaby extends Item {
 			father.attributes.setGender(fatherGender);
 			father.setUniqueId(fatherId);
 
-			onItemUseByVillager(mother, father, world, stack, pos);
+			result = onItemUseByVillager(mother, father, world, stack, pos);
 
 		} else if(hasMother()) {
 			logger.debug("Only has NPC mother");
@@ -162,7 +162,7 @@ public class ItemBaby extends Item {
 			mother.attributes.setName(motherName);
 			mother.attributes.setGender(motherGender);
 
-			onItemUseByVillager(mother, world, stack, pos);
+			result = onItemUseByVillager(mother, world, stack, pos);
 		} else if (hasFather()) {
 			logger.debug("Only has NPC father");
 			MCA.getLog().debug("Only has NPC father");
@@ -172,7 +172,7 @@ public class ItemBaby extends Item {
 			father.attributes.setGender(fatherGender);
 			father.setUniqueId(fatherId);
 
-			onItemUseByVillager(father, world, stack, pos);
+			result = onItemUseByVillager(father, world, stack, pos);
 		} else {
 			logger.debug("Player's child.");
 			MCA.getLog().debug("Player's child.");
@@ -238,9 +238,10 @@ public class ItemBaby extends Item {
 				data.setOwnsBaby(false);
 			}
 		}
-		player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
-
-		return EnumActionResult.PASS;
+		if(result == EnumActionResult.PASS) {
+			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
+		}
+		return result;
 	}
 
 	public boolean hasFather() {
@@ -314,9 +315,9 @@ public class ItemBaby extends Item {
 			PotionEffect glowing = new PotionEffect(Potion.getPotionById(24), 1000);
 			child.addPotionEffect(glowing);
 			//player.addStat(AchievementsMCA.babyToChild);
+			return EnumActionResult.PASS;
 		}
-
-		return EnumActionResult.PASS;
+		return EnumActionResult.FAIL;
 	}
 
 	public EnumActionResult onItemUseByVillager(EntityVillagerMCA mother, EntityVillagerMCA father, World world, ItemStack babyStack, BlockPos pos) {
@@ -388,9 +389,10 @@ public class ItemBaby extends Item {
 			PotionEffect glowing = new PotionEffect(Potion.getPotionById(24), 1000);
 			child.addPotionEffect(glowing);
 			//player.addStat(AchievementsMCA.babyToChild);
+			return EnumActionResult.PASS;
+		} else {
+			return EnumActionResult.FAIL;
 		}
-
-		return EnumActionResult.PASS;
 	}
 
 	@Override
