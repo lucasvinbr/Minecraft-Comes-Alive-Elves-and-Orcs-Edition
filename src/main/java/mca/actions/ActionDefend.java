@@ -222,11 +222,13 @@ public class ActionDefend extends AbstractAction {
 										mcaVillager.swingArm(EnumHand.OFF_HAND);
 									}
 								}
+								if(actor.attributes.getGender() == EnumGender.MALE) {
+									reset();
+									return;
+								}
 								if(mcaVillager.attributes.getRaceEnum() != EnumRace.Elf && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Guard && mcaVillager.attributes.getProfessionEnum() != EnumProfession.Archer) {
-									if(actor.attributes.getGender() == EnumGender.MALE) {
-										reset();
-										return;
-									}
+									reset();
+									return;
 								}
 //								MCA.getLog().debug("End of if I'm male");
 							}// end if female
