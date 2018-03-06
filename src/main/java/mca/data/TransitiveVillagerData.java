@@ -13,18 +13,19 @@ import mca.enums.EnumMarriageState;
 import mca.enums.EnumMovementState;
 import mca.enums.EnumPersonality;
 import mca.enums.EnumProfession;
+import mca.enums.EnumRace;
 import net.minecraft.nbt.NBTTagCompound;
 
 /*
  * Used to carry around villager attributes without using the data manager, ex. in memorial objects.
  */
-public class TransitiveVillagerData implements Serializable
-{
+public class TransitiveVillagerData implements Serializable {
 	private final UUID uuid;
 	private final String name;
 	private final String headTexture;
 	private final String clothesTexture;
 	private final Integer profession;
+	private final Integer race;
 	private final Integer personality;
 	private final Integer gender;
 	private final String spouseName;
@@ -49,14 +50,14 @@ public class TransitiveVillagerData implements Serializable
 	private final Boolean doOpenInventory;
 	private final Integer marriageState;
 	private final Map<UUID, PlayerMemory> playerMemories;
-	
-	public TransitiveVillagerData(VillagerAttributes attributes)
-	{
+
+	public TransitiveVillagerData(VillagerAttributes attributes) {
 		this.uuid = attributes.getVillagerUUID();
 		this.name = attributes.getName();
 		this.headTexture = attributes.getHeadTexture();
 		this.clothesTexture = attributes.getClothesTexture();
 		this.profession = attributes.getProfessionEnum().getId();
+		this.race = attributes.getRaceEnum().getId();
 		this.personality = attributes.getPersonality().getId();
 		this.gender = attributes.getGender().getId();
 		this.spouseUUID = attributes.getSpouseUUID();
@@ -83,13 +84,13 @@ public class TransitiveVillagerData implements Serializable
 		this.playerMemories = attributes.getPlayerMemories();
 	}
 
-	public TransitiveVillagerData(NBTTagCompound nbt)
-	{
+	public TransitiveVillagerData(NBTTagCompound nbt) {
 		this.uuid = nbt.getUniqueId("uuid");
 		this.name = nbt.getString("name");
 		this.headTexture = nbt.getString("headTexture");
 		this.clothesTexture = nbt.getString("clothesTexture");
 		this.profession = nbt.getInteger("profession");
+		this.race = nbt.getInteger("race");
 		this.personality = nbt.getInteger("personality");
 		this.gender = nbt.getInteger("gender");
 		this.spouseUUID = nbt.getUniqueId("spouseUUID");
@@ -114,20 +115,15 @@ public class TransitiveVillagerData implements Serializable
 		this.doOpenInventory = nbt.getBoolean("doOpenInventory");
 		this.marriageState = nbt.getInteger("marriageState");
 		this.playerMemories = new HashMap<UUID, PlayerMemory>();
-		
+
 		int counter = 0;
-		
-		while (true)
-		{
+
+		while (true) {
 			final UUID playerUUID = nbt.getUniqueId("playerMemoryKey" + counter);
 
-			if (playerUUID == null || playerUUID.equals(Constants.EMPTY_UUID))
-			{
+			if (playerUUID == null || playerUUID.equals(Constants.EMPTY_UUID)) {
 				break;
-			}
-
-			else
-			{
+			} else {
 				final PlayerMemory playerMemory = new PlayerMemory(null, playerUUID);
 				playerMemory.readPlayerMemoryFromNBT(nbt);
 				playerMemories.put(playerUUID, playerMemory);
@@ -135,159 +131,134 @@ public class TransitiveVillagerData implements Serializable
 			}
 		}
 	}
-	
-	public UUID getUUID()
-	{
+
+	public UUID getUUID() {
 		return uuid;
 	}
-	
-	public String getName() 
-	{
+
+	public String getName() {
 		return name;
 	}
 
-	public String getHeadTexture() 
-	{
+	public String getHeadTexture() {
 		return headTexture;
 	}
 
-	public String getClothesTexture() 
-	{
+	public String getClothesTexture() {
 		return clothesTexture;
 	}
 
-	public EnumProfession getProfession() 
-	{
+	public EnumProfession getProfession() {
 		return EnumProfession.getProfessionById(profession);
 	}
 
-	public EnumPersonality getPersonality() 
-	{
+	public EnumRace getRace() {
+		return EnumRace.getRaceById(race);
+	}
+
+	public EnumPersonality getPersonality() {
 		return EnumPersonality.getById(personality);
 	}
 
-	public EnumGender getGender() 
-	{
+	public EnumGender getGender() {
 		return EnumGender.byId(gender);
 	}
 
-	public String getSpouseName()
-	{
+	public String getSpouseName() {
 		return spouseName;
 	}
-	
-	public UUID getSpouseUUID() 
-	{
+
+	public UUID getSpouseUUID() {
 		return spouseUUID;
 	}
 
-	public EnumGender getSpouseGender() 
-	{
+	public EnumGender getSpouseGender() {
 		return EnumGender.byId(spouseGender);
 	}
 
-	public String getMotherName() 
-	{
+	public String getMotherName() {
 		return motherName;
 	}
 
-	public UUID getMotherUUID() 
-	{
+	public UUID getMotherUUID() {
 		return motherUUID;
 	}
 
-	public EnumGender getMotherGender() 
-	{
+	public EnumGender getMotherGender() {
 		return EnumGender.byId(motherGender);
 	}
 
-	public String getFatherName() 
-	{
+	public String getFatherName() {
 		return fatherName;
 	}
 
-	public UUID getFatherUUID() 
-	{
+	public UUID getFatherUUID() {
 		return fatherUUID;
 	}
 
-	public EnumGender getFatherGender() 
-	{
+	public EnumGender getFatherGender() {
 		return EnumGender.byId(fatherGender);
 	}
 
-	public EnumBabyState getBabyState() 
-	{
+	public EnumBabyState getBabyState() {
 		return EnumBabyState.fromId(babyState);
 	}
 
-	public EnumMovementState getMovementState() 
-	{
+	public EnumMovementState getMovementState() {
 		return EnumMovementState.fromId(movementState);
 	}
 
-	public Boolean getIsChild() 
-	{
+	public Boolean getIsChild() {
 		return isChild;
 	}
 
-	public Integer getAge() 
-	{
+	public Integer getAge() {
 		return age;
 	}
 
-	public Float getScaleHeight() 
-	{
+	public Float getScaleHeight() {
 		return scaleHeight;
 	}
 
-	public Float getScaleWidth() 
-	{
+	public Float getScaleWidth() {
 		return scaleWidth;
 	}
 
-	public Boolean getDoDisplay() 
-	{
+	public Boolean getDoDisplay() {
 		return doDisplay;
 	}
 
-	public Boolean getIsSwinging() 
-	{
+	public Boolean getIsSwinging() {
 		return isSwinging;
 	}
 
-	public Integer getHeldItemSlot() 
-	{
+	public Integer getHeldItemSlot() {
 		return heldItemSlot;
 	}
 
-	public Boolean getIsInfected() 
-	{
+	public Boolean getIsInfected() {
 		return isInfected;
 	}
 
-	public Boolean getDoOpenInventory() 
-	{
+	public Boolean getDoOpenInventory() {
 		return doOpenInventory;
 	}
 
-	public EnumMarriageState getMarriageState() 
-	{
+	public EnumMarriageState getMarriageState() {
 		return EnumMarriageState.byId(marriageState);
 	}
-	
-	public Map<UUID, PlayerMemory> getPlayerMemories()
-	{
+
+	public Map<UUID, PlayerMemory> getPlayerMemories() {
 		return playerMemories;
 	}
-	
-	public void writeToNBT(NBTTagCompound nbt)
-	{
+
+	public void writeToNBT(NBTTagCompound nbt) {
 		nbt.setUniqueId("uuid", uuid);
 		nbt.setString("name", name);
 		nbt.setString("headTexture", headTexture);
 		nbt.setString("clothesTexture", clothesTexture);
 		nbt.setInteger("profession", profession);
+		nbt.getInteger("race");
 		nbt.setInteger("personality", personality);
 		nbt.setInteger("gender", gender);
 		nbt.setUniqueId("spouseUUID", spouseUUID);
@@ -311,10 +282,9 @@ public class TransitiveVillagerData implements Serializable
 		nbt.setBoolean("isInfected", isInfected);
 		nbt.setBoolean("doOpenInventory", doOpenInventory);
 		nbt.setInteger("marriageState", marriageState);
-		
+
 		int counter = 0;
-		for (Map.Entry<UUID, PlayerMemory> pair : playerMemories.entrySet())
-		{
+		for (Map.Entry<UUID, PlayerMemory> pair : playerMemories.entrySet()) {
 			nbt.setUniqueId("playerMemoryKey" + counter, pair.getKey());
 			pair.getValue().writePlayerMemoryToNBT(nbt);
 			counter++;

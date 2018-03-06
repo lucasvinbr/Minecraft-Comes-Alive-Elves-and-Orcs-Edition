@@ -17,73 +17,53 @@ import java.util.zip.ZipFile;
 
 import mca.core.MCA;
 import mca.enums.EnumProfessionSkinGroup;
+import org.apache.logging.log4j.LogManager;
 import radixcore.core.RadixCore;
 
 /**
  * Handles loading of MCA's skins.
  */
-public final class SkinLoader
-{
-	public static void loadSkins()
-	{
-		try
-		{
+public final class SkinLoader {
+	public static void loadSkins() {
+		try {
 			final File modFile = findModDataFile();
 
-			if (modFile.isFile())
-			{
+			if (modFile.isFile()) {
 				loadSkinsFromFile(modFile);
+			} else {
+				LogManager.getLogger(SkinLoader.class).fatal(new FileNotFoundException("Unable to locate MCA assets!"));
 			}
-
-			else
-			{
-				MCA.getLog().fatal(new FileNotFoundException("Unable to locate MCA assets!"));
-			}
-		}
-
-		catch (final IOException e)
-		{
-			MCA.getLog().fatal(e);
-		}
-		
-		catch (final NullPointerException e)
-		{
-			MCA.getLog().fatal(e);
+		} catch (final IOException e) {
+			LogManager.getLogger(SkinLoader.class).fatal(e);
+		} catch (final NullPointerException e) {
+			LogManager.getLogger(SkinLoader.class).fatal(e);
 		}
 	}
 
-	private static File findModDataFile() throws ZipException, IOException
-	{
+	private static File findModDataFile() throws ZipException, IOException {
 		File modData = findModAsArchive();
 
-		if (modData == null)
-		{
-			MCA.getLog().fatal(new FileNotFoundException("Unable to locate MCA assets! This may be due to an issue with your launcher (if made by a third party), or your MCA installation. Try reinstalling the mod, or try a different launcher."));
+		if (modData == null) {
+			LogManager.getLogger(SkinLoader.class)
+					.fatal(new FileNotFoundException(
+							"Unable to locate MCA assets! This may be due to an issue with your launcher (if made by a third party), or your MCA installation. Try reinstalling the mod, or try a different launcher."));
 		}
 
 		return modData;
 	}
 
-	private static File findModAsArchive() throws ZipException, IOException
-	{
+	private static File findModAsArchive() throws ZipException, IOException {
 		final File modsFolder = new File(RadixCore.getRunningDirectory() + "/mods");
 
-		for (final File fileInMods : modsFolder.listFiles())
-		{
-			if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar"))
-			{
-				if (fileContainsModData(fileInMods))
-				{
+		for (final File fileInMods : modsFolder.listFiles()) {
+			if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar")) {
+				if (fileContainsModData(fileInMods)) {
 					return fileInMods;
 				}
-			}
-
-			else if (fileInMods.isDirectory())
-			{
+			} else if (fileInMods.isDirectory()) {
 				final File modData = getModFileFromNestedFolder(fileInMods);
 
-				if (modData != null)
-				{
+				if (modData != null) {
 					return modData;
 				}
 			}
@@ -92,24 +72,19 @@ public final class SkinLoader
 		return null;
 	}
 
-	private static void loadSkinsFromFile(File modDataFile) throws ZipException, IOException
-	{
+	private static void loadSkinsFromFile(File modDataFile) throws ZipException, IOException {
 		final ZipFile modArchive = new ZipFile(modDataFile);
 		final Enumeration enumerator = modArchive.entries();
 		int counter = 0;
-		
-		while (enumerator.hasMoreElements())
-		{
+
+		while (enumerator.hasMoreElements()) {
 			//Loop through each entry within the JAR until the MCA folder is hit.
 			final ZipEntry file = (ZipEntry) enumerator.nextElement();
 			String archiveFilePath = "/" + file.getName();
 
-			if (archiveFilePath.contains("textures/skins") && !archiveFilePath.contains("/sleeping/"))
-			{
-				for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values())
-				{
-					if (file.getName().contains(skinGroup.toString().toLowerCase()))
-					{
+			if (archiveFilePath.contains("textures/skins") && !archiveFilePath.contains("/sleeping/")) {
+				for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
+					if (file.getName().contains(skinGroup.toString().toLowerCase())) {
 						skinGroup.addSkin(archiveFilePath);
 						counter++;
 					}
@@ -118,24 +93,17 @@ public final class SkinLoader
 		}
 
 		modArchive.close();
-		MCA.getLog().info("MCA has successfully loaded " + counter + " skins.");
+		LogManager.getLogger(SkinLoader.class).info("MCA has successfully loaded " + counter + " skins.");
 	}
 
-	private static File getModFileFromNestedFolder(File nestedFolder) throws IOException
-	{
+	private static File getModFileFromNestedFolder(File nestedFolder) throws IOException {
 		final File[] nestedFiles = nestedFolder.listFiles();
 
-		for (final File file : nestedFiles)
-		{
-			if (file.isDirectory())
-			{
+		for (final File file : nestedFiles) {
+			if (file.isDirectory()) {
 				getModFileFromNestedFolder(file);
-			}
-
-			else
-			{
-				if (fileContainsModData(file))
-				{
+			} else {
+				if (fileContainsModData(file)) {
 					return file;
 				}
 			}
@@ -144,33 +112,26 @@ public final class SkinLoader
 		return null;
 	}
 
-	private static boolean fileContainsModData(File fileToTest) throws IOException
-	{
-		if (fileToTest.getName().contains(".zip") || fileToTest.getName().contains(".jar"))
-		{
-			try
-			{
+	private static boolean fileContainsModData(File fileToTest) throws IOException {
+		if (fileToTest.getName().contains(".zip") || fileToTest.getName().contains(".jar")) {
+			try {
 				final ZipFile archive = new ZipFile(fileToTest);
 				final Enumeration enumerator = archive.entries();
 				ZipEntry entry;
 
-				while (enumerator.hasMoreElements())
-				{
+				while (enumerator.hasMoreElements()) {
 					entry = (ZipEntry) enumerator.nextElement();
 
 					//Test for random files unique to MCA.
-					if (entry.getName().contains("mca/core/MCA.class") || entry.getName().contains("sleeping/ee1.png"))
-					{
+					if (entry.getName().contains("mca/core/MCA.class") ||
+							entry.getName().contains("sleeping/ee1.png")) {
 						archive.close();
 						return true;
 					}
 				}
 
 				archive.close();
-			}
-
-			catch (final ZipException e)
-			{
+			} catch (final ZipException e) {
 				e.printStackTrace();
 			}
 		}

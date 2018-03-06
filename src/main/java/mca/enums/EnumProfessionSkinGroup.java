@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mca.core.MCA;
+import org.apache.logging.log4j.LogManager;
 import radixcore.datastructures.CyclicIntList;
 import radixcore.modules.RadixMath;
 
-public enum EnumProfessionSkinGroup 
-{
+public enum EnumProfessionSkinGroup {
 	Unassigned(-1),
 	Farmer(0),
 	Baker(0),
@@ -19,69 +19,60 @@ public enum EnumProfessionSkinGroup
 	Miner(3),
 	Priest(2),
 	Smith(3),
-	Warrior(3);
+	Warrior(3),
+	Elf(3),
+	Orc(4);
 
 	private List<String> completeSkinList;
 	private List<String> maleSkinList;
 	private List<String> femaleSkinList;
 	private int vanillaId;
 
-	private EnumProfessionSkinGroup(int vanillaId)
-	{
+	private EnumProfessionSkinGroup(int vanillaId) {
 		this.completeSkinList = new ArrayList<String>();
 		this.maleSkinList = new ArrayList<String>();
 		this.femaleSkinList = new ArrayList<String>();
 		this.vanillaId = vanillaId;
 	}
 
-	public void addSkin(String locationInJAR)
-	{
+	public void addSkin(String locationInJAR) {
 		String resourceLocation = locationInJAR.replace("/assets/mca/", "mca:");
 		completeSkinList.add(resourceLocation);
 
-		String genderChar = resourceLocation.replace("mca:textures/skins/" + this.toString().toLowerCase(), "").substring(0, 1);
+		String
+				genderChar =
+				resourceLocation.replace("mca:textures/skins/" + this.toString().toLowerCase(), "").substring(0, 1);
 
-		if (genderChar.equals("m"))
-		{
+		if (genderChar.equals("m")) {
 			maleSkinList.add(resourceLocation);
-		}
-
-		else if (genderChar.equals("f"))
-		{
+		} else if (genderChar.equals("f")) {
 			femaleSkinList.add(resourceLocation);
 		}
 	}
 
-	private String getSkin(boolean isMale)
-	{
+	private String getSkin(boolean isMale) {
 		List<String> skinList = isMale ? maleSkinList : femaleSkinList;
 
-		try
-		{
+		try {
 			return skinList.get(RadixMath.getNumberInRange(0, skinList.size() - 1));
-		}
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass())
+					.error("Unable to generate random skin for skin group <" + this.toString() + ">" + "!");
+			LogManager.getLogger(this.getClass()).error(e);
 
-		catch (Exception e)
-		{
-			MCA.getLog().error("Unable to generate random skin for skin group <" + this.toString() + ">" + "!");
-			MCA.getLog().error(e);
-			
 			return "";
 		}
 	}
 
-	public List<String> getSkinList(boolean isMale)
-	{
+	public List<String> getSkinList(boolean isMale) {
 		return isMale ? maleSkinList : femaleSkinList;
 	}
 
-	public CyclicIntList getListOfSkinIDs(boolean isMale)
-	{
+	public CyclicIntList getListOfSkinIDs(boolean isMale) {
 		List<String> textureList = getSkinList(isMale);
 		List<Integer> ids = new ArrayList<Integer>();
 
-		for (String texture : textureList)
-		{
+		for (String texture : textureList) {
 			int id = Integer.parseInt(texture.replaceAll("[^\\d]", ""));
 			ids.add(id);
 		}
@@ -89,18 +80,15 @@ public enum EnumProfessionSkinGroup
 		return CyclicIntList.fromList(ids);
 	}
 
-	public String getRandomMaleSkin()
-	{
+	public String getRandomMaleSkin() {
 		return getSkin(true);
 	}
 
-	public String getRandomFemaleSkin()
-	{
+	public String getRandomFemaleSkin() {
 		return getSkin(false);
 	}
 
-	public int getVanillaProfessionId() 
-	{
+	public int getVanillaProfessionId() {
 		return vanillaId;
 	}
 }

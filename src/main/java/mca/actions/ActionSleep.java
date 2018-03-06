@@ -6,7 +6,6 @@ import java.util.List;
 import mca.core.Constants;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumSleepingState;
 import mca.util.Utilities;
 import net.minecraft.block.Block;
@@ -52,7 +51,7 @@ public class ActionSleep extends AbstractAction
 		//If the villager is busy working, following, or riding something automatically set their sleep state to interrupted for the night.
 		if (actor.getBehaviors().isToggleActionActive() || actor.attributes.getMovementState() == EnumMovementState.FOLLOW || 
 			actor.getRidingEntity() != null || 
-			(actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard && !actor.attributes.getIsMarried()))
+			(EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup()) && !actor.attributes.getIsMarried()))
 		{
 			if (!isDaytime && getSleepingState() != EnumSleepingState.INTERRUPTED)
 			{

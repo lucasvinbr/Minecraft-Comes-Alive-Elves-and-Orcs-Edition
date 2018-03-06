@@ -6,7 +6,9 @@ public enum EnumMarriageState
 	NOT_MARRIED(0),
 	ENGAGED(1),
 	MARRIED_TO_PLAYER(2),
-	MARRIED_TO_VILLAGER(3);
+	MARRIED_TO_VILLAGER(3),
+	MARRIED_TO_ORC(4),
+	MARRIED_TO_ELF(5);
 	
 	int id = 0;
 	

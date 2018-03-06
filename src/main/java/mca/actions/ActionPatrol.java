@@ -3,7 +3,6 @@ package mca.actions;
 import java.util.List;
 
 import mca.entity.EntityVillagerMCA;
-import mca.enums.EnumProfessionSkinGroup;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.init.Blocks;
@@ -42,7 +41,7 @@ public class ActionPatrol extends AbstractAction
 			timeUntilTick = 20;
 		}
 		
-		if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard && !actor.world.isDaytime())
+		if (EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup()) && !actor.world.isDaytime())
 		{
 			if (!hasDoor)
 			{

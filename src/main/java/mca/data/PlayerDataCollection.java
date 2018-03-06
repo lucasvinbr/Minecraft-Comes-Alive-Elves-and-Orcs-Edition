@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.logging.log4j.LogManager;
 
 public class PlayerDataCollection extends WorldSavedData 
 {	
@@ -59,7 +60,7 @@ public class PlayerDataCollection extends WorldSavedData
 
 			catch (Exception e)
 			{
-				MCA.getLog().error("Error writing player data to NBT for UUID " + uuid.toString() + ". Progress may be corrupted or lost.");
+				LogManager.getLogger(this.getClass()).error("Error writing player data to NBT for UUID " + uuid.toString() + ". Progress may be corrupted or lost.");
 				continue;
 			}
 		}
@@ -85,7 +86,7 @@ public class PlayerDataCollection extends WorldSavedData
 
 			catch (Exception e)
 			{
-				MCA.getLog().error("Error reading player data from NBT tag: " + (String)tagKey + ". Progress may be corrupted or lost.");
+				LogManager.getLogger(this.getClass()).error("Error reading player data from NBT tag: " + (String)tagKey + ". Progress may be corrupted or lost.");
 				continue;
 			}
 		}

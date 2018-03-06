@@ -1,5 +1,6 @@
 package mca.actions;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import mca.enums.EnumMovementState;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixBlocks;
 import radixcore.modules.RadixLogic;
@@ -21,7 +24,8 @@ import radixcore.modules.schematics.BlockObj;
 import radixcore.modules.schematics.RadixSchematics;
 
 public class ActionBuild extends AbstractToggleAction
-{	
+{
+	private static Logger logger = LogManager.getLogger(EntityVillagerMCA.class);
 	private Map<Point3D, BlockObj> schematicMap;
 	private CropEntry cropEntry;
 
@@ -43,6 +47,7 @@ public class ActionBuild extends AbstractToggleAction
 	@Override
 	public void onUpdateServer() 
 	{
+		logger.trace(MessageFormat.format("{0}", this));
 		if (index != -1)
 		{
 			interval--;

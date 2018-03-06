@@ -1,0 +1,3 @@
+rootProject.name = 'minecraft-comes-alive'
+//include ':radix-core'
+//project(':radix-core').projectDir = new File("../radix-core")

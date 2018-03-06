@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import mca.core.MCA;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.logging.log4j.LogManager;
 import radixcore.modules.AbstractCrashWatcher;
 
 public class CrashWatcher extends AbstractCrashWatcher
@@ -55,21 +56,21 @@ public class CrashWatcher extends AbstractCrashWatcher
 					dataOut.writeUTF(report);
 					connectSocket.close();
 
-					MCA.getLog().fatal("Sent crash report to mod authors for review. Sorry about that!");
+					LogManager.getLogger(this.getClass()).fatal("Sent crash report to mod authors for review. Sorry about that!");
 				}
 
 				else
 				{
 					Thread.sleep(1000); //Give the crash report time to be displayed to the console so this message appears after the fact.
-					MCA.getLog().fatal("Detected a crash involving MCA, but crash reporting has been disabled! :(");
-					MCA.getLog().fatal("Please consider enabling crash reporting. It will help us find and stop crashes such as this!");
+					LogManager.getLogger(this.getClass()).fatal("Detected a crash involving MCA, but crash reporting has been disabled! :(");
+					LogManager.getLogger(this.getClass()).fatal("Please consider enabling crash reporting. It will help us find and stop crashes such as this!");
 				}
 			}
 		}
 
 		catch (Exception e)
 		{
-			MCA.getLog().fatal("MCA detected a crash and attempted to report it, but failed to do so! " + e.getMessage());
+			LogManager.getLogger(this.getClass()).fatal("MCA detected a crash and attempted to report it, but failed to do so! " + e.getMessage());
 		}
 	}
 }

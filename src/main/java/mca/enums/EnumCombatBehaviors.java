@@ -2,8 +2,7 @@ package mca.enums;
 
 import mca.core.MCA;
 
-public enum EnumCombatBehaviors
-{
+public enum EnumCombatBehaviors {
 	METHOD_MELEE_AND_RANGED(100, "combat.meleeandranged"),
 	METHOD_MELEE_ONLY(101, "combat.meleeonly"),
 	METHOD_RANGED_ONLY(102, "combat.rangedonly"),
@@ -18,28 +17,22 @@ public enum EnumCombatBehaviors
 	private int numericId;
 	private String parserId;
 
-	EnumCombatBehaviors(int numericId, String parserId)
-	{
+	EnumCombatBehaviors(int numericId, String parserId) {
 		this.numericId = numericId;
 		this.parserId = parserId;
 	}
 
-	public int getNumericId()
-	{
+	public int getNumericId() {
 		return numericId;
 	}
 
-	public String getParsedText()
-	{
+	public String getParsedText() {
 		return MCA.getLocalizer().getString(parserId);
 	}
 
-	public static EnumCombatBehaviors getById(int id)
-	{
-		for (EnumCombatBehaviors method : values())
-		{
-			if (method.getNumericId() == id)
-			{
+	public static EnumCombatBehaviors getById(int id) {
+		for (EnumCombatBehaviors method : values()) {
+			if (method.getNumericId() == id) {
 				return method;
 			}
 		}

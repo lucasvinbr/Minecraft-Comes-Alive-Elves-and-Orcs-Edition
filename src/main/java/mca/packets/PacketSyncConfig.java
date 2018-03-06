@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import mca.core.Config;
 import mca.core.MCA;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.apache.logging.log4j.LogManager;
 import radixcore.modules.RadixNettyIO;
 import radixcore.modules.net.AbstractPacket;
 
@@ -36,6 +37,6 @@ public class PacketSyncConfig extends AbstractPacket<PacketSyncConfig>
 	public void processOnGameThread(PacketSyncConfig packet, MessageContext context) 
 	{	
 		MCA.setConfig(packet.configObject);
-		MCA.getLog().info("Received and applied server-side configuration.");
+		LogManager.getLogger(this.getClass()).trace("Received and applied server-side configuration.");
 	}
 }

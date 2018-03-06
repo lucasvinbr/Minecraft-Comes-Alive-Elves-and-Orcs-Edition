@@ -55,6 +55,8 @@ item.baby_boy.name=Baby Boy
 item.baby_girl.name=Baby Girl
 item.egg_male.name=Spawn Male Villager
 item.egg_female.name=Spawn Female Villager
+item.egg_orc=Spawn Male Orc
+item.egg_elf=Spawn Female Elf
 item.divorce_papers.name=Divorce Papers
 item.rose_gold_ingot.name=Rose Gold Ingot
 item.crystal_ball.name=Crystal Ball
@@ -5708,6 +5710,9 @@ profession.househusband=Househusband
 profession.housewife=Housewife
 profession.villager=Villager
 profession.warrior=Warrior
+race.villager=Human
+race.elf=Elf
+race.orc=Orc
 
 ################
 # Personalities
@@ -6626,15 +6631,15 @@ relative.gift.good1=Oh thank you.
 relative.gift.good2=Thank you for thinking of me, %PlayerName%.
 relative.gift.good3=How thoughtful of you.
 relative.gift.good4=How'd you know I liked these?
-relative.gift.good5=Youre too kind.
+relative.gift.good5=You?re too kind.
 
 relative.gift.better1=I have the perfect spot for this.
 relative.gift.better2=Thank you very much, %PlayerName%.
 relative.gift.better3=This is lovely.
 relative.gift.better4=I appreciate you thinking about me.
-relative.gift.better5=Ill take good care of it.
+relative.gift.better5=I?ll take good care of it.
 
-relative.gift.best1=Ive always wanted one of these\!
+relative.gift.best1=I?ve always wanted one of these\!
 relative.gift.best2=This is the best gift I've ever received, %PlayerName%\!
 relative.gift.best3=You give the best gifts, %PlayerName%\!
 relative.gift.best4=I can't believe this, you're too sweet, thank you\!

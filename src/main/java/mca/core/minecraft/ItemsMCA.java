@@ -10,6 +10,8 @@ import mca.items.ItemGuideBook;
 import mca.items.ItemMemorial;
 import mca.items.ItemNewOutfit;
 import mca.items.ItemSpawnEgg;
+import mca.items.ItemSpawnEggForOrcs;
+import mca.items.ItemSpawnEggForElves;
 import mca.items.ItemSpawnGrimReaper;
 import mca.items.ItemStaffOfLife;
 import mca.items.ItemTombstone;
@@ -44,6 +46,8 @@ public final class ItemsMCA
 	public static final ItemBaby BABY_GIRL = new ItemBaby(false);
 	public static final ItemSpawnEgg EGG_MALE = new ItemSpawnEgg(true);
 	public static final ItemSpawnEgg EGG_FEMALE = new ItemSpawnEgg(false);
+	public static final ItemSpawnEgg EGG_ORC = new ItemSpawnEggForOrcs(true); //They're dudes by default?
+	public static final ItemSpawnEgg EGG_ELF = new ItemSpawnEggForElves(false); //They're chicks by default?
 	public static final ItemSpawnGrimReaper EGG_GRIM_REAPER = new ItemSpawnGrimReaper();
 	public static final ItemCrystalBall CRYSTAL_BALL = new ItemCrystalBall();
 	public static final Item ROSE_GOLD_INGOT = new Item();
@@ -79,6 +83,8 @@ public final class ItemsMCA
 				BABY_GIRL,
 				EGG_MALE,
 				EGG_FEMALE,
+				EGG_ORC,
+				EGG_ELF,
 				EGG_GRIM_REAPER,
 				CRYSTAL_BALL,
 				ROSE_GOLD_INGOT,
@@ -111,6 +117,8 @@ public final class ItemsMCA
 		setItemName(BABY_GIRL, "baby_girl");
 		setItemName(EGG_MALE, "egg_male");
 		setItemName(EGG_FEMALE, "egg_female");
+		setItemName(EGG_ORC, "egg_orc");
+		setItemName(EGG_ELF, "egg_elf");
 		setItemName(EGG_GRIM_REAPER, "egg_grim_reaper");
 		setItemName(CRYSTAL_BALL, "crystal_ball");
 		setItemName(ROSE_GOLD_INGOT, "rose_gold_ingot");

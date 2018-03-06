@@ -2,6 +2,9 @@ package mca.core;
 
 import java.util.UUID;
 
+import mca.entity.EntityElfMCA;
+import mca.entity.EntityOrcMCA;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import mca.api.CookableFood;
@@ -74,14 +77,17 @@ import radixcore.modules.gen.SimpleOreGenerator;
 import radixcore.modules.updates.NoUpdateProtocol;
 import radixcore.modules.updates.RDXUpdateProtocol;
 
-@Mod(modid = MCA.ID, name = MCA.NAME, version = MCA.VERSION, dependencies = "required-after:radixcore@[1.12.x-2.2.1,)", acceptedMinecraftVersions = "[1.12,1.12.2]",
-guiFactory = "mca.core.forge.client.MCAGuiFactory")
-public class MCA
-{
+@Mod(modid = MCA.ID,
+		name = MCA.NAME,
+		version = MCA.VERSION,
+		dependencies = "required-after:radixcore@[1.12.x-2.2.1,)",
+		acceptedMinecraftVersions = "[1.12,1.12.2]",
+		guiFactory = "mca.core.forge.client.MCAGuiFactory")
+public class MCA {
 	public static final String ID = "mca";
 	public static final String NAME = "Minecraft Comes Alive";
 	public static final String VERSION = "@VERSION@";
-	
+
 	@Instance(ID)
 	private static MCA instance;
 	private static ModMetadata metadata;
@@ -92,7 +98,7 @@ public class MCA
 	private static PacketHandlerMCA packetHandler;
 	private static CrashWatcher crashWatcher;
 
-	private static Logger logger;
+	private static Logger  logger = LogManager.getLogger(MCA.class);
 
 	@SidedProxy(clientSide = "mca.core.forge.ClientProxy", serverSide = "mca.core.forge.ServerProxy")
 	public static ServerProxy proxy;
@@ -107,11 +113,10 @@ public class MCA
 	public static boolean reloadLanguage;
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
-	{	
+	public void preInit(FMLPreInitializationEvent event) {
 		instance = this;
 		metadata = event.getModMetadata();
-		logger = event.getModLog();
+//		logger = event.getModLog();
 		config = new Config(event);
 		clientConfig = config;
 		localizer = new Localizer(event);
@@ -119,61 +124,93 @@ public class MCA
 		packetHandler = new PacketHandlerMCA(ID);
 		proxy.registerEntityRenderers();
 		proxy.registerEventHandlers();
-		
-		creativeTab = new CreativeTabs("MCA")
-		{
+
+		creativeTab = new CreativeTabs("MCA") {
 			@Override
-			public ItemStack getTabIconItem() 
-			{
+			public ItemStack getTabIconItem() {
 				return new ItemStack(ItemsMCA.ENGAGEMENT_RING);
 			}
 		};
-		
+
 		ModMetadataEx exData = ModMetadataEx.getFromModMetadata(metadata);
 		exData.updateProtocol = config.allowUpdateChecking ? new RDXUpdateProtocol() : new NoUpdateProtocol();
 		exData.packetHandler = packetHandler;
 
 		RadixCore.registerMod(exData);
 
-		if (exData.updateProtocol == null)
-		{
+		if (exData.updateProtocol == null) {
 			logger.warn("Update checking is turned off. You will not be notified of any available updates for MCA.");
 		}
-		
+
 		MinecraftForge.EVENT_BUS.register(new EventHooksForge());
 		MinecraftForge.EVENT_BUS.register(new EventHooksFML());
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event)
-	{
+	public void init(FMLInitializationEvent event) {
 		proxy.registerModelMeshers();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
 		SkinLoader.loadSkins();
 
 		//Entity registry
-		EntityRegistry.registerModEntity(new ResourceLocation(ID, "VillagerMCA"), EntityVillagerMCA.class, EntityVillagerMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
-		EntityRegistry.registerModEntity(new ResourceLocation(ID, "FishHookMCA"), EntityChoreFishHook.class, EntityChoreFishHook.class.getSimpleName(), config.baseEntityId + 1, this, 50, 2, true);
-		EntityRegistry.registerModEntity(new ResourceLocation(ID, "GrimReaperMCA"), EntityGrimReaper.class, EntityGrimReaper.class.getSimpleName(), config.baseEntityId + 2, this, 50, 2, true);
-		
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "VillagerMCA"),
+				EntityVillagerMCA.class,
+				EntityVillagerMCA.class.getSimpleName(),
+				config.baseEntityId,
+				this,
+				50,
+				2,
+				true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "OrcMCA"),
+				EntityOrcMCA.class,
+				EntityOrcMCA.class.getSimpleName(),
+				config.baseEntityId,
+				this,
+				50,
+				2,
+				true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "ElfMCA"),
+				EntityElfMCA.class,
+				EntityElfMCA.class.getSimpleName(),
+				config.baseEntityId,
+				this,
+				50,
+				2,
+				true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "FishHookMCA"),
+				EntityChoreFishHook.class,
+				EntityChoreFishHook.class.getSimpleName(),
+				config.baseEntityId + 1,
+				this,
+				50,
+				2,
+				true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "GrimReaperMCA"),
+				EntityGrimReaper.class,
+				EntityGrimReaper.class.getSimpleName(),
+				config.baseEntityId + 2,
+				this,
+				50,
+				2,
+				true);
+
 		//Tile registry
 		GameRegistry.registerTileEntity(TileTombstone.class, TileTombstone.class.getSimpleName());
 		GameRegistry.registerTileEntity(TileMemorial.class, TileMemorial.class.getSimpleName());
-		
+
 		//Smeltings
 		GameRegistry.addSmelting(BlocksMCA.rose_gold_ore, new ItemStack(ItemsMCA.ROSE_GOLD_INGOT), 5.0F);
 
-		if (MCA.config.roseGoldSpawnWeight > 0)
-		{
-			SimpleOreGenerator.register(new SimpleOreGenerator(BlocksMCA.rose_gold_ore, 6, 12, 40, true, false), MCA.config.roseGoldSpawnWeight);
+		if (MCA.config.roseGoldSpawnWeight > 0) {
+			SimpleOreGenerator.register(new SimpleOreGenerator(BlocksMCA.rose_gold_ore, 6, 12, 40, true, false),
+					MCA.config.roseGoldSpawnWeight);
 		}
 	}
 
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent event)
-	{
+	public void postInit(FMLPostInitializationEvent event) {
 		RegistryMCA.addObjectAsGift(Items.WOODEN_SWORD, 3);
 		RegistryMCA.addObjectAsGift(Items.WOODEN_AXE, 3);
 		RegistryMCA.addObjectAsGift(Items.WOODEN_HOE, 3);
@@ -300,43 +337,41 @@ public class MCA
 		RegistryMCA.addObjectAsGift(Blocks.REDSTONE_BLOCK, 20);
 
 		RegistryMCA.addFishingEntryToFishingAI(0, new FishingEntry(Items.FISH));
-		RegistryMCA.addFishingEntryToFishingAI(1, new FishingEntry(Items.FISH, ItemFishFood.FishType.CLOWNFISH.getMetadata()));
-		RegistryMCA.addFishingEntryToFishingAI(2, new FishingEntry(Items.FISH, ItemFishFood.FishType.COD.getMetadata()));
-		RegistryMCA.addFishingEntryToFishingAI(3, new FishingEntry(Items.FISH, ItemFishFood.FishType.PUFFERFISH.getMetadata()));
-		RegistryMCA.addFishingEntryToFishingAI(4, new FishingEntry(Items.FISH, ItemFishFood.FishType.SALMON.getMetadata()));
-		
-		if (getConfig().additionalGiftItems.length > 0)
-		{
-			for (String entry : getConfig().additionalGiftItems)
-			{
-				try
-				{
+		RegistryMCA.addFishingEntryToFishingAI(1,
+				new FishingEntry(Items.FISH, ItemFishFood.FishType.CLOWNFISH.getMetadata()));
+		RegistryMCA.addFishingEntryToFishingAI(2,
+				new FishingEntry(Items.FISH, ItemFishFood.FishType.COD.getMetadata()));
+		RegistryMCA.addFishingEntryToFishingAI(3,
+				new FishingEntry(Items.FISH, ItemFishFood.FishType.PUFFERFISH.getMetadata()));
+		RegistryMCA.addFishingEntryToFishingAI(4,
+				new FishingEntry(Items.FISH, ItemFishFood.FishType.SALMON.getMetadata()));
+
+		if (getConfig().additionalGiftItems.length > 0) {
+			for (String entry : getConfig().additionalGiftItems) {
+				try {
 					String[] split = entry.split("\\|");
 					int heartsValue = Integer.parseInt(split[1]);
 					String itemName = split[0];
 
-					if (!itemName.startsWith("#"))
-					{
+					if (!itemName.startsWith("#")) {
 						Object item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
 						Object block = Block.REGISTRY.getObject(new ResourceLocation(itemName));
 						Object addObject = item != null ? item : block != null ? block : null;
 
-						if (addObject != null)
-						{
+						if (addObject != null) {
 							RegistryMCA.addObjectAsGift(addObject, heartsValue);
-							logger.info("Successfully added " + itemName + " with hearts value of " + heartsValue + " to gift registry.");
-						}
-
-						else
-						{
+							logger.info("Successfully added " +
+									itemName +
+									" with hearts value of " +
+									heartsValue +
+									" to gift registry.");
+						} else {
 							logger.error("Failed to find item by name provided. Gift entry not created: " + entry);
 						}
 					}
-				}
-
-				catch (Exception e)
-				{
-					logger.error("Failed to add additional gift due to error. Use <item name>|<hearts value>: " + entry);
+				} catch (Exception e) {
+					logger.error("Failed to add additional gift due to error. Use <item name>|<hearts value>: " +
+							entry);
 				}
 			}
 		}
@@ -370,13 +405,69 @@ public class MCA
 		RegistryMCA.addFoodToCookingAI(new CookableFood(Items.FISH, Items.COOKED_FISH));
 		RegistryMCA.addFoodToCookingAI(new CookableFood(Items.POTATO, Items.BAKED_POTATO));
 
-		RegistryMCA.addCropToFarmingAI(1, new CropEntry(EnumCropCategory.WHEAT, Blocks.WHEAT, Items.WHEAT_SEEDS, Blocks.WHEAT, 7, Items.WHEAT, 1, 4));
-		RegistryMCA.addCropToFarmingAI(2, new CropEntry(EnumCropCategory.WHEAT, Blocks.POTATOES, Items.POTATO, Blocks.POTATOES, 7, Items.POTATO, 1, 4));
-		RegistryMCA.addCropToFarmingAI(3, new CropEntry(EnumCropCategory.WHEAT, Blocks.CARROTS, Items.CARROT, Blocks.CARROTS, 7, Items.CARROT, 1, 4));
-		RegistryMCA.addCropToFarmingAI(4, new CropEntry(EnumCropCategory.WHEAT, Blocks.BEETROOTS, Items.BEETROOT_SEEDS, Blocks.BEETROOTS, 7, Items.BEETROOT, 1, 4));
-		RegistryMCA.addCropToFarmingAI(5, new CropEntry(EnumCropCategory.MELON, Blocks.MELON_STEM, Items.MELON_SEEDS, Blocks.MELON_BLOCK, 0, Items.MELON, 2, 6));
-		RegistryMCA.addCropToFarmingAI(6, new CropEntry(EnumCropCategory.MELON, Blocks.PUMPKIN_STEM, Items.PUMPKIN_SEEDS, Blocks.PUMPKIN, 0, null, 1, 1));
-		RegistryMCA.addCropToFarmingAI(7, new CropEntry(EnumCropCategory.SUGARCANE, Blocks.REEDS, Items.REEDS, Blocks.REEDS, 0, Items.REEDS, 1, 1));
+		RegistryMCA.addCropToFarmingAI(1,
+				new CropEntry(EnumCropCategory.WHEAT,
+						Blocks.WHEAT,
+						Items.WHEAT_SEEDS,
+						Blocks.WHEAT,
+						7,
+						Items.WHEAT,
+						1,
+						4));
+		RegistryMCA.addCropToFarmingAI(2,
+				new CropEntry(EnumCropCategory.WHEAT,
+						Blocks.POTATOES,
+						Items.POTATO,
+						Blocks.POTATOES,
+						7,
+						Items.POTATO,
+						1,
+						4));
+		RegistryMCA.addCropToFarmingAI(3,
+				new CropEntry(EnumCropCategory.WHEAT,
+						Blocks.CARROTS,
+						Items.CARROT,
+						Blocks.CARROTS,
+						7,
+						Items.CARROT,
+						1,
+						4));
+		RegistryMCA.addCropToFarmingAI(4,
+				new CropEntry(EnumCropCategory.WHEAT,
+						Blocks.BEETROOTS,
+						Items.BEETROOT_SEEDS,
+						Blocks.BEETROOTS,
+						7,
+						Items.BEETROOT,
+						1,
+						4));
+		RegistryMCA.addCropToFarmingAI(5,
+				new CropEntry(EnumCropCategory.MELON,
+						Blocks.MELON_STEM,
+						Items.MELON_SEEDS,
+						Blocks.MELON_BLOCK,
+						0,
+						Items.MELON,
+						2,
+						6));
+		RegistryMCA.addCropToFarmingAI(6,
+				new CropEntry(EnumCropCategory.MELON,
+						Blocks.PUMPKIN_STEM,
+						Items.PUMPKIN_SEEDS,
+						Blocks.PUMPKIN,
+						0,
+						null,
+						1,
+						1));
+		RegistryMCA.addCropToFarmingAI(7,
+				new CropEntry(EnumCropCategory.SUGARCANE,
+						Blocks.REEDS,
+						Items.REEDS,
+						Blocks.REEDS,
+						0,
+						Items.REEDS,
+						1,
+						1));
 
 		RegistryMCA.addWeddingGift(new WeddingGift(Blocks.DIRT, 1, 6), EnumGiftCategory.BAD);
 		RegistryMCA.addWeddingGift(new WeddingGift(Blocks.DEADBUSH, 1, 1), EnumGiftCategory.BAD);
@@ -402,7 +493,7 @@ public class MCA
 		RegistryMCA.addWeddingGift(new WeddingGift(Blocks.COBBLESTONE, 2, 16), EnumGiftCategory.GOOD);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.COAL, 2, 8), EnumGiftCategory.GOOD);
 		RegistryMCA.addWeddingGift(new WeddingGift(ItemsMCA.BOOK_ROSE_GOLD, 1, 1), EnumGiftCategory.BEST);
-		
+
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.CLAY_BALL, 16, 32), EnumGiftCategory.BETTER);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.IRON_AXE, 1, 1), EnumGiftCategory.BETTER);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.IRON_SWORD, 1, 1), EnumGiftCategory.BETTER);
@@ -427,7 +518,7 @@ public class MCA
 		RegistryMCA.addWeddingGift(new WeddingGift(ItemsMCA.BOOK_INFECTION, 1, 1), EnumGiftCategory.BETTER);
 		RegistryMCA.addWeddingGift(new WeddingGift(ItemsMCA.BOOK_ROMANCE, 1, 1), EnumGiftCategory.BETTER);
 		RegistryMCA.addWeddingGift(new WeddingGift(ItemsMCA.BOOK_FAMILY, 1, 1), EnumGiftCategory.BETTER);
-		
+
 		RegistryMCA.addWeddingGift(new WeddingGift(Blocks.BRICK_BLOCK, 32, 32), EnumGiftCategory.BEST);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.DIAMOND_AXE, 1, 1), EnumGiftCategory.BEST);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.DIAMOND_SWORD, 1, 1), EnumGiftCategory.BEST);
@@ -456,104 +547,179 @@ public class MCA
 	}
 
 	@EventHandler
-	public void serverStarting(FMLServerStartingEvent event)
-	{
+	public void serverStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandMCA());
 	}
-	
+
 	@EventHandler
-	public void serverStopping(FMLServerStoppingEvent event)
-	{
+	public void serverStopping(FMLServerStoppingEvent event) {
 	}
 
-	public static MCA getInstance()
-	{
+	public static MCA getInstance() {
 		return instance;
 	}
 
-	public static Logger getLog()
-	{
+	public static Logger getLog() {
 		return logger;
 	}
 
-	public static Config getConfig()
-	{
+	public static Config getConfig() {
 		return config;
 	}
 
-	public static void setConfig(Config configObj)
-	{
+	public static void setConfig(Config configObj) {
 		config = configObj;
 	}
 
-	public static void resetConfig()
-	{
-		if (config != clientConfig)
-		{
+	public static void resetConfig() {
+		if (config != clientConfig) {
 			logger.info("Resetting config to client-side values...");
 			config = clientConfig;
 		}
 	}
-	
-	public static ModMetadata getMetadata()
-	{
+
+	public static ModMetadata getMetadata() {
 		return metadata;
 	}
 
-	public static CreativeTabs getCreativeTab()
-	{
+	public static CreativeTabs getCreativeTab() {
 		return creativeTab;
 	}
 
-	public static void setCreativeTab(CreativeTabs tab)
-	{
+	public static void setCreativeTab(CreativeTabs tab) {
 		creativeTab = tab;
 	}
-	
-	public static Localizer getLocalizer()
-	{
+
+	public static Localizer getLocalizer() {
 		return localizer;
 	}
-	
-	public static PacketHandlerMCA getPacketHandler()
-	{
+
+	public static PacketHandlerMCA getPacketHandler() {
 		return packetHandler;
 	}
 
-	public static NBTPlayerData getPlayerData(EntityPlayer player)
-	{
-		if (!player.world.isRemote)
-		{
+	public static NBTPlayerData getPlayerData(EntityPlayer player) {
+		if (!player.world.isRemote) {
 			return PlayerDataCollection.get().getPlayerData(player.getUniqueID());
-		}
-		
-		else
-		{
+		} else {
 			return myPlayerData;
 		}
 	}
-	
-	public static NBTPlayerData getPlayerData(World world, UUID uuid)
-	{
+
+	public static NBTPlayerData getPlayerData(World world, UUID uuid) {
 		return PlayerDataCollection.get().getPlayerData(uuid);
 	}
 
-	public static void naturallySpawnVillagers(Point3D pointOfSpawn, World world, int originalProfession)
-	{
+	public static void naturallySpawnOrcs(Point3D pointOfSpawn, World world, int originalProfession) {
+		MCA.getLog().debug(String.format("Original Profession newly spawned orc: %d", originalProfession));
+		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
+
+		final EntityOrcMCA orc = new EntityOrcMCA(world);
+		orc.attributes.setGender(EnumGender.MALE);
+		orc.attributes.assignRandomName();
+		orc.attributes.assignRandomSkin();
+		orc.attributes.assignRandomPersonality();
+
+		orc.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+		if (hasFamily) {
+			EntityVillagerMCA wench = new EntityOrcMCA(world);
+			wench.attributes.setGender(EnumGender.FEMALE);
+			wench.attributes.assignRandomName();
+			wench.attributes.assignRandomSkin();
+			wench.attributes.assignRandomPersonality();
+			wench.setPosition(orc.posX, orc.posY, orc.posZ - 1);
+			world.spawnEntity(wench);
+
+			orc.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(wench));
+
+			//Children
+			for (int i = 0; i < 8; i++) {
+				if (RadixLogic.getBooleanWithProbability(50)) {
+					continue;
+				}
+				EntityOrcMCA brat = new EntityOrcMCA(world);
+				boolean bratIsMale = RadixLogic.getBooleanWithProbability(75);
+				brat.attributes.setGender(bratIsMale ? EnumGender.MALE : EnumGender.FEMALE);
+				brat.attributes.assignRandomName();
+				brat.attributes.assignRandomSkin();
+				brat.attributes.assignRandomPersonality();
+				brat.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(wench));
+				brat.attributes.setFather(Either.<EntityVillagerMCA, EntityPlayer>withL(orc));
+				brat.attributes.setIsChild(true);
+
+				brat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
+				world.spawnEntity(brat);
+			}
+		}
+		world.spawnEntity(orc);
+	}
+
+	public static void naturallySpawnElves(Point3D pointOfSpawn, World world, int originalProfession) {
+		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
+
+		final EntityElfMCA elf = new EntityElfMCA(world);
+		elf.attributes.setGender(EnumGender.FEMALE);
+		elf.attributes.setProfession(EnumProfession.Elf);
+		elf.attributes.assignRandomName();
+		elf.attributes.assignRandomSkin();
+		elf.attributes.assignRandomPersonality();
+
+		elf.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+
+		if (hasFamily) {
+			final EntityVillagerMCA husband = new EntityElfMCA(world);
+			husband.attributes.setProfession(EnumProfession.Elf);
+			husband.attributes.setGender(EnumGender.MALE);
+			husband.attributes.assignRandomName();
+			husband.attributes.assignRandomSkin();
+			husband.attributes.assignRandomPersonality();
+			husband.setPosition(elf.posX, elf.posY, elf.posZ - 1);
+			world.spawnEntity(husband);
+
+			elf.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(husband));
+
+			final EntityVillagerMCA father = husband;
+			final EntityVillagerMCA mother = elf;
+
+			//Children
+			for (int i = 0; i < 1; i++) {
+				if (RadixLogic.getBooleanWithProbability(66)) {
+					continue;
+				}
+				final EntityElfMCA child = new EntityElfMCA(world);
+				child.attributes.assignRandomGender();
+				child.attributes.assignRandomName();
+				child.attributes.assignRandomSkin();
+				child.attributes.assignRandomPersonality();
+				child.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(mother));
+				child.attributes.setFather(Either.<EntityVillagerMCA, EntityPlayer>withL(father));
+				child.attributes.setIsChild(true);
+
+				child.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
+				world.spawnEntity(child);
+			}
+		}
+
+		world.spawnEntity(elf);
+	}
+
+	public static void naturallySpawnVillagers(Point3D pointOfSpawn, World world, int originalProfession) {
+//		MCA.getLog().debug(String.format("Original Profession newly spawned villager: %d", originalProfession));
 		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
 		boolean adult1IsMale = RadixLogic.getBooleanWithProbability(50);
 
 		final EntityVillagerMCA adult1 = new EntityVillagerMCA(world);
 		adult1.attributes.setGender(adult1IsMale ? EnumGender.MALE : EnumGender.FEMALE);
-		adult1.attributes.setProfession(originalProfession != -1 ? EnumProfession.getProfessionById(originalProfession) : EnumProfession.getAtRandom());
+		adult1.attributes.setProfession(originalProfession != -1 ?
+				EnumProfession.getProfessionById(originalProfession) :
+				EnumProfession.getAtRandom());
 		adult1.attributes.assignRandomName();
 		adult1.attributes.assignRandomSkin();
 		adult1.attributes.assignRandomPersonality();
-		
+
 		adult1.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
 
-		if (hasFamily)
-		{
+		if (hasFamily) {
 			final EntityVillagerMCA adult2 = new EntityVillagerMCA(world);
 			adult2.attributes.setGender(adult1IsMale ? EnumGender.FEMALE : EnumGender.MALE);
 			adult2.attributes.assignRandomProfession();
@@ -563,16 +729,14 @@ public class MCA
 			adult2.setPosition(adult1.posX, adult1.posY, adult1.posZ - 1);
 			world.spawnEntity(adult2);
 
-			adult1.startMarriage(Either.<EntityVillagerMCA,EntityPlayer>withL(adult2));
+			adult1.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(adult2));
 
 			final EntityVillagerMCA father = adult1IsMale ? adult1 : adult2;
 			final EntityVillagerMCA mother = father == adult1 ? adult2 : adult1;
 
 			//Children
-			for (int i = 0; i < 2; i++)
-			{
-				if (RadixLogic.getBooleanWithProbability(66))
-				{
+			for (int i = 0; i < 2; i++) {
+				if (RadixLogic.getBooleanWithProbability(50)) {
 					continue;
 				}
 
@@ -582,9 +746,10 @@ public class MCA
 				child.attributes.assignRandomProfession();
 				child.attributes.assignRandomSkin();
 				child.attributes.assignRandomPersonality();
-				child.attributes.setMother(Either.<EntityVillagerMCA,EntityPlayer>withL(mother));
-				child.attributes.setFather(Either.<EntityVillagerMCA,EntityPlayer>withL(father));
-				
+				child.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(mother));
+				child.attributes.setFather(Either.<EntityVillagerMCA, EntityPlayer>withL(father));
+				child.attributes.setIsChild(true);
+
 				child.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
 				world.spawnEntity(child);
 			}
@@ -593,21 +758,17 @@ public class MCA
 		world.spawnEntity(adult1);
 	}
 
-	public static CrashWatcher getCrashWatcher() 
-	{
+	public static CrashWatcher getCrashWatcher() {
 		return crashWatcher;
 	}
 
-	public static Entity getEntityByUUID(World world, UUID uuid) 
-	{
-		for (Entity entity : world.loadedEntityList)
-		{
-			if (entity.getUniqueID() == uuid)
-			{
+	public static Entity getEntityByUUID(World world, UUID uuid) {
+		for (Entity entity : world.loadedEntityList) {
+			if (entity.getUniqueID() == uuid) {
 				return entity;
 			}
 		}
-		
+
 		return null;
 	}
 }

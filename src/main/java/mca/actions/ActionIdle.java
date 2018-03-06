@@ -2,7 +2,6 @@ package mca.actions;
 
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumSleepingState;
 import net.minecraft.nbt.NBTTagCompound;
 import radixcore.constant.Time;
@@ -21,7 +20,7 @@ public class ActionIdle extends AbstractAction
 	{
 		idleTicks++;
 	
-		if (idleTicks >= Time.MINUTE * 1 && actor.isInOverworld() && !actor.world.isDaytime() && actor.attributes.getProfessionSkinGroup() != EnumProfessionSkinGroup.Guard && actor.attributes.getMovementState() == EnumMovementState.STAY)
+		if (idleTicks >= Time.MINUTE * 1 && actor.isInOverworld() && !actor.world.isDaytime() && !EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup()) && actor.attributes.getMovementState() == EnumMovementState.STAY)
 		{
 			ActionSleep AISleep = actor.getBehavior(ActionSleep.class);
 	

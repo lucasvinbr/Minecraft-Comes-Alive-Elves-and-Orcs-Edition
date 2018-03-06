@@ -82,7 +82,8 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	public EntityOrcMCA(World world) {
 		super(world);
 		maxSwingProgressTicks = 10;
-//		this.attributes.setProfession(EnumProfession.Orc);
+		this.attributes.setProfession(EnumProfession.Orc);
+//		this.attributes.setProfession(EnumProfession.Guard);
 		this.attributes.setRace(EnumRace.Orc);
 	}
 
@@ -94,7 +95,7 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 //		String zombieMoan = RadixLogic.getBooleanWithProbability(33) ? "Raagh..." :
 //				RadixLogic.getBooleanWithProbability(33) ? "Ughh..." : "Argh-gur...";
 //		target.sendMessage(new TextComponentString(attributes.getTitle(target) + ": " + zombieMoan));
-		this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 0.5F, rand.nextFloat() + 0.5F);
+		this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 0.5F, pitch);
 	}
 
 	@Override

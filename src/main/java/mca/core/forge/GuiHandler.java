@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
+import org.apache.logging.log4j.LogManager;
 import radixcore.modules.RadixLogic;
 
 /**
@@ -66,8 +67,8 @@ public class GuiHandler implements IGuiHandler
 			return new GuiInventory(entity, player.inventory, entity.attributes.getInventory(), false);
 		case Constants.GUI_ID_GUIDEBOOK:
 			return new GuiScreenBook(player, player.inventory.getCurrentItem(), false);
-		default: 
-			MCA.getLog().fatal("Failed to handle provided GUI ID: " + guiId +". This is a programming error, please report!");
+		default:
+			LogManager.getLogger(this.getClass()).fatal("Failed to handle provided GUI ID: " + guiId +". This is a programming error, please report!");
 			return null;
 		}
 	}

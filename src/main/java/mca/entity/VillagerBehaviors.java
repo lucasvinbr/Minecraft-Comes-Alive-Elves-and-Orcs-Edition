@@ -35,16 +35,15 @@ import net.minecraft.nbt.NBTTagCompound;
 /**
  * Manages the execution of AI objects attached to an actor.
  */
-public class VillagerBehaviors 
-{
+public class VillagerBehaviors {
+
 	private EntityVillagerMCA actor;
 	private List<AbstractAction> actions;
 
-	public VillagerBehaviors(EntityVillagerMCA actor)
-	{
+	public VillagerBehaviors(EntityVillagerMCA actor) {
 		this.actor = actor;
 		this.actions = new ArrayList<AbstractAction>();
-		
+
 		addAction(new ActionIdle(actor));
 		addAction(new ActionRegenerate(actor));
 		addAction(new ActionSleep(actor));
@@ -69,29 +68,23 @@ public class VillagerBehaviors
 		addAction(new ActionCombat(actor));
 	}
 
-	public void addAction(AbstractAction AI)
-	{
+	public void addAction(AbstractAction AI) {
 		actions.add(AI);
 	}
 
-	public void onUpdate()
-	{
+	public void onUpdate() {
 		actor.getProfiler().startSection("MCA Villager Behaviors");
-		for (final AbstractAction action : actions)
-		{
-			boolean doRun = action instanceof AbstractToggleAction ? ((AbstractToggleAction)action).getIsActive() : true;
+		for (final AbstractAction action : actions) {
+			boolean
+					doRun =
+					action instanceof AbstractToggleAction ? ((AbstractToggleAction) action).getIsActive() : true;
 
-			if (doRun)
-			{
+			if (doRun) {
 				action.onUpdateCommon();
 
-				if (actor.world.isRemote)
-				{
+				if (actor.world.isRemote) {
 					action.onUpdateClient();
-				}
-
-				else
-				{
+				} else {
 					action.onUpdateServer();
 				}
 			}
@@ -99,132 +92,106 @@ public class VillagerBehaviors
 		actor.getProfiler().endSection();
 	}
 
-	public void writeToNBT(NBTTagCompound nbt)
-	{
-		for (final AbstractAction action : actions)
-		{
+	public void writeToNBT(NBTTagCompound nbt) {
+		for (final AbstractAction action : actions) {
 			action.writeToNBT(nbt);
 		}
 	}
 
-	public void readFromNBT(NBTTagCompound nbt)
-	{
-		for (final AbstractAction action : actions)
-		{
+	public void readFromNBT(NBTTagCompound nbt) {
+		for (final AbstractAction action : actions) {
 			action.readFromNBT(nbt);
 		}
 	}
 
-	public <T extends AbstractAction> T getAction(Class<T> clazz)
-	{
-		for (final AbstractAction action : actions)
-		{
-			if (action.getClass() == clazz)
-			{
+	public <T extends AbstractAction> T getAction(Class<T> clazz) {
+		for (final AbstractAction action : actions) {
+			if (action.getClass() == clazz) {
 				return (T) action;
 			}
 		}
 
 		return null;
 	}
-	
-	public boolean isToggleActionActive()
-	{
-		for (final AbstractAction action : actions)
-		{
-			if (action instanceof AbstractToggleAction)
-			{
+
+	public boolean isToggleActionActive() {
+		for (final AbstractAction action : actions) {
+			if (action instanceof AbstractToggleAction) {
 				AbstractToggleAction tAction = (AbstractToggleAction) action;
-				
-				if (tAction.getIsActive())
-				{
+
+				if (tAction.getIsActive()) {
 					return true;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
-	public String getActiveActionName()
-	{
-		for (final AbstractAction action : actions)
-		{
-			if (action instanceof AbstractToggleAction)
-			{
+
+	public String getActiveActionName() {
+		for (final AbstractAction action : actions) {
+			if (action instanceof AbstractToggleAction) {
 				AbstractToggleAction tAction = (AbstractToggleAction) action;
-				
-				if (tAction.getIsActive())
-				{
+
+				if (tAction.getIsActive()) {
 					return tAction.getName();
 				}
 			}
 		}
-		
+
 		return "";
 	}
-	
-	public void disableAllToggleActions()
-	{
-		for (final AbstractAction action : actions)
-		{
-			if (action instanceof AbstractToggleAction)
-			{
+
+	public void disableAllToggleActions() {
+		for (final AbstractAction action : actions) {
+			if (action instanceof AbstractToggleAction) {
 				AbstractToggleAction tAction = (AbstractToggleAction) action;
 				tAction.setIsActive(false);
 			}
 		}
 	}
 
-	public final void onMarriageToVillager() 
-	{
+	public final void onMarriageToVillager() {
 		EntityVillagerMCA spouse = actor.attributes.getVillagerSpouseInstance();
+		onMarriageToVillager(spouse);
+	}
+
+	public final void onMarriageToVillager(EntityVillagerMCA spouse) {
 		getAction(ActionStoryProgression.class).setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
 		spouse.getBehavior(ActionStoryProgression.class).setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
-		
+
 		//Set the other human's story progression appropriately.
 		ActionStoryProgression story = actor.getBehavior(ActionStoryProgression.class);
 		story.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
-		
+
 		//Same-sex couples, only one can be dominant in story progression
-		if (actor.attributes.getGender() == spouse.attributes.getGender())
-		{
-			if (spouse.getBehavior(ActionStoryProgression.class).getIsDominant())
-			{
+		if (actor.attributes.getGender() == spouse.attributes.getGender()) {
+			if (spouse.getBehavior(ActionStoryProgression.class).getIsDominant()) {
 				actor.getBehavior(ActionStoryProgression.class).setDominant(false);
 			}
 		}
-
 		//Otherwise if we're male, we're dominant and our spouse is not
-		else
-		{
-			if (actor.attributes.getGender() == EnumGender.MALE)
-			{
+		else {
+			if (actor.attributes.getGender() == EnumGender.MALE) {
 				actor.getBehavior(ActionStoryProgression.class).setDominant(true);
 				spouse.getBehavior(ActionStoryProgression.class).setDominant(false);
-			}
-			
-			else
-			{
+			} else {
 				actor.getBehavior(ActionStoryProgression.class).setDominant(false);
 				spouse.getBehavior(ActionStoryProgression.class).setDominant(true);
 			}
 		}
 	}
 
-	public final void onMarriageToPlayer()
-	{
+	public final void onMarriageToPlayer() {
 		getAction(ActionStoryProgression.class).setProgressionStep(EnumProgressionStep.FINISHED);
 	}
-	
-	public final void onSay()
-	{
+
+	public final void onSay() {
 		getAction(ActionIdle.class).reset();
 		getAction(ActionSleep.class).setSleepingState(EnumSleepingState.INTERRUPTED);
 	}
 
-	public void onMarriageEnded() 
-	{
+	public void onMarriageEnded() {
 		getAction(ActionStoryProgression.class).reset();
 	}
 }
