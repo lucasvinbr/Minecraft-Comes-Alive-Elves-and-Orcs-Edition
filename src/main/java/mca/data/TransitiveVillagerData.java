@@ -123,7 +123,8 @@ public class TransitiveVillagerData implements Serializable {
 
 			if (playerUUID == null || playerUUID.equals(Constants.EMPTY_UUID)) {
 				break;
-			} else {
+			}
+			else {
 				final PlayerMemory playerMemory = new PlayerMemory(null, playerUUID);
 				playerMemory.readPlayerMemoryFromNBT(nbt);
 				playerMemories.put(playerUUID, playerMemory);

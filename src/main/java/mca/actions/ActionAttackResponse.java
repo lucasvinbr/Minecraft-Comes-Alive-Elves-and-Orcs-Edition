@@ -98,9 +98,9 @@ public class ActionAttackResponse extends AbstractAction {
 					} else if (distanceToTarget <= 1.8D) {
 
 						float attackDamage = 0.0f;
-						if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+						if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
 							attackDamage = MCA.getConfig().orcAttackDamage;
-						} else if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+						} else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
 							attackDamage = MCA.getConfig().elfAttackDamage;
 						} else {
 							attackDamage =

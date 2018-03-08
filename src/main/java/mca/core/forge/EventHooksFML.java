@@ -53,6 +53,7 @@ import radixcore.modules.schematics.RadixSchematics;
 
 public class EventHooksFML {
 	private Logger logger = LogManager.getLogger(this.getClass());
+
 	public static boolean playPortalAnimation;
 	private static int summonCounter;
 	private static Point3D summonPos;
@@ -177,18 +178,25 @@ public class EventHooksFML {
 						logger.debug(String.format("Profession Number: %d, Profession Name: %s", villager.getProfession(), villager.getDisplayName()));
 						logger.trace(MessageFormat.format("Villager Forge Profession: {0}", villager.getProfessionForge()));
 						try {
-							//							if(villager.getProfession() == 5) {
-							//
-							////								if(new Random().nextBoolean()) {
-							//								//									doOverwriteVillagerWithOrc(villager);
-							//								//								} else {
-							//								//									doOverwriteVillagerWithElf(villager);
-							//								//								}
-							////								doOverwriteVillagerWithOrc(villager);
-							//							} /*else if(villager.getProfession() > 6) {
-							//								doOverwriteVillagerWithElf(villager);
-							//							}*/
-							if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
+//							if(villager.getProfession() == 5) {
+//
+////								if(new Random().nextBoolean()) {
+//								//									doOverwriteVillagerWithOrc(villager);
+//								//								} else {
+//								//									doOverwriteVillagerWithElf(villager);
+//								//								}
+////								doOverwriteVillagerWithOrc(villager);
+//							} /*else if(villager.getProfession() > 6) {
+//								doOverwriteVillagerWithElf(villager);
+//							}*/
+							Integer overwriteValue = Integer.MAX_VALUE;
+							try {
+								overwriteValue = villager.getDataManager().get(Constants.OVERWRITE_KEY);
+							}
+							catch (Exception e) {
+								logger.warn(e.getLocalizedMessage(), e);
+							}
+							if (overwriteValue == 3577) {
 								doOverwriteVillager(villager);
 							} else {
 								logger.warn("Villager's Data manager doesn't have overwrite key.");
@@ -406,9 +414,9 @@ public class EventHooksFML {
 	public void doOverwriteVillager(EntityVillager villager) {
 		Biome biome = villager.world.getBiome(villager.getPos());
 		logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
-		if (biome.getBiomeName().contains("swamp")) {
+		if(biome.getBiomeName().contains("swamp")) {
 			doOverwriteVillagerWithOrc(villager);
-		} else if (biome.getBiomeName().contains("forest")) {
+		} else if(biome.getBiomeName().contains("forest")) {
 			doOverwriteVillagerWithElf(villager);
 		} else {
 			villager.setDead();

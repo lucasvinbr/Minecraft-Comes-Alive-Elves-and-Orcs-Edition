@@ -11,14 +11,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import mca.core.MCA;
 import mca.enums.EnumProfessionSkinGroup;
-import org.apache.logging.log4j.LogManager;
+import mca.enums.EnumRace;
 import radixcore.core.RadixCore;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Handles loading of MCA's skins.
@@ -30,12 +32,15 @@ public final class SkinLoader {
 
 			if (modFile.isFile()) {
 				loadSkinsFromFile(modFile);
-			} else {
+			}
+			else {
 				LogManager.getLogger(SkinLoader.class).fatal(new FileNotFoundException("Unable to locate MCA assets!"));
 			}
-		} catch (final IOException e) {
+		}
+		catch (final IOException e) {
 			LogManager.getLogger(SkinLoader.class).fatal(e);
-		} catch (final NullPointerException e) {
+		}
+		catch (final NullPointerException e) {
 			LogManager.getLogger(SkinLoader.class).fatal(e);
 		}
 	}
@@ -44,9 +49,8 @@ public final class SkinLoader {
 		File modData = findModAsArchive();
 
 		if (modData == null) {
-			LogManager.getLogger(SkinLoader.class)
-					.fatal(new FileNotFoundException(
-							"Unable to locate MCA assets! This may be due to an issue with your launcher (if made by a third party), or your MCA installation. Try reinstalling the mod, or try a different launcher."));
+			LogManager.getLogger(SkinLoader.class).fatal(new FileNotFoundException(
+					"Unable to locate MCA assets! This may be due to an issue with your launcher (if made by a third party), or your MCA installation. Try reinstalling the mod, or try a different launcher."));
 		}
 
 		return modData;
@@ -60,7 +64,8 @@ public final class SkinLoader {
 				if (fileContainsModData(fileInMods)) {
 					return fileInMods;
 				}
-			} else if (fileInMods.isDirectory()) {
+			}
+			else if (fileInMods.isDirectory()) {
 				final File modData = getModFileFromNestedFolder(fileInMods);
 
 				if (modData != null) {
@@ -78,14 +83,23 @@ public final class SkinLoader {
 		int counter = 0;
 
 		while (enumerator.hasMoreElements()) {
-			//Loop through each entry within the JAR until the MCA folder is hit.
+			// Loop through each entry within the JAR until the MCA folder is hit.
 			final ZipEntry file = (ZipEntry) enumerator.nextElement();
 			String archiveFilePath = "/" + file.getName();
 
 			if (archiveFilePath.contains("textures/skins") && !archiveFilePath.contains("/sleeping/")) {
+				//TODO: Find a way to make orcs and elves have their own diverse set of profession skins.
+				//Right now, I am not even sure if villagers, elves, and orcs should have the same profession sets.
 				for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
-					if (file.getName().contains(skinGroup.toString().toLowerCase())) {
-						skinGroup.addSkin(archiveFilePath);
+					if(file.getName().toLowerCase().contains("orc")) {
+						//Just load up the orc skins for any profession.
+						skinGroup.addSkin(archiveFilePath, EnumRace.Orc);
+						counter++;
+					} else if(file.getName().toLowerCase().contains("elf")) {
+						skinGroup.addSkin(archiveFilePath, EnumRace.Elf);
+						counter++;
+					} else if (file.getName().toLowerCase().contains(skinGroup.toString().toLowerCase())) {
+						skinGroup.addSkin(archiveFilePath, EnumRace.Villager);
 						counter++;
 					}
 				}
@@ -102,7 +116,8 @@ public final class SkinLoader {
 		for (final File file : nestedFiles) {
 			if (file.isDirectory()) {
 				getModFileFromNestedFolder(file);
-			} else {
+			}
+			else {
 				if (fileContainsModData(file)) {
 					return file;
 				}
@@ -116,23 +131,24 @@ public final class SkinLoader {
 		if (fileToTest.getName().contains(".zip") || fileToTest.getName().contains(".jar")) {
 			try {
 				final ZipFile archive = new ZipFile(fileToTest);
-				final Enumeration enumerator = archive.entries();
+				final Enumeration<?> enumerator = archive.entries();
 				ZipEntry entry;
 
 				while (enumerator.hasMoreElements()) {
 					entry = (ZipEntry) enumerator.nextElement();
 
-					//Test for random files unique to MCA.
-					if (entry.getName().contains("mca/core/MCA.class") ||
-							entry.getName().contains("sleeping/ee1.png")) {
+					// Test for random files unique to MCA.
+					if (entry.getName().contains("mca/core/MCA.class")
+							|| entry.getName().contains("sleeping/ee1.png")) {
 						archive.close();
 						return true;
 					}
 				}
 
 				archive.close();
-			} catch (final ZipException e) {
-				e.printStackTrace();
+			}
+			catch (final ZipException e) {
+				Logger.getGlobal().log(Level.WARNING, e.getLocalizedMessage(), e);
 			}
 		}
 

@@ -5,8 +5,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public final class SoundsMCA 
-{
+public final class SoundsMCA {
 	private static final ResourceLocation loc_reaper_scythe_out = new ResourceLocation("mca:reaper.scythe.out");
 	private static final ResourceLocation loc_reaper_scythe_swing = new ResourceLocation("mca:reaper.scythe.swing");
 	private static final ResourceLocation loc_reaper_idle = new ResourceLocation("mca:reaper.idle");
@@ -24,43 +23,47 @@ public final class SoundsMCA
 	private static final ResourceLocation loc_femaleattack2 = new ResourceLocation("mca:femaleattack2");
 	private static final ResourceLocation loc_girl_villager_uhuh = new ResourceLocation("mca:girl.villager.uhuh");
 
-	private static final ResourceLocation loc_evil_female_attack_1	 = new ResourceLocation("mca:evil.female.attack.1");
-	private static final ResourceLocation loc_evil_female_attack_2	 = new ResourceLocation("mca:evil.female.attack.2");
-	private static final ResourceLocation loc_evil_female_death_1	 = new ResourceLocation("mca:evil.female.death.1");
-	private static final ResourceLocation loc_evil_female_death_2	 = new ResourceLocation("mca:evil.female.death.2");
-	private static final ResourceLocation loc_evil_female_hurt_1	 = new ResourceLocation("mca:evil.female.hurt.1");
-	private static final ResourceLocation loc_evil_female_hurt_2	 = new ResourceLocation("mca:evil.female.hurt.2");
-	private static final ResourceLocation loc_evil_male_attack_1	 = new ResourceLocation("mca:evil.male.attack.1");
-	private static final ResourceLocation loc_evil_male_attack_2	 = new ResourceLocation("mca:evil.male.attack.2");
-	private static final ResourceLocation loc_evil_male_death_1	 = new ResourceLocation("mca:evil.male.death.1");
-	private static final ResourceLocation loc_evil_male_death_2	 = new ResourceLocation("mca:evil.male.death.2");
-	private static final ResourceLocation loc_evil_male_hurt_1	 = new ResourceLocation("mca:evil.male.hurt.1");
-	private static final ResourceLocation loc_evil_male_hurt_2	 = new ResourceLocation("mca:evil.male.hurt.2");
-	private static final ResourceLocation loc_heroic_female_attack_1	 = new ResourceLocation("mca:heroic.female.attack.1");
-	private static final ResourceLocation loc_heroic_female_attack_2	 = new ResourceLocation("mca:heroic.female.attack.2");
-	private static final ResourceLocation loc_heroic_female_death_1	 = new ResourceLocation("mca:heroic.female.death.1");
-	private static final ResourceLocation loc_heroic_female_death_2	 = new ResourceLocation("mca:heroic.female.death.2");
-	private static final ResourceLocation loc_heroic_female_hurt_1	 = new ResourceLocation("mca:heroic.female.hurt.1");
-	private static final ResourceLocation loc_heroic_female_hurt_2	 = new ResourceLocation("mca:heroic.female.hurt.2");
-	private static final ResourceLocation loc_heroic_male_attack_1	 = new ResourceLocation("mca:heroic.male.attack.1");
-	private static final ResourceLocation loc_heroic_male_attack_2	 = new ResourceLocation("mca:heroic.male.attack.2");
-	private static final ResourceLocation loc_heroic_male_death_1	 = new ResourceLocation("mca:heroic.male.death.1");
-	private static final ResourceLocation loc_heroic_male_death_2	 = new ResourceLocation("mca:heroic.male.death.2");
-	private static final ResourceLocation loc_heroic_male_hurt_1	 = new ResourceLocation("mca:heroic.male.hurt.1");
-	private static final ResourceLocation loc_heroic_male_hurt_2	 = new ResourceLocation("mca:heroic.male.hurt.2");
-	private static final ResourceLocation loc_villager_female_death_1	 = new ResourceLocation("mca:villager.female.death.1");
-	private static final ResourceLocation loc_villager_female_death_2	 = new ResourceLocation("mca:villager.female.death.2");
-	private static final ResourceLocation loc_villager_female_heh	 = new ResourceLocation("mca:villager.female.heh");
-	private static final ResourceLocation loc_villager_female_hurt_1	 = new ResourceLocation("mca:villager.female.hurt.1");
-	private static final ResourceLocation loc_villager_female_hurt_2	 = new ResourceLocation("mca:villager.female.hurt.2");
-	private static final ResourceLocation loc_villager_male_death_1	 = new ResourceLocation("mca:villager.male.death.1");
-	private static final ResourceLocation loc_villager_male_death_2	 = new ResourceLocation("mca:villager.male.death.2");
-	private static final ResourceLocation loc_villager_male_heh	 = new ResourceLocation("mca:villager.male.heh");
-	private static final ResourceLocation loc_villager_male_hurt_1	 = new ResourceLocation("mca:villager.male.hurt.1");
-	private static final ResourceLocation loc_villager_male_hurt_2	 = new ResourceLocation("mca:villager.male.hurt.2");
+	private static final ResourceLocation loc_evil_female_attack_1 = new ResourceLocation("mca:evil.female.attack.1");
+	private static final ResourceLocation loc_evil_female_attack_2 = new ResourceLocation("mca:evil.female.attack.2");
+	private static final ResourceLocation loc_evil_female_death_1 = new ResourceLocation("mca:evil.female.death.1");
+	private static final ResourceLocation loc_evil_female_death_2 = new ResourceLocation("mca:evil.female.death.2");
+	private static final ResourceLocation loc_evil_female_hurt_1 = new ResourceLocation("mca:evil.female.hurt.1");
+	private static final ResourceLocation loc_evil_female_hurt_2 = new ResourceLocation("mca:evil.female.hurt.2");
+	private static final ResourceLocation loc_evil_male_attack_1 = new ResourceLocation("mca:evil.male.attack.1");
+	private static final ResourceLocation loc_evil_male_attack_2 = new ResourceLocation("mca:evil.male.attack.2");
+	private static final ResourceLocation loc_evil_male_death_1 = new ResourceLocation("mca:evil.male.death.1");
+	private static final ResourceLocation loc_evil_male_death_2 = new ResourceLocation("mca:evil.male.death.2");
+	private static final ResourceLocation loc_evil_male_hurt_1 = new ResourceLocation("mca:evil.male.hurt.1");
+	private static final ResourceLocation loc_evil_male_hurt_2 = new ResourceLocation("mca:evil.male.hurt.2");
+	private static final ResourceLocation loc_heroic_female_attack_1 = new ResourceLocation(
+			"mca:heroic.female.attack.1");
+	private static final ResourceLocation loc_heroic_female_attack_2 = new ResourceLocation(
+			"mca:heroic.female.attack.2");
+	private static final ResourceLocation loc_heroic_female_death_1 = new ResourceLocation("mca:heroic.female.death.1");
+	private static final ResourceLocation loc_heroic_female_death_2 = new ResourceLocation("mca:heroic.female.death.2");
+	private static final ResourceLocation loc_heroic_female_hurt_1 = new ResourceLocation("mca:heroic.female.hurt.1");
+	private static final ResourceLocation loc_heroic_female_hurt_2 = new ResourceLocation("mca:heroic.female.hurt.2");
+	private static final ResourceLocation loc_heroic_male_attack_1 = new ResourceLocation("mca:heroic.male.attack.1");
+	private static final ResourceLocation loc_heroic_male_attack_2 = new ResourceLocation("mca:heroic.male.attack.2");
+	private static final ResourceLocation loc_heroic_male_death_1 = new ResourceLocation("mca:heroic.male.death.1");
+	private static final ResourceLocation loc_heroic_male_death_2 = new ResourceLocation("mca:heroic.male.death.2");
+	private static final ResourceLocation loc_heroic_male_hurt_1 = new ResourceLocation("mca:heroic.male.hurt.1");
+	private static final ResourceLocation loc_heroic_male_hurt_2 = new ResourceLocation("mca:heroic.male.hurt.2");
+	private static final ResourceLocation loc_villager_female_death_1 = new ResourceLocation(
+			"mca:villager.female.death.1");
+	private static final ResourceLocation loc_villager_female_death_2 = new ResourceLocation(
+			"mca:villager.female.death.2");
+	private static final ResourceLocation loc_villager_female_heh = new ResourceLocation("mca:villager.female.heh");
+	private static final ResourceLocation loc_villager_female_hurt_1 = new ResourceLocation(
+			"mca:villager.female.hurt.1");
+	private static final ResourceLocation loc_villager_female_hurt_2 = new ResourceLocation(
+			"mca:villager.female.hurt.2");
+	private static final ResourceLocation loc_villager_male_death_1 = new ResourceLocation("mca:villager.male.death.1");
+	private static final ResourceLocation loc_villager_male_death_2 = new ResourceLocation("mca:villager.male.death.2");
+	private static final ResourceLocation loc_villager_male_heh = new ResourceLocation("mca:villager.male.heh");
+	private static final ResourceLocation loc_villager_male_hurt_1 = new ResourceLocation("mca:villager.male.hurt.1");
+	private static final ResourceLocation loc_villager_male_hurt_2 = new ResourceLocation("mca:villager.male.hurt.2");
 	private static final ResourceLocation loc_malehurt = new ResourceLocation("mca:malehurt");
-
-
 
 	public static final SoundEvent reaper_scythe_out = new SoundEvent(loc_reaper_scythe_out);
 	public static final SoundEvent reaper_scythe_swing = new SoundEvent(loc_reaper_scythe_swing);
@@ -80,46 +83,46 @@ public final class SoundsMCA
 	public static final SoundEvent femaleattack2 = new SoundEvent(loc_femaleattack2);
 	public static final SoundEvent girl_villager_uhuh = new SoundEvent(loc_girl_villager_uhuh);
 
-	public static final SoundEvent evil_female_attack_1	 = new SoundEvent(loc_evil_female_attack_1);
-	public static final SoundEvent evil_female_attack_2	 = new SoundEvent(loc_evil_female_attack_2);
-	public static final SoundEvent evil_female_death_1	 = new SoundEvent(loc_evil_female_death_1);
-	public static final SoundEvent evil_female_death_2	 = new SoundEvent(loc_evil_female_death_2);
-	public static final SoundEvent evil_female_hurt_1	 = new SoundEvent(loc_evil_female_hurt_1);
-	public static final SoundEvent evil_female_hurt_2	 = new SoundEvent(loc_evil_female_hurt_2);
-	public static final SoundEvent evil_male_attack_1	 = new SoundEvent(loc_evil_male_attack_1);
-	public static final SoundEvent evil_male_attack_2	 = new SoundEvent(loc_evil_male_attack_2);
-	public static final SoundEvent evil_male_death_1	 = new SoundEvent(loc_evil_male_death_1);
-	public static final SoundEvent evil_male_death_2	 = new SoundEvent(loc_evil_male_death_2);
-	public static final SoundEvent evil_male_hurt_1	 = new SoundEvent(loc_evil_male_hurt_1);
-	public static final SoundEvent evil_male_hurt_2	 = new SoundEvent(loc_evil_male_hurt_2);
-	public static final SoundEvent heroic_female_attack_1	 = new SoundEvent(loc_heroic_female_attack_1);
-	public static final SoundEvent heroic_female_attack_2	 = new SoundEvent(loc_heroic_female_attack_2);
-	public static final SoundEvent heroic_female_death_1	 = new SoundEvent(loc_heroic_female_death_1);
-	public static final SoundEvent heroic_female_death_2	 = new SoundEvent(loc_heroic_female_death_2);
-	public static final SoundEvent heroic_female_hurt_1	 = new SoundEvent(loc_heroic_female_hurt_1);
-	public static final SoundEvent heroic_female_hurt_2	 = new SoundEvent(loc_heroic_female_hurt_2);
-	public static final SoundEvent heroic_male_attack_1	 = new SoundEvent(loc_heroic_male_attack_1);
-	public static final SoundEvent heroic_male_attack_2	 = new SoundEvent(loc_heroic_male_attack_2);
-	public static final SoundEvent heroic_male_death_1	 = new SoundEvent(loc_heroic_male_death_1);
-	public static final SoundEvent heroic_male_death_2	 = new SoundEvent(loc_heroic_male_death_2);
-	public static final SoundEvent heroic_male_hurt_1	 = new SoundEvent(loc_heroic_male_hurt_1);
-	public static final SoundEvent heroic_male_hurt_2	 = new SoundEvent(loc_heroic_male_hurt_2);
-	public static final SoundEvent villager_female_death_1	 = new SoundEvent(loc_villager_female_death_1);
-	public static final SoundEvent villager_female_death_2	 = new SoundEvent(loc_villager_female_death_2);
-	public static final SoundEvent villager_female_hurt_1	 = new SoundEvent(loc_villager_female_hurt_1);
-	public static final SoundEvent villager_female_hurt_2	 = new SoundEvent(loc_villager_female_hurt_2);
-	public static final SoundEvent villager_male_death_1	 = new SoundEvent(loc_villager_male_death_1);
-	public static final SoundEvent villager_male_death_2	 = new SoundEvent(loc_villager_male_death_2);
-	public static final SoundEvent villager_female_heh	 = new SoundEvent(loc_villager_female_heh);
-	public static final SoundEvent villager_male_hurt_1	 = new SoundEvent(loc_villager_male_hurt_1);
-	public static final SoundEvent villager_male_hurt_2	 = new SoundEvent(loc_villager_male_hurt_2);
-	public static final SoundEvent villager_male_heh	 = new SoundEvent(loc_villager_male_heh);
+	public static final SoundEvent evil_female_attack_1 = new SoundEvent(loc_evil_female_attack_1);
+	public static final SoundEvent evil_female_attack_2 = new SoundEvent(loc_evil_female_attack_2);
+	public static final SoundEvent evil_female_death_1 = new SoundEvent(loc_evil_female_death_1);
+	public static final SoundEvent evil_female_death_2 = new SoundEvent(loc_evil_female_death_2);
+	public static final SoundEvent evil_female_hurt_1 = new SoundEvent(loc_evil_female_hurt_1);
+	public static final SoundEvent evil_female_hurt_2 = new SoundEvent(loc_evil_female_hurt_2);
+	public static final SoundEvent evil_male_attack_1 = new SoundEvent(loc_evil_male_attack_1);
+	public static final SoundEvent evil_male_attack_2 = new SoundEvent(loc_evil_male_attack_2);
+	public static final SoundEvent evil_male_death_1 = new SoundEvent(loc_evil_male_death_1);
+	public static final SoundEvent evil_male_death_2 = new SoundEvent(loc_evil_male_death_2);
+	public static final SoundEvent evil_male_hurt_1 = new SoundEvent(loc_evil_male_hurt_1);
+	public static final SoundEvent evil_male_hurt_2 = new SoundEvent(loc_evil_male_hurt_2);
+	public static final SoundEvent heroic_female_attack_1 = new SoundEvent(loc_heroic_female_attack_1);
+	public static final SoundEvent heroic_female_attack_2 = new SoundEvent(loc_heroic_female_attack_2);
+	public static final SoundEvent heroic_female_death_1 = new SoundEvent(loc_heroic_female_death_1);
+	public static final SoundEvent heroic_female_death_2 = new SoundEvent(loc_heroic_female_death_2);
+	public static final SoundEvent heroic_female_hurt_1 = new SoundEvent(loc_heroic_female_hurt_1);
+	public static final SoundEvent heroic_female_hurt_2 = new SoundEvent(loc_heroic_female_hurt_2);
+	public static final SoundEvent heroic_male_attack_1 = new SoundEvent(loc_heroic_male_attack_1);
+	public static final SoundEvent heroic_male_attack_2 = new SoundEvent(loc_heroic_male_attack_2);
+	public static final SoundEvent heroic_male_death_1 = new SoundEvent(loc_heroic_male_death_1);
+	public static final SoundEvent heroic_male_death_2 = new SoundEvent(loc_heroic_male_death_2);
+	public static final SoundEvent heroic_male_hurt_1 = new SoundEvent(loc_heroic_male_hurt_1);
+	public static final SoundEvent heroic_male_hurt_2 = new SoundEvent(loc_heroic_male_hurt_2);
+	public static final SoundEvent villager_female_death_1 = new SoundEvent(loc_villager_female_death_1);
+	public static final SoundEvent villager_female_death_2 = new SoundEvent(loc_villager_female_death_2);
+	public static final SoundEvent villager_female_hurt_1 = new SoundEvent(loc_villager_female_hurt_1);
+	public static final SoundEvent villager_female_hurt_2 = new SoundEvent(loc_villager_female_hurt_2);
+	public static final SoundEvent villager_male_death_1 = new SoundEvent(loc_villager_male_death_1);
+	public static final SoundEvent villager_male_death_2 = new SoundEvent(loc_villager_male_death_2);
+	public static final SoundEvent villager_female_heh = new SoundEvent(loc_villager_female_heh);
+	public static final SoundEvent villager_male_hurt_1 = new SoundEvent(loc_villager_male_hurt_1);
+	public static final SoundEvent villager_male_hurt_2 = new SoundEvent(loc_villager_male_hurt_2);
+	public static final SoundEvent villager_male_heh = new SoundEvent(loc_villager_male_heh);
 	public static final SoundEvent malehurt = new SoundEvent(loc_malehurt);
-	
-	private SoundsMCA(){};
-	
-	public static void register(RegistryEvent.Register<SoundEvent> event)
-	{
+
+	private SoundsMCA() {
+	};
+
+	public static void register(RegistryEvent.Register<SoundEvent> event) {
 		IForgeRegistry<SoundEvent> registry = event.getRegistry();
 		reaper_scythe_out.setRegistryName(loc_reaper_scythe_out);
 		reaper_scythe_swing.setRegistryName(loc_reaper_scythe_swing);
@@ -224,7 +227,6 @@ public final class SoundsMCA
 		registry.register(villager_male_heh);
 		registry.register(villager_male_death_1);
 		registry.register(villager_male_death_2);
-		registry.register(villager_male_heh);
 		registry.register(villager_male_hurt_1);
 		registry.register(villager_male_hurt_2);
 	}

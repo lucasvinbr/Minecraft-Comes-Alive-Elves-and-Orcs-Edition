@@ -13,7 +13,7 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	public EntityOrcMCA(World world) {
 		super(world);
 		maxSwingProgressTicks = 10;
-		//		this.attributes.setProfession(EnumProfession.Orc);
+//		this.attributes.setProfession(EnumProfession.Orc);
 		this.attributes.setProfession(EnumProfession.Warrior);
 		this.attributes.setRace(EnumRace.Orc);
 	}

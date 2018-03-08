@@ -21,7 +21,7 @@ public class ItemSpawnEggForOrcs extends ItemSpawnEgg {
 		orc.attributes.assignRandomName();
 		orc.attributes.assignRandomPersonality();
 		orc.attributes.assignRandomSkin();
-		//		orc.attributes.setProfession(EnumProfession.Unassigned);
+//		orc.attributes.setProfession(EnumProfession.Unassigned);
 		orc.setPosition(posX, posY, posZ);
 		world.spawnEntity(orc);
 	}

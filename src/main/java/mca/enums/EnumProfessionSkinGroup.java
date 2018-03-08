@@ -12,24 +12,37 @@ public enum EnumProfessionSkinGroup {
 	Farmer(0),
 	Baker(0),
 	Butcher(4),
-	Guard(3),
+	Guard(5),
 	Child(0),
 	Librarian(1),
 	Miner(3),
 	Priest(2),
 	Smith(3),
-	Warrior(3),
-	Orc(5),
-	Elf(5);
+	Warrior(5)/*,
+	Elf(3),
+	Orc(4)*/;
 
-	//	List<String> villagerSkinList;
-	//	List<String> orkSkinList;
-	//	List<String> elfSkinList;
+//	List<String> villagerSkinList;
+//	List<String> orkSkinList;
+//	List<String> elfSkinList;
 
 	SkinManager villagerSkins;
 	SkinManager elfSkins;
 	SkinManager orcSkins;
+	int vanillaId;
 
+
+	class SkinManager {
+		List<String> completeSkinList = new ArrayList<String>();
+		List<String> maleSkinList;
+		List<String> femaleSkinList;
+		int vanillaId;
+		SkinManager(int vanillaId) {
+			this.vanillaId = vanillaId;
+			this.maleSkinList = new ArrayList<String>();
+			this.femaleSkinList = new ArrayList<String>();
+		}
+	}
 
 	EnumProfessionSkinGroup(int vanillaId) {
 		villagerSkins = new SkinManager(vanillaId);
@@ -37,20 +50,20 @@ public enum EnumProfessionSkinGroup {
 		orcSkins = new SkinManager(vanillaId);
 	}
 
-	public void addSkin(String locationInJAR) {
+	public void addSkin(String locationInJAR, EnumRace race) {
 		String resourceLocation = locationInJAR.replace("/assets/mca/", "mca:");
-		SkinManager skinManager = null;
-		if (resourceLocation.toLowerCase().contains("orc")) {
+		SkinManager skinManager;
+		if(race == EnumRace.Orc) {
 			skinManager = orcSkins;
-		} else if (resourceLocation.toLowerCase().contains("elf")) {
+		} else if(race == EnumRace.Elf) {
 			skinManager = elfSkins;
 		} else {
 			skinManager = villagerSkins;
 		}
 		skinManager.completeSkinList.add(resourceLocation);
-		String
-				genderChar =
-				resourceLocation.replace("mca:textures/skins/" + this.toString().toLowerCase(), "").substring(0, 1);
+		String professionName = this.toString().toLowerCase();
+		String textureName = resourceLocation.replace(String.format("mca:textures/skins/%s", professionName), "");
+		String genderChar = textureName.substring(0, 1);
 
 		if (genderChar.equals("m")) {
 			skinManager.maleSkinList.add(resourceLocation);
@@ -59,33 +72,34 @@ public enum EnumProfessionSkinGroup {
 		}
 	}
 
-	String getSkin(boolean isMale, EnumRace race) {
-		SkinManager skinManager = null;
-		if (race == EnumRace.Orc) {
+	public String getSkin(boolean isMale, EnumRace race) {
+		SkinManager skinManager;
+		if(race == EnumRace.Orc) {
 			skinManager = orcSkins;
-		} else if (race == EnumRace.Elf) {
+		} else if(race == EnumRace.Elf) {
 			skinManager = elfSkins;
 		} else {
 			skinManager = villagerSkins;
 		}
 		List<String> skinList = isMale ? skinManager.maleSkinList : skinManager.femaleSkinList;
-
+		String skin = new String();
 		try {
-			return skinList.get(RadixMath.getNumberInRange(0, skinList.size() - 1));
+			skin = skinList.get(RadixMath.getNumberInRange(0, skinList.size() - 1));
 		} catch (Exception e) {
 			LogManager.getLogger(this.getClass())
 					.error("Unable to generate random skin for skin group <" + this.toString() + ">" + "!");
 			LogManager.getLogger(this.getClass()).error(e);
 
-			return "";
+			skin = "";
 		}
+		return skin;
 	}
 
 	public List<String> getSkinList(boolean isMale, EnumRace race) {
-		SkinManager skinManager = null;
-		if (race == EnumRace.Orc) {
+		SkinManager skinManager;
+		if(race == EnumRace.Orc) {
 			skinManager = orcSkins;
-		} else if (race == EnumRace.Elf) {
+		} else if(race == EnumRace.Elf) {
 			skinManager = elfSkins;
 		} else {
 			skinManager = villagerSkins;
@@ -113,20 +127,7 @@ public enum EnumProfessionSkinGroup {
 		return getSkin(false, race);
 	}
 
-	class SkinManager {
-		List<String> completeSkinList;
-		List<String> maleSkinList;
-		List<String> femaleSkinList;
-		int vanillaId;
-
-		SkinManager(int vanillaId) {
-			this.vanillaId = vanillaId;
-			this.maleSkinList = new ArrayList<String>();
-			this.femaleSkinList = new ArrayList<String>();
-		}
+	public int getVanillaProfessionId() {
+		return vanillaId;
 	}
-
-	//	public int getVanillaProfessionId() {
-	//		return vanillaId;
-	//	}
 }

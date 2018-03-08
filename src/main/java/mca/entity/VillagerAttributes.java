@@ -45,90 +45,62 @@ public class VillagerAttributes {
 	private final EntityVillagerMCA villager;
 	private final EntityDataManager dataManager;
 
-	private static final DataParameter<String>
-			NAME =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	private static final DataParameter<String>
-			HEAD_TEXTURE =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	private static final DataParameter<String>
-			CLOTHES_TEXTURE =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	protected static final DataParameter<Integer>
-			PROFESSION =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	protected static final DataParameter<Integer>
-			RACE =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Integer>
-			PERSONALITY =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Integer>
-			GENDER =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<String>
-			SPOUSE_NAME =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	private static final DataParameter<Optional<UUID>>
-			SPOUSE_UUID =
-			EntityDataManager.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private static final DataParameter<Integer>
-			SPOUSE_GENDER =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<String>
-			MOTHER_NAME =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	private static final DataParameter<Optional<UUID>>
-			MOTHER_UUID =
-			EntityDataManager.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private static final DataParameter<Integer>
-			MOTHER_GENDER =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<String>
-			FATHER_NAME =
-			EntityDataManager.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
-	private static final DataParameter<Optional<UUID>>
-			FATHER_UUID =
-			EntityDataManager.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-	private static final DataParameter<Integer>
-			FATHER_GENDER =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Integer>
-			BABY_STATE =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Integer>
-			MOVEMENT_STATE =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Boolean>
-			IS_CHILD =
-			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Integer>
-			AGE =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Float>
-			SCALE_HEIGHT =
-			EntityDataManager.<Float>createKey(EntityVillagerMCA.class, DataSerializers.FLOAT);
-	private static final DataParameter<Float>
-			SCALE_WIDTH =
-			EntityDataManager.<Float>createKey(EntityVillagerMCA.class, DataSerializers.FLOAT);
-	private static final DataParameter<Boolean>
-			DO_DISPLAY =
-			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Boolean>
-			IS_SWINGING =
-			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Integer>
-			HELD_ITEM_SLOT =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
-	private static final DataParameter<Boolean>
-			IS_INFECTED =
-			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Boolean>
-			DO_OPEN_INVENTORY =
-			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Integer>
-			MARRIAGE_STATE =
-			EntityDataManager.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<String> NAME = EntityDataManager.<String>createKey(EntityVillagerMCA.class,
+			DataSerializers.STRING);
+	private static final DataParameter<String> HEAD_TEXTURE = EntityDataManager
+			.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
+	private static final DataParameter<String> CLOTHES_TEXTURE = EntityDataManager
+			.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
+	protected static final DataParameter<Integer> PROFESSION = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	protected static final DataParameter<Integer> RACE = EntityDataManager.<Integer>createKey(EntityVillagerMCA.class,
+			DataSerializers.VARINT);
+	private static final DataParameter<Integer> PERSONALITY = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> GENDER = EntityDataManager.<Integer>createKey(EntityVillagerMCA.class,
+			DataSerializers.VARINT);
+	private static final DataParameter<String> SPOUSE_NAME = EntityDataManager
+			.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
+	private static final DataParameter<Optional<UUID>> SPOUSE_UUID = EntityDataManager
+			.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Integer> SPOUSE_GENDER = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<String> MOTHER_NAME = EntityDataManager
+			.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
+	private static final DataParameter<Optional<UUID>> MOTHER_UUID = EntityDataManager
+			.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Integer> MOTHER_GENDER = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<String> FATHER_NAME = EntityDataManager
+			.<String>createKey(EntityVillagerMCA.class, DataSerializers.STRING);
+	private static final DataParameter<Optional<UUID>> FATHER_UUID = EntityDataManager
+			.<Optional<UUID>>createKey(EntityVillagerMCA.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Integer> FATHER_GENDER = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> BABY_STATE = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> MOVEMENT_STATE = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class,
+			DataSerializers.BOOLEAN);
+	private static final DataParameter<Integer> AGE = EntityDataManager.<Integer>createKey(EntityVillagerMCA.class,
+			DataSerializers.VARINT);
+	private static final DataParameter<Float> SCALE_HEIGHT = EntityDataManager.<Float>createKey(EntityVillagerMCA.class,
+			DataSerializers.FLOAT);
+	private static final DataParameter<Float> SCALE_WIDTH = EntityDataManager.<Float>createKey(EntityVillagerMCA.class,
+			DataSerializers.FLOAT);
+	private static final DataParameter<Boolean> DO_DISPLAY = EntityDataManager
+			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> IS_SWINGING = EntityDataManager
+			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Integer> HELD_ITEM_SLOT = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Boolean> IS_INFECTED = EntityDataManager
+			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Boolean> DO_OPEN_INVENTORY = EntityDataManager
+			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
+	private static final DataParameter<Integer> MARRIAGE_STATE = EntityDataManager
+			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
 
 	private int timesWarnedForLowHearts;
 	private int ticksAlive;
@@ -151,13 +123,13 @@ public class VillagerAttributes {
 	}
 
 	public void initialize() {
-		dataManager.register(NAME, "Steve");
-		dataManager.register(HEAD_TEXTURE, "");
-		dataManager.register(CLOTHES_TEXTURE, "");
+		dataManager.register(NAME, "Eve");
+		dataManager.register(HEAD_TEXTURE, EnumProfessionSkinGroup.Farmer.getSkin(false, EnumRace.Villager));
+		dataManager.register(CLOTHES_TEXTURE, EnumProfessionSkinGroup.Farmer.getSkin(false, EnumRace.Villager));
 		dataManager.register(PROFESSION, EnumProfession.Farmer.getId());
 		dataManager.register(RACE, EnumRace.Villager.getId());
 		dataManager.register(PERSONALITY, EnumPersonality.FRIENDLY.getId());
-		dataManager.register(GENDER, EnumGender.MALE.getId());
+		dataManager.register(GENDER, EnumGender.FEMALE.getId());
 		dataManager.register(SPOUSE_NAME, "N/A");
 		dataManager.register(SPOUSE_UUID, Constants.EMPTY_UUID_OPT);
 		dataManager.register(SPOUSE_GENDER, EnumGender.UNASSIGNED.getId());
@@ -226,19 +198,46 @@ public class VillagerAttributes {
 	}
 
 	public String getHeadTexture() {
-		return dataManager.get(HEAD_TEXTURE);
+		EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
+		
+		String skin = null;
+		skin = dataManager.get(HEAD_TEXTURE);
+		if(skin == null || skin.isEmpty()) {
+//			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
+//					: skinGroup.getRandomFemaleSkin(getRaceEnum());
+			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+		}
+		
+		return skin;
 	}
 
 	public void setHeadTexture(String texture) {
-		dataManager.set(HEAD_TEXTURE, texture);
+		if(texture == null || texture.isEmpty()) {
+			LogManager.getLogger(this.getClass()).warn("Setting a null head texture.");
+		} else {
+			dataManager.set(HEAD_TEXTURE, texture);
+		}
+		
 	}
 
 	public String getClothesTexture() {
-		return dataManager.get(CLOTHES_TEXTURE);
+		EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
+		String skin = null;
+		skin = dataManager.get(CLOTHES_TEXTURE);
+		if(skin == null || skin.isEmpty()) {
+//			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
+//					: skinGroup.getRandomFemaleSkin(getRaceEnum());
+			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+		}
+		return skin;
 	}
 
 	public void setClothesTexture(String texture) {
-		dataManager.set(CLOTHES_TEXTURE, texture);
+		if(texture == null || texture.isEmpty()) {
+			LogManager.getLogger(this.getClass()).warn("Setting a null clothes texture.");
+		} else {
+			dataManager.set(CLOTHES_TEXTURE, texture);
+		}
 	}
 
 	public void assignRandomSkin() {
@@ -246,11 +245,11 @@ public class VillagerAttributes {
 			Throwable t = new Throwable();
 			LogManager.getLogger(this.getClass()).error("Attempted to randomize skin on unassigned gender villager.");
 			LogManager.getLogger(this.getClass()).error(t);
-		} else {
+		}
+		else {
 			EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
-			String skin = this.getGender() == EnumGender.MALE ?
-			              skinGroup.getRandomMaleSkin(getRaceEnum()) :
-			              skinGroup.getRandomFemaleSkin(getRaceEnum());
+			String skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
+					: skinGroup.getRandomFemaleSkin(getRaceEnum());
 			setHeadTexture(skin);
 			setClothesTexture(skin);
 		}
@@ -263,11 +262,13 @@ public class VillagerAttributes {
 	public EnumProfession getProfessionEnum() {
 		if (dataManager.get(RACE).intValue() == EnumRace.Orc.getId()) {
 			return EnumProfession.Guard;
-		} else if (dataManager.get(RACE).intValue() == EnumRace.Elf.getId()) {
+		}
+		else if (dataManager.get(RACE).intValue() == EnumRace.Elf.getId()) {
 			EnumGender sex = EnumGender.byId(dataManager.get(GENDER));
 			if (sex == EnumGender.MALE) {
 				return EnumProfession.Guard;
-			} else {
+			}
+			else {
 				return EnumProfession.Archer;
 			}
 		}
@@ -275,23 +276,23 @@ public class VillagerAttributes {
 	}
 
 	public EnumProfessionSkinGroup getProfessionSkinGroup() {
-		//		if (dataManager.get(RACE) == EnumRace.Orc.getId()) {
-		//			return EnumRace.Orc;
-		//		} else if (dataManager.get(RACE) == EnumRace.Elf.getId()) {
-		//			return EnumRace.Elf;
-		//		}
+		// if (dataManager.get(RACE) == EnumRace.Orc.getId()) {
+		// return EnumRace.Orc;
+		// } else if (dataManager.get(RACE) == EnumRace.Elf.getId()) {
+		// return EnumRace.Elf;
+		// }
 		return EnumProfession.getProfessionById(dataManager.get(PROFESSION).intValue()).getSkinGroup();
 	}
 
 	public void setProfession(EnumProfession profession) {
-		//		if(profession == EnumProfession.Elf) {
-		//			setRace(EnumRace.Elf);
-		//			return;
-		//		}
-		//		if(profession == EnumProfession.Orc) {
-		//			setRace(EnumRace.Orc);
-		//			return;
-		//		}
+		// if(profession == EnumProfession.Elf) {
+		// setRace(EnumRace.Elf);
+		// return;
+		// }
+		// if(profession == EnumProfession.Orc) {
+		// setRace(EnumRace.Orc);
+		// return;
+		// }
 		dataManager.set(PROFESSION, profession.getId());
 		villager.setProfession(profession.getId());
 	}
@@ -303,16 +304,17 @@ public class VillagerAttributes {
 	public EnumRaceSkinGroup getRaceSkinGroup() {
 		if (dataManager.get(RACE).intValue() == EnumRace.Orc.getId()) {
 			return EnumRaceSkinGroup.Orc;
-		} else if (dataManager.get(RACE).intValue() == EnumRace.Elf.getId()) {
+		}
+		else if (dataManager.get(RACE).intValue() == EnumRace.Elf.getId()) {
 			return EnumRaceSkinGroup.Elf;
 		}
 		return EnumRaceSkinGroup.Villager;
-		//		return EnumRace.getRaceById(dataManager.get(RACE).intValue()).getSkinGroup();
+		// return EnumRace.getRaceById(dataManager.get(RACE).intValue()).getSkinGroup();
 	}
 
 	public void setRace(EnumRace race) {
 		dataManager.set(RACE, race.getId());
-		//		villager.setRace(race.getId()); //I don't think that I need this.
+		// villager.setRace(race.getId()); //I don't think that I need this.
 	}
 
 	public EnumPersonality getPersonality() {
@@ -343,10 +345,10 @@ public class VillagerAttributes {
 		return EnumGender.byId(dataManager.get(SPOUSE_GENDER));
 	}
 
-
-	/* Performs an engagement between this villager and provided player. 
-	 * DOES NOT handle nulls. To end an engagement, call setSpouse with null.
-	 * */
+	/*
+	 * Performs an engagement between this villager and provided player. DOES NOT
+	 * handle nulls. To end an engagement, call setSpouse with null.
+	 */
 	public void setFiancee(EntityPlayer player) {
 		if (player == null) {
 			throw new Error("Engagement player cannot be null");
@@ -365,7 +367,7 @@ public class VillagerAttributes {
 		playerData.setSpouseUUID(villager.getUniqueID());
 		playerData.setMarriageState(EnumMarriageState.ENGAGED);
 
-		//Prevent story progression when engaged to a player
+		// Prevent story progression when engaged to a player
 		villager.getBehavior(ActionStoryProgression.class).setProgressionStep(EnumProgressionStep.FINISHED);
 	}
 
@@ -428,12 +430,14 @@ public class VillagerAttributes {
 			dataManager.set(MOTHER_NAME, "");
 			dataManager.set(MOTHER_UUID, EMPTY_UUID_OPT);
 			dataManager.set(MOTHER_GENDER, EnumGender.UNASSIGNED.getId());
-		} else if (either.getLeft() != null) {
+		}
+		else if (either.getLeft() != null) {
 			EntityVillagerMCA mother = either.getLeft();
 			dataManager.set(MOTHER_NAME, mother.attributes.getName());
 			dataManager.set(MOTHER_UUID, Optional.of(mother.getUniqueID()));
 			dataManager.set(MOTHER_GENDER, mother.attributes.getGender().getId());
-		} else if (either.getRight() != null) {
+		}
+		else if (either.getRight() != null) {
 			EntityPlayer player = either.getRight();
 			NBTPlayerData data = MCA.getPlayerData(player);
 
@@ -476,12 +480,14 @@ public class VillagerAttributes {
 			dataManager.set(FATHER_NAME, "");
 			dataManager.set(FATHER_UUID, EMPTY_UUID_OPT);
 			dataManager.set(FATHER_GENDER, EnumGender.UNASSIGNED.getId());
-		} else if (either.getLeft() != null) {
+		}
+		else if (either.getLeft() != null) {
 			EntityVillagerMCA father = either.getLeft();
 			dataManager.set(FATHER_NAME, father.attributes.getName());
 			dataManager.set(FATHER_UUID, Optional.of(father.getUniqueID()));
 			dataManager.set(FATHER_GENDER, father.attributes.getGender().getId());
-		} else if (either.getRight() != null) {
+		}
+		else if (either.getRight() != null) {
 			EntityPlayer player = either.getRight();
 			NBTPlayerData data = MCA.getPlayerData(player);
 
@@ -585,16 +591,15 @@ public class VillagerAttributes {
 
 	@Deprecated
 	public boolean getIsMarried() {
-		return getMarriageState() == EnumMarriageState.MARRIED_TO_VILLAGER ||
-				getMarriageState() == EnumMarriageState.MARRIED_TO_PLAYER;
+		return getMarriageState() == EnumMarriageState.MARRIED_TO_VILLAGER
+				|| getMarriageState() == EnumMarriageState.MARRIED_TO_PLAYER;
 	}
 
 	public boolean getCanBeHired(EntityPlayer player) {
-		return getPlayerSpouseInstance() != player && (getProfessionSkinGroup() == EnumProfessionSkinGroup.Farmer ||
-				getProfessionSkinGroup() == EnumProfessionSkinGroup.Miner ||
-				getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior);
+		return getPlayerSpouseInstance() != player && (getProfessionSkinGroup() == EnumProfessionSkinGroup.Farmer
+				|| getProfessionSkinGroup() == EnumProfessionSkinGroup.Miner
+				|| getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior);
 	}
-
 
 	public boolean getDoOpenInventory() {
 		return dataManager.get(DO_OPEN_INVENTORY);
@@ -608,37 +613,36 @@ public class VillagerAttributes {
 		return EnumMarriageState.byId(dataManager.get(MARRIAGE_STATE));
 	}
 
-	/*package-private*/ void setSpouseUUID(UUID uuid) {
+	/* package-private */ void setSpouseUUID(UUID uuid) {
 		dataManager.set(SPOUSE_UUID, Optional.of(uuid));
 	}
 
-	/*package-private*/ void setSpouseName(String value) {
+	/* package-private */ void setSpouseName(String value) {
 		dataManager.set(SPOUSE_NAME, value);
 	}
 
-	/*package-private*/ void setSpouseGender(EnumGender gender) {
+	/* package-private */ void setSpouseGender(EnumGender gender) {
 		dataManager.set(SPOUSE_GENDER, gender.getId());
 	}
 
-	/*package-private*/ void setParentName(boolean mother, String value) {
+	/* package-private */ void setParentName(boolean mother, String value) {
 		DataParameter field = mother ? MOTHER_NAME : FATHER_NAME;
 		dataManager.set(field, value);
 	}
 
-	/*package-private*/ void setParentUUID(boolean mother, UUID uuid) {
+	/* package-private */ void setParentUUID(boolean mother, UUID uuid) {
 		DataParameter field = mother ? MOTHER_UUID : FATHER_UUID;
 		dataManager.set(field, Optional.of(uuid));
 	}
 
-	/*package-private*/ void setParentGender(boolean mother, EnumGender gender) {
+	/* package-private */ void setParentGender(boolean mother, EnumGender gender) {
 		DataParameter field = mother ? MOTHER_GENDER : FATHER_GENDER;
 		dataManager.set(field, gender.getId());
 	}
 
-	/*package-private*/ void setMarriageState(EnumMarriageState state) {
+	/* package-private */ void setMarriageState(EnumMarriageState state) {
 		dataManager.set(MARRIAGE_STATE, state.getId());
 	}
-
 
 	public int getHeldItemSlot() {
 		return dataManager.get(HELD_ITEM_SLOT);
@@ -656,26 +660,27 @@ public class VillagerAttributes {
 		dataManager.set(IS_INFECTED, value);
 	}
 
-
 	public double getBaseAttackDamage() {
 		switch (getPersonality()) {
-			case STRONG:
-				return 2.0D;
-			case CONFIDENT:
-				return 1.0D;
-			default:
-				if (getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {
-					return 5.0D;
-				} else {
-					return 0.5D;
-				}
+		case STRONG:
+			return 2.0D;
+		case CONFIDENT:
+			return 1.0D;
+		default:
+			if (getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {
+				return 5.0D;
+			}
+			else {
+				return 0.5D;
+			}
 		}
 	}
 
 	public void assignRandomName() {
 		if (getGender() == EnumGender.MALE) {
 			setName(MCA.getLocalizer().getString("name.male"));
-		} else {
+		}
+		else {
 			setName(MCA.getLocalizer().getString("name.female"));
 		}
 	}
@@ -687,12 +692,15 @@ public class VillagerAttributes {
 	public void assignRandomProfession() {
 		if (getRaceEnum() == EnumRace.Villager) {
 			setProfession(EnumProfession.getAtRandom());
-		} else if (getRaceEnum() == EnumRace.Orc) {
+		}
+		else if (getRaceEnum() == EnumRace.Orc) {
 			setProfession(EnumProfession.Guard);
-		} else if (getRaceEnum() == EnumRace.Elf) {
+		}
+		else if (getRaceEnum() == EnumRace.Elf) {
 			if (getGender() == EnumGender.MALE) {
 				setProfession(EnumProfession.Guard);
-			} else {
+			}
+			else {
 				setProfession(EnumProfession.Archer);
 			}
 		}
@@ -722,14 +730,14 @@ public class VillagerAttributes {
 		return getMarriageState() == EnumMarriageState.ENGAGED;
 	}
 
-
 	public boolean isPlayerAParent(EntityPlayer player) {
 		final NBTPlayerData data = MCA.getPlayerData(player);
 
 		if (data != null) {
 			boolean result = getMotherUUID().equals(data.getUUID()) || getFatherUUID().equals(data.getUUID());
 			return result;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -739,7 +747,8 @@ public class VillagerAttributes {
 
 		if (data != null) {
 			return getMotherUUID() == data.getUUID() || getFatherUUID() == data.getUUID();
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -749,9 +758,9 @@ public class VillagerAttributes {
 	}
 
 	public boolean allowsHiring(EntityPlayer player) {
-		return getPlayerSpouseInstance() != player && (getProfessionSkinGroup() == EnumProfessionSkinGroup.Farmer ||
-				getProfessionSkinGroup() == EnumProfessionSkinGroup.Miner ||
-				getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior);
+		return getPlayerSpouseInstance() != player && (getProfessionSkinGroup() == EnumProfessionSkinGroup.Farmer
+				|| getProfessionSkinGroup() == EnumProfessionSkinGroup.Miner
+				|| getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior);
 	}
 
 	public boolean allowsWorkInteractions(EntityPlayer player) {
@@ -760,12 +769,15 @@ public class VillagerAttributes {
 
 		if (data.getIsSuperUser()) {
 			return true;
-		} else if (getIsInfected()) //Infected villagers can't use an inventory or do chores.
+		}
+		else if (getIsInfected()) // Infected villagers can't use an inventory or do chores.
 		{
 			return false;
-		} else if (memory.getIsHiredBy()) {
+		}
+		else if (memory.getIsHiredBy()) {
 			return true;
-		} else if (isPlayerAParent(player)) {
+		}
+		else if (isPlayerAParent(player)) {
 			return true;
 		}
 
@@ -779,15 +791,18 @@ public class VillagerAttributes {
 			return true;
 		}
 
-		//Married to a player, and this player is not their spouse.
+		// Married to a player, and this player is not their spouse.
 		else if (isMarriedToAPlayer() && !getSpouseUUID().equals(data.getUUID())) {
 			return false;
-		} else if (getIsChild()) {
+		}
+		else if (getIsChild()) {
 			if (isPlayerAParent(player)) {
 				return true;
-			} else if (isChildOfAVillager()) {
+			}
+			else if (isChildOfAVillager()) {
 				return true;
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -855,20 +870,18 @@ public class VillagerAttributes {
 		PlayerMemory memory = getPlayerMemory(player);
 
 		if (memory.isRelatedToPlayer()) {
-			return MCA.getLocalizer()
-					.getString(getGender() == EnumGender.MALE ? "title.relative.male" : "title.relative.female",
-							villager,
-							player);
-		} else {
-			return MCA.getLocalizer()
-					.getString(getGender() == EnumGender.MALE ? "title.nonrelative.male" : "title.nonrelative.female",
-							villager,
-							player);
+			return MCA.getLocalizer().getString(
+					getGender() == EnumGender.MALE ? "title.relative.male" : "title.relative.female", villager, player);
+		}
+		else {
+			return MCA.getLocalizer().getString(
+					getGender() == EnumGender.MALE ? "title.nonrelative.male" : "title.nonrelative.female", villager,
+					player);
 		}
 	}
 
 	public void writeToNBT(NBTTagCompound nbt) {
-		//Auto save data manager values to NBT by reflection
+		// Auto save data manager values to NBT by reflection
 		for (Field f : this.getClass().getDeclaredFields()) {
 			try {
 				if (f.getType() == DataParameter.class) {
@@ -880,23 +893,29 @@ public class VillagerAttributes {
 					if (typeName.contains("Boolean")) {
 						DataParameter<Boolean> bParam = (DataParameter<Boolean>) param;
 						nbt.setBoolean(paramName, dataManager.get(bParam).booleanValue());
-					} else if (typeName.contains("Integer")) {
+					}
+					else if (typeName.contains("Integer")) {
 						DataParameter<Integer> iParam = (DataParameter<Integer>) param;
 						nbt.setInteger(paramName, dataManager.get(iParam).intValue());
-					} else if (typeName.contains("String")) {
+					}
+					else if (typeName.contains("String")) {
 						DataParameter<String> sParam = (DataParameter<String>) param;
 						nbt.setString(paramName, dataManager.get(sParam));
-					} else if (typeName.contains("Float")) {
+					}
+					else if (typeName.contains("Float")) {
 						DataParameter<Float> fParam = (DataParameter<Float>) param;
 						nbt.setFloat(paramName, dataManager.get(fParam).floatValue());
-					} else if (typeName.contains("Optional<java.util.UUID>")) {
+					}
+					else if (typeName.contains("Optional<java.util.UUID>")) {
 						DataParameter<Optional<UUID>> uuParam = (DataParameter<Optional<UUID>>) param;
 						nbt.setUniqueId(paramName, dataManager.get(uuParam).get());
-					} else {
+					}
+					else {
 						throw new RuntimeException("Field type not handled while saving to NBT: " + f.getName());
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -914,7 +933,7 @@ public class VillagerAttributes {
 	}
 
 	public void readFromNBT(NBTTagCompound nbt) {
-		//Auto read data manager values
+		// Auto read data manager values
 		for (Field f : this.getClass().getDeclaredFields()) {
 			try {
 				if (f.getType() == DataParameter.class) {
@@ -926,23 +945,29 @@ public class VillagerAttributes {
 					if (typeName.contains("Boolean")) {
 						DataParameter<Boolean> bParam = (DataParameter<Boolean>) param;
 						dataManager.set(bParam, nbt.getBoolean(paramName));
-					} else if (typeName.contains("Integer")) {
+					}
+					else if (typeName.contains("Integer")) {
 						DataParameter<Integer> iParam = (DataParameter<Integer>) param;
 						dataManager.set(iParam, nbt.getInteger(paramName));
-					} else if (typeName.contains("String")) {
+					}
+					else if (typeName.contains("String")) {
 						DataParameter<String> sParam = (DataParameter<String>) param;
 						dataManager.set(sParam, nbt.getString(paramName));
-					} else if (typeName.contains("Float")) {
+					}
+					else if (typeName.contains("Float")) {
 						DataParameter<Float> fParam = (DataParameter<Float>) param;
 						dataManager.set(fParam, nbt.getFloat(paramName));
-					} else if (typeName.contains("Optional<java.util.UUID>")) {
+					}
+					else if (typeName.contains("Optional<java.util.UUID>")) {
 						DataParameter<Optional<UUID>> uuParam = (DataParameter<Optional<UUID>>) param;
 						dataManager.set(uuParam, Optional.of(nbt.getUniqueId(paramName)));
-					} else {
+					}
+					else {
 						throw new RuntimeException("Field type not handled while saving to NBT: " + f.getName());
 					}
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -958,7 +983,8 @@ public class VillagerAttributes {
 
 			if (playerUUID == null || playerUUID.equals(Constants.EMPTY_UUID)) {
 				break;
-			} else {
+			}
+			else {
 				final PlayerMemory playerMemory = new PlayerMemory(villager, playerUUID);
 				playerMemory.readPlayerMemoryFromNBT(nbt);
 				playerMemories.put(playerUUID, playerMemory);
