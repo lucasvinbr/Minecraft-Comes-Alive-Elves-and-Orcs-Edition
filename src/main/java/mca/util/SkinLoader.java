@@ -74,7 +74,7 @@ public final class SkinLoader {
 
 	private static void loadSkinsFromFile(File modDataFile) throws ZipException, IOException {
 		final ZipFile modArchive = new ZipFile(modDataFile);
-		final Enumeration enumerator = modArchive.entries();
+		final Enumeration<?> enumerator = modArchive.entries();
 		int counter = 0;
 
 		while (enumerator.hasMoreElements()) {

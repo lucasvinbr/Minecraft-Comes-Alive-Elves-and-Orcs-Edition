@@ -17,3 +17,5 @@
 gitlog-to-changelog
 CHANGELOG
 *.jar
+/version.properties
+

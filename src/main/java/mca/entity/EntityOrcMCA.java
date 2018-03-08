@@ -1,80 +1,11 @@
 package mca.entity;
 
-import io.netty.buffer.ByteBuf;
-import mca.actions.AbstractAction;
-import mca.actions.ActionAttackResponse;
-import mca.actions.ActionCombat;
-import mca.actions.ActionSleep;
-import mca.actions.ActionUpdateMood;
-import mca.core.Constants;
-import mca.core.MCA;
-import mca.core.minecraft.ItemsMCA;
-import mca.data.NBTPlayerData;
-import mca.data.PlayerMemory;
-import mca.data.TransitiveVillagerData;
-import mca.enums.EnumBabyState;
-import mca.enums.EnumDialogueType;
-import mca.enums.EnumGender;
-import mca.enums.EnumMarriageState;
-import mca.enums.EnumMovementState;
 import mca.enums.EnumProfession;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumRace;
-import mca.enums.EnumRelation;
-import mca.items.ItemBaby;
-import mca.items.ItemMemorial;
-import mca.items.ItemVillagerEditor;
-import mca.packets.PacketOpenGUIOnEntity;
-import mca.util.Either;
-import mca.util.Utilities;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.Block;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveIndoors;
-import net.minecraft.entity.ai.EntityAIOpenDoor;
-import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.profiler.Profiler;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.common.registry.VillagerRegistry;
-import org.apache.logging.log4j.LogManager;
-import radixcore.constant.Font;
-import radixcore.math.Point3D;
-import radixcore.modules.RadixLogic;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static mca.core.Constants.EMPTY_UUID;
 import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.getPrivateValue;
 import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.setPrivateValue;
 
@@ -82,8 +13,8 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	public EntityOrcMCA(World world) {
 		super(world);
 		maxSwingProgressTicks = 10;
-		this.attributes.setProfession(EnumProfession.Orc);
-//		this.attributes.setProfession(EnumProfession.Guard);
+		//		this.attributes.setProfession(EnumProfession.Orc);
+		this.attributes.setProfession(EnumProfession.Warrior);
 		this.attributes.setRace(EnumRace.Orc);
 	}
 

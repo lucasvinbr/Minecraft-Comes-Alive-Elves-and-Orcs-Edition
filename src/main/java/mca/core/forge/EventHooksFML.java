@@ -3,7 +3,6 @@ package mca.core.forge;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import mca.core.Constants;
 import mca.core.MCA;
@@ -33,6 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,6 +53,7 @@ import radixcore.modules.schematics.RadixSchematics;
 
 public class EventHooksFML {
 	private Logger logger = LogManager.getLogger(this.getClass());
+
 	public static boolean playPortalAnimation;
 	private static int summonCounter;
 	private static Point3D summonPos;
@@ -177,17 +178,18 @@ public class EventHooksFML {
 						logger.debug(String.format("Profession Number: %d, Profession Name: %s", villager.getProfession(), villager.getDisplayName()));
 						logger.trace(MessageFormat.format("Villager Forge Profession: {0}", villager.getProfessionForge()));
 						try {
-							if(villager.getProfession() == 5) {
-								//TODO: Let's see about finding a way to know what biome I'm in for this.
-//								if(new Random().nextBoolean()) {
-								//									doOverwriteVillagerWithOrc(villager);
-								//								} else {
-								//									doOverwriteVillagerWithElf(villager);
-								//								}
-								doOverwriteVillagerWithOrc(villager);
-							} /*else if(villager.getProfession() > 6) {
-								doOverwriteVillagerWithElf(villager);
-							}*/ else if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
+							//							if(villager.getProfession() == 5) {
+							//
+							////								if(new Random().nextBoolean()) {
+							//								//									doOverwriteVillagerWithOrc(villager);
+							//								//								} else {
+							//								//									doOverwriteVillagerWithElf(villager);
+							//								//								}
+							////								doOverwriteVillagerWithOrc(villager);
+							//							} /*else if(villager.getProfession() > 6) {
+							//								doOverwriteVillagerWithElf(villager);
+							//							}*/
+							if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
 								doOverwriteVillager(villager);
 							} else {
 								logger.warn("Villager's Data manager doesn't have overwrite key.");
@@ -403,10 +405,18 @@ public class EventHooksFML {
 	}
 
 	public void doOverwriteVillager(EntityVillager villager) {
-		villager.setDead();
-		MCA.naturallySpawnVillagers(new Point3D(villager.posX, villager.posY, villager.posZ),
-				villager.world,
-				villager.getProfession());
+		Biome biome = villager.world.getBiome(villager.getPos());
+		logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
+		if (biome.getBiomeName().contains("swamp")) {
+			doOverwriteVillagerWithOrc(villager);
+		} else if (biome.getBiomeName().contains("forest")) {
+			doOverwriteVillagerWithElf(villager);
+		} else {
+			villager.setDead();
+			MCA.naturallySpawnVillagers(new Point3D(villager.posX, villager.posY, villager.posZ),
+					villager.world,
+					villager.getProfession());
+		}
 	}
 
 	public void doOverwriteVillagerWithElf(EntityVillager villager) {

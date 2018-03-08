@@ -8,6 +8,7 @@ import mca.core.minecraft.SoundsMCA;
 import mca.data.NBTPlayerData;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
+import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumRace;
 import mca.items.ItemBaby;
 import mca.packets.PacketOpenBabyNameGUI;

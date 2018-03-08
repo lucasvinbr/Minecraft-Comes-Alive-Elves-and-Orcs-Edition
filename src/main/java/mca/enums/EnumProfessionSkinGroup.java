@@ -1,12 +1,11 @@
 package mca.enums;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import mca.core.MCA;
 import org.apache.logging.log4j.LogManager;
 import radixcore.datastructures.CyclicIntList;
 import radixcore.modules.RadixMath;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public enum EnumProfessionSkinGroup {
 	Unassigned(-1),
@@ -19,39 +18,57 @@ public enum EnumProfessionSkinGroup {
 	Miner(3),
 	Priest(2),
 	Smith(3),
-	Warrior(3)/*,
-	Elf(3),
-	Orc(4)*/;
+	Warrior(3),
+	Orc(5),
+	Elf(5);
 
-	private List<String> completeSkinList;
-	private List<String> maleSkinList;
-	private List<String> femaleSkinList;
-	private int vanillaId;
+	//	List<String> villagerSkinList;
+	//	List<String> orkSkinList;
+	//	List<String> elfSkinList;
 
-	private EnumProfessionSkinGroup(int vanillaId) {
-		this.completeSkinList = new ArrayList<String>();
-		this.maleSkinList = new ArrayList<String>();
-		this.femaleSkinList = new ArrayList<String>();
-		this.vanillaId = vanillaId;
+	SkinManager villagerSkins;
+	SkinManager elfSkins;
+	SkinManager orcSkins;
+
+
+	EnumProfessionSkinGroup(int vanillaId) {
+		villagerSkins = new SkinManager(vanillaId);
+		elfSkins = new SkinManager(vanillaId);
+		orcSkins = new SkinManager(vanillaId);
 	}
 
 	public void addSkin(String locationInJAR) {
 		String resourceLocation = locationInJAR.replace("/assets/mca/", "mca:");
-		completeSkinList.add(resourceLocation);
-
+		SkinManager skinManager = null;
+		if (resourceLocation.toLowerCase().contains("orc")) {
+			skinManager = orcSkins;
+		} else if (resourceLocation.toLowerCase().contains("elf")) {
+			skinManager = elfSkins;
+		} else {
+			skinManager = villagerSkins;
+		}
+		skinManager.completeSkinList.add(resourceLocation);
 		String
 				genderChar =
 				resourceLocation.replace("mca:textures/skins/" + this.toString().toLowerCase(), "").substring(0, 1);
 
 		if (genderChar.equals("m")) {
-			maleSkinList.add(resourceLocation);
+			skinManager.maleSkinList.add(resourceLocation);
 		} else if (genderChar.equals("f")) {
-			femaleSkinList.add(resourceLocation);
+			skinManager.femaleSkinList.add(resourceLocation);
 		}
 	}
 
-	private String getSkin(boolean isMale) {
-		List<String> skinList = isMale ? maleSkinList : femaleSkinList;
+	String getSkin(boolean isMale, EnumRace race) {
+		SkinManager skinManager = null;
+		if (race == EnumRace.Orc) {
+			skinManager = orcSkins;
+		} else if (race == EnumRace.Elf) {
+			skinManager = elfSkins;
+		} else {
+			skinManager = villagerSkins;
+		}
+		List<String> skinList = isMale ? skinManager.maleSkinList : skinManager.femaleSkinList;
 
 		try {
 			return skinList.get(RadixMath.getNumberInRange(0, skinList.size() - 1));
@@ -64,12 +81,20 @@ public enum EnumProfessionSkinGroup {
 		}
 	}
 
-	public List<String> getSkinList(boolean isMale) {
-		return isMale ? maleSkinList : femaleSkinList;
+	public List<String> getSkinList(boolean isMale, EnumRace race) {
+		SkinManager skinManager = null;
+		if (race == EnumRace.Orc) {
+			skinManager = orcSkins;
+		} else if (race == EnumRace.Elf) {
+			skinManager = elfSkins;
+		} else {
+			skinManager = villagerSkins;
+		}
+		return isMale ? skinManager.maleSkinList : skinManager.femaleSkinList;
 	}
 
-	public CyclicIntList getListOfSkinIDs(boolean isMale) {
-		List<String> textureList = getSkinList(isMale);
+	public CyclicIntList getListOfSkinIDs(boolean isMale, EnumRace race) {
+		List<String> textureList = getSkinList(isMale, race);
 		List<Integer> ids = new ArrayList<Integer>();
 
 		for (String texture : textureList) {
@@ -80,15 +105,28 @@ public enum EnumProfessionSkinGroup {
 		return CyclicIntList.fromList(ids);
 	}
 
-	public String getRandomMaleSkin() {
-		return getSkin(true);
+	public String getRandomMaleSkin(EnumRace race) {
+		return getSkin(true, race);
 	}
 
-	public String getRandomFemaleSkin() {
-		return getSkin(false);
+	public String getRandomFemaleSkin(EnumRace race) {
+		return getSkin(false, race);
 	}
 
-	public int getVanillaProfessionId() {
-		return vanillaId;
+	class SkinManager {
+		List<String> completeSkinList;
+		List<String> maleSkinList;
+		List<String> femaleSkinList;
+		int vanillaId;
+
+		SkinManager(int vanillaId) {
+			this.vanillaId = vanillaId;
+			this.maleSkinList = new ArrayList<String>();
+			this.femaleSkinList = new ArrayList<String>();
+		}
 	}
+
+	//	public int getVanillaProfessionId() {
+	//		return vanillaId;
+	//	}
 }

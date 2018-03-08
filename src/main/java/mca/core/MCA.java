@@ -1,9 +1,11 @@
 package mca.core;
 
+import java.util.Random;
 import java.util.UUID;
 
 import mca.entity.EntityElfMCA;
 import mca.entity.EntityOrcMCA;
+import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -659,7 +661,6 @@ public class MCA {
 
 		final EntityElfMCA elf = new EntityElfMCA(world);
 		elf.attributes.setGender(EnumGender.FEMALE);
-		elf.attributes.setProfession(EnumProfession.Elf);
 		elf.attributes.assignRandomName();
 		elf.attributes.assignRandomSkin();
 		elf.attributes.assignRandomPersonality();
@@ -668,7 +669,6 @@ public class MCA {
 
 		if (hasFamily) {
 			final EntityVillagerMCA husband = new EntityElfMCA(world);
-			husband.attributes.setProfession(EnumProfession.Elf);
 			husband.attributes.setGender(EnumGender.MALE);
 			husband.attributes.assignRandomName();
 			husband.attributes.assignRandomSkin();
@@ -708,31 +708,41 @@ public class MCA {
 		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
 		boolean adult1IsMale = RadixLogic.getBooleanWithProbability(50);
 
-		final EntityVillagerMCA adult1 = new EntityVillagerMCA(world);
-		adult1.attributes.setGender(adult1IsMale ? EnumGender.MALE : EnumGender.FEMALE);
-		adult1.attributes.setProfession(originalProfession != -1 ?
+		final EntityVillagerMCA villager = new EntityVillagerMCA(world);
+		villager.attributes.setGender(adult1IsMale ? EnumGender.MALE : EnumGender.FEMALE);
+		villager.attributes.setProfession(originalProfession != -1 ?
 				EnumProfession.getProfessionById(originalProfession) :
 				EnumProfession.getAtRandom());
-		adult1.attributes.assignRandomName();
-		adult1.attributes.assignRandomSkin();
-		adult1.attributes.assignRandomPersonality();
+		villager.attributes.assignRandomName();
+		villager.attributes.assignRandomSkin();
+		villager.attributes.assignRandomPersonality();
 
-		adult1.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
-
+		villager.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+		EntityPlayer closestPlayer = villager.world.getClosestPlayerToEntity(villager, 500);
+		villager.sayRaw(String.format("Profession ID: %d ", originalProfession), closestPlayer);
 		if (hasFamily) {
-			final EntityVillagerMCA adult2 = new EntityVillagerMCA(world);
-			adult2.attributes.setGender(adult1IsMale ? EnumGender.FEMALE : EnumGender.MALE);
-			adult2.attributes.assignRandomProfession();
-			adult2.attributes.assignRandomName();
-			adult2.attributes.assignRandomSkin();
-			adult2.attributes.assignRandomPersonality();
-			adult2.setPosition(adult1.posX, adult1.posY, adult1.posZ - 1);
-			world.spawnEntity(adult2);
+			final EntityVillagerMCA spouse = new EntityVillagerMCA(world);
+			spouse.attributes.setGender(adult1IsMale ? EnumGender.FEMALE : EnumGender.MALE);
+			if (spouse.attributes.getGender() == EnumGender.MALE) {
+				int caste = new Random().nextInt((5 - villager.getProfession()) + 1) + villager.getProfession();
+				spouse.sayRaw(String.format("Profession ID: %d ", caste), closestPlayer);
+				spouse.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(caste));
+			} else {
+				//I'm not letting the wife's caste exceed the husband's.
+				int caste = new Random().nextInt(villager.getProfession());
+				spouse.sayRaw(String.format("Profession ID: %d ", caste), closestPlayer);
+				spouse.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(caste));
+			}
+			spouse.attributes.assignRandomName();
+			spouse.attributes.assignRandomSkin();
+			spouse.attributes.assignRandomPersonality();
+			spouse.setPosition(villager.posX, villager.posY, villager.posZ - 1);
+			world.spawnEntity(spouse);
 
-			adult1.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(adult2));
+			villager.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(spouse));
 
-			final EntityVillagerMCA father = adult1IsMale ? adult1 : adult2;
-			final EntityVillagerMCA mother = father == adult1 ? adult2 : adult1;
+			final EntityVillagerMCA father = adult1IsMale ? villager : spouse;
+			final EntityVillagerMCA mother = father == villager ? spouse : villager;
 
 			//Children
 			for (int i = 0; i < 2; i++) {
@@ -743,7 +753,13 @@ public class MCA {
 				final EntityVillagerMCA child = new EntityVillagerMCA(world);
 				child.attributes.assignRandomGender();
 				child.attributes.assignRandomName();
-				child.attributes.assignRandomProfession();
+				//				child.attributes.assignRandomProfession();
+				int
+						childCaste =
+						new Random().nextInt((father.getProfession() - mother.getProfession()) + 1) +
+								mother.getProfession();
+				child.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(childCaste));
+				child.sayRaw(String.format("Profession ID: %d ", childCaste), closestPlayer);
 				child.attributes.assignRandomSkin();
 				child.attributes.assignRandomPersonality();
 				child.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(mother));
@@ -754,8 +770,10 @@ public class MCA {
 				world.spawnEntity(child);
 			}
 		}
+		Biome biome = villager.world.getBiome(villager.getPos());
 
-		world.spawnEntity(adult1);
+		villager.sayRaw(String.format("I was born in a %s biome ", biome.getBiomeName()), closestPlayer);
+		world.spawnEntity(villager);
 	}
 
 	public static CrashWatcher getCrashWatcher() {

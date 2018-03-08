@@ -1,5 +1,7 @@
 package mca.enums;
 
+import mca.core.MCA;
+import mca.entity.EntityVillagerMCA;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,5 +69,9 @@ public enum EnumRace {
 		}
 
 		return Villager;
+	}
+
+	public String getUserFriendlyForm(EntityVillagerMCA villager) {
+		return MCA.getLocalizer().getString(getLocalizationId());
 	}
 }

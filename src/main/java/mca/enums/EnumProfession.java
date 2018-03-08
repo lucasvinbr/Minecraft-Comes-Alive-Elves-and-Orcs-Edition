@@ -2,6 +2,7 @@ package mca.enums;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import mca.core.MCA;
 import mca.entity.EntityVillagerMCA;
@@ -23,14 +24,14 @@ public enum EnumProfession {
 	Butcher(9, EnumProfessionSkinGroup.Butcher, 4),
 	Baker(10, EnumProfessionSkinGroup.Baker, 0),
 	Leatherworker(11, EnumProfessionSkinGroup.Butcher, 4),
-	Guard(12, EnumProfessionSkinGroup.Guard, 1),
-	Archer(13, EnumProfessionSkinGroup.Guard, 1),
-	Miner(14, EnumProfessionSkinGroup.Miner, 1),
-	Mason(15, EnumProfessionSkinGroup.Miner, 1),
+	Guard(12, EnumProfessionSkinGroup.Guard, 5),
+	Archer(13, EnumProfessionSkinGroup.Guard, 5),
+	Miner(14, EnumProfessionSkinGroup.Miner, 5),
+	Mason(15, EnumProfessionSkinGroup.Miner, 2),
 	Child(16, EnumProfessionSkinGroup.Child, 5),
-	Warrior(17, EnumProfessionSkinGroup.Warrior, 3),
-	Elf(18, EnumProfessionSkinGroup.Elf, 5),
-	Orc(19, EnumProfessionSkinGroup.Orc, 5);
+	Warrior(17, EnumProfessionSkinGroup.Warrior, 5)/*,
+	Elf(18, EnumRace.Elf, 5),
+	Orc(19, EnumRace.Orc, 5)*/;
 	private static Logger logger = LogManager.getLogger(EnumProfession.class);
 	private int id;
 	private int vanillaCareerId;
@@ -58,6 +59,8 @@ public enum EnumProfession {
 				return getRandomByGroup(EnumProfessionSkinGroup.Smith);
 			case 4:
 				return getRandomByGroup(EnumProfessionSkinGroup.Butcher, EnumProfessionSkinGroup.Baker);
+			case 5:
+				return getRandomByGroup(EnumProfessionSkinGroup.Guard, EnumProfessionSkinGroup.Warrior);
 			default:
 				return getRandomByGroup(EnumProfessionSkinGroup.Farmer);
 		}

@@ -487,7 +487,8 @@ public class PacketGift extends AbstractPacket<PacketGift>
 			else if (item == ItemsMCA.NEW_OUTFIT && human.attributes.allowsControllingInteractions(player))
 			{
 				Utilities.spawnParticlesAroundEntityS(EnumParticleTypes.VILLAGER_HAPPY, human, 16);
-				human.attributes.setClothesTexture(human.attributes.getProfessionSkinGroup().getRandomMaleSkin());
+				human.attributes.setClothesTexture(human.attributes.getProfessionSkinGroup()
+						.getRandomMaleSkin(human.attributes.getRaceEnum()));
 				removeItem = true;
 				removeCount = 1;
 			}

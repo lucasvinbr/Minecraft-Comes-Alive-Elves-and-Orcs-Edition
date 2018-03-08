@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mca.enums.EnumProfessionSkinGroup;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -33,7 +34,6 @@ import mca.enums.EnumGender;
 import mca.enums.EnumInteraction;
 import mca.enums.EnumMarriageState;
 import mca.enums.EnumMovementState;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.packets.PacketGift;
 import mca.packets.PacketInteract;
 import mca.packets.PacketToggleAI;
@@ -205,7 +205,7 @@ public class GuiInteraction extends GuiScreen
 		if (villager.attributes.getIsInfected())
 		{
 			//Compensate for "Age: Adult" by moving over 80 instead of 62. 18 for all others.
-			int xLoc = villager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Child ? 
+			int xLoc = villager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Child ?
 					villager.attributes.getIsChild() ? 62 : 80 : 18;
 			
 			RadixRender.drawTextPopup(Color.GREEN + Format.BOLD + "INFECTED!", xLoc, 11);			

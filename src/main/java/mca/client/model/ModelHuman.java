@@ -1,5 +1,7 @@
 package mca.client.model;
 
+import mca.enums.EnumProfession;
+import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 
 import mca.core.MCA;
@@ -12,12 +14,10 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelHuman extends ModelBiped
-{
+public class ModelHuman extends ModelBiped {
 	private ModelRenderer breasts;
 
-	public ModelHuman()
-	{
+	public ModelHuman() {
 		super(0.0F);
 
 		breasts = new ModelRenderer(this, 18, 21);
@@ -30,32 +30,34 @@ public class ModelHuman extends ModelBiped
 	}
 
 	@Override
-	public void render(Entity entity, float f1, float f2, float f3, float f4, float f5, float f6) 
-	{
-		final EntityVillagerMCA human = (EntityVillagerMCA)entity;
+	public void render(Entity entity, float f1, float f2, float f3, float f4, float f5, float f6) {
+		final EntityVillagerMCA human = (EntityVillagerMCA) entity;
 		final double scale = 0.9375D;
-		
+
 		this.setRotationAngles(f1, f2, f3, f4, f5, f6, entity);
 
 		//Default head texture is going to be the one we can get straight from the human object.
 		String headTexture = human.attributes.getHeadTexture();
 		String clothesTexture = human.attributes.getClothesTexture();
-
+		LogManager.getLogger(EnumProfession.class).debug("Clothes Texture: " + clothesTexture);
 		//But if the human is infected, we need to show the zombified skin instead. Check for this here.
-		if (human.attributes.getIsInfected())
-		{
+		if (human.attributes.getIsInfected()) {
 			String textureBase = "mca:textures/skins/";
 
-			headTexture = human.attributes.getIsMale() ? textureBase + "ZombieVillagerMale.png" : textureBase + "ZombieVillagerFemale.png";
+			headTexture =
+					human.attributes.getIsMale() ?
+					textureBase + "ZombieVillagerMale.png" :
+					textureBase + "ZombieVillagerFemale.png";
 			clothesTexture = headTexture;
 		}
 
 		//Bind the head texture to the head and headwear.
+		LogManager.getLogger(EnumProfession.class).debug("Head Texture: " + headTexture);
 		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(headTexture));
-		
+
 		this.bipedHead.render(f6);
 		this.bipedHeadwear.render(f6);
-		
+
 		//Bind the clothes texture to the rest of the body.
 		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(clothesTexture));
 
@@ -65,8 +67,10 @@ public class ModelHuman extends ModelBiped
 		this.bipedRightArm.render(f6);
 		this.bipedLeftArm.render(f6);
 
-		if (!human.attributes.getIsMale() && !human.attributes.getIsChild() && MCA.getConfig().modifyFemaleBody && human.getItemStackFromSlot(EntityEquipmentSlot.CHEST) == ItemStack.EMPTY)
-		{
+		if (!human.attributes.getIsMale() &&
+				!human.attributes.getIsChild() &&
+				MCA.getConfig().modifyFemaleBody &&
+				human.getItemStackFromSlot(EntityEquipmentSlot.CHEST) == ItemStack.EMPTY) {
 			GL11.glPushMatrix();
 			{
 				//Correct scaling and location.
@@ -78,8 +82,7 @@ public class ModelHuman extends ModelBiped
 		}
 	}
 
-	private void setRotation(ModelRenderer model, float x, float y, float z)
-	{
+	private void setRotation(ModelRenderer model, float x, float y, float z) {
 		model.rotateAngleX = x;
 		model.rotateAngleY = y;
 		model.rotateAngleZ = z;

@@ -1,7 +1,6 @@
 package mca.items;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import mca.core.Constants;
@@ -14,7 +13,6 @@ import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumRace;
 import mca.enums.EnumRelation;
 import mca.packets.PacketOpenBabyNameGUI;
@@ -276,7 +274,7 @@ public class ItemBaby extends Item {
 
 			EntityVillagerMCA child = null;
 			child = new EntityVillagerMCA(world);
-			if(villager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+			if (villager.attributes.getRaceEnum() == EnumRace.Orc) {
 				if(baby.isBoy) {
 					child.attributes.setProfession(EnumProfession.Guard);
 					child.attributes.setRace(EnumRace.Orc);
@@ -286,7 +284,7 @@ public class ItemBaby extends Item {
 				}
 			} else {
 				child.attributes.setProfession(EnumProfession.Child);
-				if(villager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+				if (villager.attributes.getRaceEnum() == EnumRace.Elf) {
 					child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 					child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 				}
@@ -340,17 +338,19 @@ public class ItemBaby extends Item {
 			fatherRace = father.attributes.getRaceEnum();
 
 			EntityVillagerMCA child = new EntityVillagerMCA(world);
-			if(father.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc && mother.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
-				child.attributes.setProfession(EnumProfession.Orc);
+			if (father.attributes.getRaceEnum() == EnumRace.Orc && mother.attributes.getRaceEnum() == EnumRace.Orc) {
+				child.attributes.setProfession(EnumProfession.Unassigned);
 				child.attributes.setRace(EnumRace.Orc);
-			} else if(father.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf && mother.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+			} else if (father.attributes.getRaceEnum() == EnumRace.Elf &&
+					mother.attributes.getRaceEnum() == EnumRace.Elf) {
 				child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 				child.attributes.setRace(EnumRace.Elf);
 			} else {
 
-				if(father.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc || mother.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+				if (father.attributes.getRaceEnum() == EnumRace.Orc ||
+						mother.attributes.getRaceEnum() == EnumRace.Orc) {
 					if(baby.isBoy) {
-						child.attributes.setProfession(EnumProfession.Orc);
+						child.attributes.setProfession(EnumProfession.Unassigned);
 						child.attributes.setRace(EnumRace.Orc);
 					} else {
 						child.attributes.setProfession(EnumProfession.Child);
@@ -359,7 +359,8 @@ public class ItemBaby extends Item {
 				} else {
 					child = new EntityVillagerMCA(world);
 					child.attributes.setProfession(EnumProfession.Child);
-					if(father.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf || mother.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+					if (father.attributes.getRaceEnum() == EnumRace.Elf ||
+							mother.attributes.getRaceEnum() == EnumRace.Elf) {
 						child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 						child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 					}
