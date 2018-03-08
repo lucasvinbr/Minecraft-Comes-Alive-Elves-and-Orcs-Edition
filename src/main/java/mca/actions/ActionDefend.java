@@ -1,5 +1,6 @@
 package mca.actions;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,9 +9,11 @@ import mca.core.Constants;
 import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.core.minecraft.SoundsMCA;
+import mca.data.NBTPlayerData;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumGender;
+import mca.enums.EnumMarriageState;
 import mca.enums.EnumProfession;
 import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumProgressionStep;
@@ -32,19 +35,25 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import radixcore.constant.Time;
+import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixMath;
+
+import static mca.core.Constants.EMPTY_UUID;
 
 public class ActionDefend extends AbstractAction {
 	private static final int TARGET_SEARCH_INTERVAL = Time.SECOND * 1;
