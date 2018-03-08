@@ -1,6 +1,5 @@
 package mca.actions;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,11 +8,9 @@ import mca.core.Constants;
 import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.core.minecraft.SoundsMCA;
-import mca.data.NBTPlayerData;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumGender;
-import mca.enums.EnumMarriageState;
 import mca.enums.EnumProfession;
 import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumProgressionStep;
@@ -35,25 +32,19 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import radixcore.constant.Time;
-import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixMath;
-
-import static mca.core.Constants.EMPTY_UUID;
 
 public class ActionDefend extends AbstractAction {
 	private static final int TARGET_SEARCH_INTERVAL = Time.SECOND * 1;
@@ -73,8 +64,8 @@ public class ActionDefend extends AbstractAction {
 		}
 		if ((actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard ||
 				actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior ||
-				actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc ||
-				actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) &&
+				actor.attributes.getRaceEnum() == EnumRace.Orc ||
+				actor.attributes.getRaceEnum() == EnumRace.Elf) &&
 				!actor.attributes.getIsInfected()) {
 			if (target == null) {
 				if (timeUntilTargetSearch <= 0) {
@@ -151,8 +142,8 @@ public class ActionDefend extends AbstractAction {
 														.getAction(ActionProcreate.class)
 														.onUpdateClient();
 
-												mcaVillager.sayRaw("", mcaVillager.attributes.getProfessionSkinGroup() ==
-														                       EnumProfessionSkinGroup.Orc ?
+												mcaVillager.sayRaw("", mcaVillager.attributes.getRaceEnum() ==
+														                       EnumRace.Orc ?
 												                       (new Random().nextBoolean() ?
 												                        SoundsMCA.femalehurt5 :
 												                        SoundsMCA.femalehurt6) :
@@ -254,9 +245,9 @@ public class ActionDefend extends AbstractAction {
 							int attackDamage = MCA.getConfig().villagerAttackDamage;
 							if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {
 								attackDamage = MCA.getConfig().guardAttackDamage;
-							} else if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+							} else if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
 								attackDamage = MCA.getConfig().orcAttackDamage;
-							} else if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+							} else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
 								attackDamage = MCA.getConfig().elfAttackDamage;
 							}
 							if(actor.attributes.getRaceEnum() == EnumRace.Orc && actor.attributes.getGender() == EnumGender.MALE
@@ -304,7 +295,7 @@ public class ActionDefend extends AbstractAction {
 		}
 		//		List<EntityCreature> possibleTargets = RadixLogic.getEntitiesWithinDistance(EntityCreature.class, actor, 15);
 		double closestDistance = 100.0D;
-		if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+		if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
 			closestDistance = 75.0d;
 			//			PotionEffect strength = new PotionEffect(Potion.getPotionById(5), 200);
 			//			logger.trace(String.format("Strength Effect: %s", strength.getEffectName()));
@@ -322,7 +313,7 @@ public class ActionDefend extends AbstractAction {
 					if (villager instanceof EntityVillagerMCA) {
 						EntityVillagerMCA mcaVillager = (EntityVillagerMCA) villager;
 						if(mcaVillager.attributes.getGender() == EnumGender.MALE && actor.attributes.getGender() == EnumGender.MALE) {
-							if(mcaVillager.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc) {
+							if(mcaVillager.attributes.getRaceEnum() == EnumRace.Orc) {
 								if (RadixLogic.getBooleanWithProbability(10)) {
 
 									EntityPlayer closestPlayer = actor.world.getClosestPlayerToEntity(actor, 500);
@@ -339,7 +330,7 @@ public class ActionDefend extends AbstractAction {
 					}
 				}
 			}
-		} else if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf) {
+		} else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
 			closestDistance = 125.0;
 			//			PotionEffect speed = new PotionEffect(Potion.getPotionById(1), 200);
 			//			logger.trace(String.format("Speed Effect: %s", speed.getEffectName()));
@@ -348,8 +339,7 @@ public class ActionDefend extends AbstractAction {
 				List<EntityVillager> villagers = RadixLogic.getEntitiesWithinDistance(EntityVillager.class, actor, 15);
 				for (EntityVillager villager : villagers) {
 					if (villager instanceof EntityVillagerMCA &&
-							((EntityVillagerMCA) villager).attributes.getProfessionSkinGroup() ==
-									EnumProfessionSkinGroup.Orc) {
+							((EntityVillagerMCA) villager).attributes.getRaceEnum() == EnumRace.Orc) {
 						//					PotionEffect slowness = new PotionEffect(Potion.getPotionById(2), 200);
 						//					villager.addPotionEffect(slowness);
 						possibleTargets.add(villager);
@@ -366,7 +356,7 @@ public class ActionDefend extends AbstractAction {
 					if (!(entity instanceof EntityCreeper)) {
 						target = (EntityLiving) entity;
 					} else if ((actor.getProfession() == EnumProfession.Archer.getId() ||
-							actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Elf)) {
+							actor.attributes.getRaceEnum() == EnumRace.Elf)) {
 						target = (EntityLiving) entity;
 					}
 				}
