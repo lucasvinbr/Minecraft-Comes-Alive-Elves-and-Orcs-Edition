@@ -53,7 +53,6 @@ import radixcore.modules.schematics.RadixSchematics;
 
 public class EventHooksFML {
 	private Logger logger = LogManager.getLogger(this.getClass());
-
 	public static boolean playPortalAnimation;
 	private static int summonCounter;
 	private static Point3D summonPos;
