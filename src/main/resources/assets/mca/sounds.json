@@ -244,18 +244,6 @@
       "mca:heroic-male-hurt-2"
     ]
   },
-  "villager.female.heh.1": {
-    "category": "neutral",
-    "sounds": [
-      "mca:villager-female-heh-1"
-    ]
-  },
-  "villager.female.heh.2": {
-    "category": "neutral",
-    "sounds": [
-      "mca:villager-female-heh-2"
-    ]
-  },
   "villager.female.death.1": {
     "category": "neutral",
     "sounds": [
@@ -280,16 +268,10 @@
       "mca:villager-female-hurt-2"
     ]
   },
-  "villager.male.heh.1": {
+  "villager.female.heh": {
     "category": "neutral",
     "sounds": [
-      "mca:villager-male-heh-1"
-    ]
-  },
-  "villager.male.heh.2": {
-    "category": "neutral",
-    "sounds": [
-      "mca:villager-male-heh-2"
+      "mca:villager-female-heh"
     ]
   },
   "villager.male.death.1": {

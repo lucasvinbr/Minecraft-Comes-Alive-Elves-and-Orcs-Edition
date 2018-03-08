@@ -53,7 +53,11 @@ public final class SoundsMCA
 	private static final ResourceLocation loc_villager_female_heh	 = new ResourceLocation("mca:villager.female.heh");
 	private static final ResourceLocation loc_villager_female_hurt_1	 = new ResourceLocation("mca:villager.female.hurt.1");
 	private static final ResourceLocation loc_villager_female_hurt_2	 = new ResourceLocation("mca:villager.female.hurt.2");
+	private static final ResourceLocation loc_villager_male_death_1	 = new ResourceLocation("mca:villager.male.death.1");
+	private static final ResourceLocation loc_villager_male_death_2	 = new ResourceLocation("mca:villager.male.death.2");
 	private static final ResourceLocation loc_villager_male_heh	 = new ResourceLocation("mca:villager.male.heh");
+	private static final ResourceLocation loc_villager_male_hurt_1	 = new ResourceLocation("mca:villager.male.hurt.1");
+	private static final ResourceLocation loc_villager_male_hurt_2	 = new ResourceLocation("mca:villager.male.hurt.2");
 	private static final ResourceLocation loc_malehurt = new ResourceLocation("mca:malehurt");
 
 
@@ -102,9 +106,13 @@ public final class SoundsMCA
 	public static final SoundEvent heroic_male_hurt_2	 = new SoundEvent(loc_heroic_male_hurt_2);
 	public static final SoundEvent villager_female_death_1	 = new SoundEvent(loc_villager_female_death_1);
 	public static final SoundEvent villager_female_death_2	 = new SoundEvent(loc_villager_female_death_2);
-	public static final SoundEvent villager_female_heh	 = new SoundEvent(loc_villager_female_heh);
 	public static final SoundEvent villager_female_hurt_1	 = new SoundEvent(loc_villager_female_hurt_1);
 	public static final SoundEvent villager_female_hurt_2	 = new SoundEvent(loc_villager_female_hurt_2);
+	public static final SoundEvent villager_male_death_1	 = new SoundEvent(loc_villager_male_death_1);
+	public static final SoundEvent villager_male_death_2	 = new SoundEvent(loc_villager_male_death_2);
+	public static final SoundEvent villager_female_heh	 = new SoundEvent(loc_villager_female_heh);
+	public static final SoundEvent villager_male_hurt_1	 = new SoundEvent(loc_villager_male_hurt_1);
+	public static final SoundEvent villager_male_hurt_2	 = new SoundEvent(loc_villager_male_hurt_2);
 	public static final SoundEvent villager_male_heh	 = new SoundEvent(loc_villager_male_heh);
 	public static final SoundEvent malehurt = new SoundEvent(loc_malehurt);
 	
@@ -157,10 +165,14 @@ public final class SoundsMCA
 		heroic_male_hurt_2.setRegistryName(loc_heroic_male_hurt_2);
 		villager_female_death_1.setRegistryName(loc_villager_female_death_1);
 		villager_female_death_2.setRegistryName(loc_villager_female_death_2);
-		villager_female_heh.setRegistryName(loc_villager_female_heh);
 		villager_female_hurt_1.setRegistryName(loc_villager_female_hurt_1);
 		villager_female_hurt_2.setRegistryName(loc_villager_female_hurt_2);
+		villager_female_heh.setRegistryName(loc_villager_female_heh);
 		villager_male_heh.setRegistryName(loc_villager_male_heh);
+		villager_male_death_1.setRegistryName(loc_villager_male_death_1);
+		villager_male_death_2.setRegistryName(loc_villager_male_death_2);
+		villager_male_hurt_1.setRegistryName(loc_villager_male_hurt_1);
+		villager_male_hurt_2.setRegistryName(loc_villager_male_hurt_2);
 
 		registry.register(reaper_scythe_out);
 		registry.register(reaper_scythe_swing);
@@ -210,5 +222,10 @@ public final class SoundsMCA
 		registry.register(villager_female_hurt_1);
 		registry.register(villager_female_hurt_2);
 		registry.register(villager_male_heh);
+		registry.register(villager_male_death_1);
+		registry.register(villager_male_death_2);
+		registry.register(villager_male_heh);
+		registry.register(villager_male_hurt_1);
+		registry.register(villager_male_hurt_2);
 	}
 }

@@ -82,6 +82,7 @@ import org.apache.logging.log4j.Logger;
 import radixcore.constant.Font.Color;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
+import radixcore.modules.RadixMath;
 
 /**
  * The main class of MCA's villager. The class itself handles events, getters, setters, etc.
@@ -139,7 +140,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
 
 		int maxHealth = isProfessionSkinFighter(attributes.getProfessionSkinGroup()) ||
-				attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Orc ?
+				attributes.getRaceEnum() == EnumRace.Orc ?
 				MCA.getConfig().guardMaxHealth :
 				MCA.getConfig().villagerMaxHealth;
 //		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
@@ -273,8 +274,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			if(this.attributes.getGender() == EnumGender.FEMALE) {
 				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2, 1.0f, this.getPitch());
 			} else {
-				//					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, this.getPitch());
-				this.playSound(SoundEvents.ENTITY_VILLAGER_DEATH, 1.0f, this.getPitch());
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, this.getPitch());
 			}
 		}
 	}
@@ -300,8 +300,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				if(attributes.getGender() == EnumGender.FEMALE) {
 					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_death_1 : SoundsMCA.villager_female_death_2, 1.0f, pitch);
 				} else {
-//					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2, 1.0f, pitch);
-					this.playSound(SoundEvents.ENTITY_VILLAGER_DEATH, 1.0f, pitch);
+					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2, 1.0f, pitch);
 				}
 			}
 			//Switch to the sleeping skin and disable all chores/toggle AIs so they won't move
@@ -915,6 +914,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	@Override
 	public void setProfession(int professionId) {
 		this.vanillaProfessionId = professionId;
+
 	}
 
 	@Deprecated

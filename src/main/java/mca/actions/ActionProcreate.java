@@ -8,7 +8,7 @@ import mca.core.minecraft.SoundsMCA;
 import mca.data.NBTPlayerData;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
-import mca.enums.EnumProfessionSkinGroup;
+import mca.enums.EnumRace;
 import mca.items.ItemBaby;
 import mca.packets.PacketOpenBabyNameGUI;
 import mca.util.Utilities;
@@ -48,8 +48,8 @@ public class ActionProcreate extends AbstractAction {
 	public void onUpdateServer() {
 		if (getIsProcreating()) {
 			if(actor.attributes.getGender() == EnumGender.FEMALE) {
-				actor.playSound(actor.attributes.getProfessionSkinGroup() ==
-						                EnumProfessionSkinGroup.Orc ?
+				actor.playSound(actor.attributes.getRaceEnum() ==
+						                EnumRace.Orc ?
 				                (new Random().nextBoolean() ?
 				                 SoundsMCA.femalehurt5 :
 				                 SoundsMCA.femalehurt6) :
