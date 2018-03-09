@@ -79,19 +79,20 @@ public class EventHooksFML {
 		NBTPlayerData nbtData = null;
 
 		if (dataCollection.getPlayerData(player.getUniqueID()) == null) {
-			//A permanent ID is generated if no ID exists after reading from NBT.
+			// A permanent ID is generated if no ID exists after reading from NBT.
 			NBTPlayerData nbtPlayerData = new NBTPlayerData();
 			dataCollection.putPlayerData(player.getUniqueID(), nbtPlayerData);
 			nbtData = nbtPlayerData;
 			setPermanentId = true;
-		} else {
+		}
+		else {
 			nbtData = dataCollection.getPlayerData(player.getUniqueID());
 		}
 
-		//Sync the server's configuration, for display settings.
+		// Sync the server's configuration, for display settings.
 		MCA.getPacketHandler().sendPacketToPlayer(new PacketSyncConfig(MCA.getConfig()), (EntityPlayerMP) event.player);
 
-		//Send copy of the player data to the client.
+		// Send copy of the player data to the client.
 		if (nbtData != null) {
 			MCA.getPacketHandler().sendPacketToPlayer(new PacketPlayerDataLogin(nbtData), (EntityPlayerMP) player);
 
@@ -99,10 +100,9 @@ public class EventHooksFML {
 				nbtData.setUUID(player.getUniqueID());
 			}
 
-			//Add the crystal ball to the inventory if needed.
-			if (!nbtData.getHasChosenDestiny() &&
-					!player.inventory.hasItemStack(new ItemStack(ItemsMCA.CRYSTAL_BALL)) &&
-					MCA.getConfig().giveCrystalBall) {
+			// Add the crystal ball to the inventory if needed.
+			if (!nbtData.getHasChosenDestiny() && !player.inventory.hasItemStack(new ItemStack(ItemsMCA.CRYSTAL_BALL))
+					&& MCA.getConfig().giveCrystalBall) {
 				player.inventory.addItemStackToInventory(new ItemStack(ItemsMCA.CRYSTAL_BALL));
 			}
 		}
@@ -124,10 +124,11 @@ public class EventHooksFML {
 			MCA.resetConfig();
 		}
 
-		//Check for setting/processing the flag for loading language again.
+		// Check for setting/processing the flag for loading language again.
 		if (currentScreen instanceof net.minecraft.client.gui.GuiLanguage) {
 			MCA.reloadLanguage = true;
-		} else if (MCA.reloadLanguage) {
+		}
+		else if (MCA.reloadLanguage) {
 			MCA.reloadLanguage = false;
 			MCA.getLocalizer().onLanguageChange();
 		}
@@ -136,7 +137,8 @@ public class EventHooksFML {
 			EntityPlayerSP player = (EntityPlayerSP) mc.player;
 
 			if (player == null) {
-				return; //Crash when kicked from a server while using the ball. Client-side, so just throw it out.
+				return; // Crash when kicked from a server while using the ball. Client-side, so just
+						// throw it out.
 			}
 
 			player.prevTimeInPortal = player.timeInPortal;
@@ -152,10 +154,10 @@ public class EventHooksFML {
 
 			if (MCA.destinySpawnFlag) {
 				RadixSchematics.spawnStructureRelativeToPoint("/assets/mca/schematic/destiny-test.schematic",
-						MCA.destinyCenterPoint,
-						mc.world);
+						MCA.destinyCenterPoint, mc.world);
 			}
-		} else {
+		}
+		else {
 			clientTickCounter--;
 		}
 	}
@@ -164,8 +166,10 @@ public class EventHooksFML {
 	public void serverTickEventHandler(ServerTickEvent event) {
 		MCA.getPacketHandler().processPackets(Side.SERVER);
 
-		// This block prevents the long-standing issue of crashing while using a world that previously contained villagers.
-		// It will check every second for a villager that has not been converted, and see if it should be. These villagers
+		// This block prevents the long-standing issue of crashing while using a world
+		// that previously contained villagers.
+		// It will check every second for a villager that has not been converted, and
+		// see if it should be. These villagers
 		// are identified by having the value of 3577 for watched object number 28.
 		if (serverTickCounter % 40 == 0) {
 			for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
@@ -175,35 +179,33 @@ public class EventHooksFML {
 					if (obj instanceof EntityVillager) {
 						EntityVillager villager = (EntityVillager) obj;
 						logger.trace(MessageFormat.format("Villager Data: {0}", villager));
-						logger.debug(String.format("Profession Number: %d, Profession Name: %s", villager.getProfession(), villager.getDisplayName()));
-						logger.trace(MessageFormat.format("Villager Forge Profession: {0}", villager.getProfessionForge()));
+						logger.debug(String.format("Profession Number: %d, Profession Name: %s",
+								villager.getProfession(), villager.getDisplayName()));
+						logger.trace(
+								MessageFormat.format("Villager Forge Profession: {0}", villager.getProfessionForge()));
 						try {
-//							if(villager.getProfession() == 5) {
-//
-////								if(new Random().nextBoolean()) {
-//								//									doOverwriteVillagerWithOrc(villager);
-//								//								} else {
-//								//									doOverwriteVillagerWithElf(villager);
-//								//								}
-////								doOverwriteVillagerWithOrc(villager);
-//							} /*else if(villager.getProfession() > 6) {
-//								doOverwriteVillagerWithElf(villager);
-//							}*/
-							Integer overwriteValue = Integer.MAX_VALUE;
-							try {
-								overwriteValue = villager.getDataManager().get(Constants.OVERWRITE_KEY);
-							}
-							catch (Exception e) {
-								logger.warn(e.getLocalizedMessage(), e);
-							}
-							if (overwriteValue == 3577) {
+							if (villager.getProfession() == 5) {
+
+								Biome biome = villager.world.getBiome(villager.getPos());
+								logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
+								if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+									doOverwriteVillagerWithOrc(villager);
+									continue;
+								}
+								else if (biome.getBiomeName().toLowerCase().contains("forest")) {
+									doOverwriteVillagerWithElf(villager);
+									continue;
+								}
+							} 
+							if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
 								doOverwriteVillager(villager);
 							} else {
-								logger.warn("Villager's Data manager doesn't have overwrite key.");
-								doOverwriteVillagerWithElf(villager);
+								// logger.warn("Villager's Data manager doesn't have overwrite key.");
+								doOverwriteVillager(villager);
 							}
-						} catch (Exception e) {
-							logger.warn(e.getLocalizedMessage(),e);
+						}
+						catch (Exception e) {
+//							logger.warn(e.getLocalizedMessage(), e);
 							continue;
 						}
 					}
@@ -211,53 +213,36 @@ public class EventHooksFML {
 			}
 		}
 
-		//Tick down reaper counter.
+		// Tick down reaper counter.
 		if (summonCounter > 0) {
 			summonCounter--;
 
-			//Spawn particles around the summon point.
-			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.PORTAL,
-					summonWorld,
-					summonPos.iX(),
-					summonPos.iY(),
-					summonPos.iZ(),
-					2);
+			// Spawn particles around the summon point.
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.PORTAL, summonWorld, summonPos.iX(), summonPos.iY(),
+					summonPos.iZ(), 2);
 
-			//Lightning will strike periodically.
+			// Lightning will strike periodically.
 			if (summonCounter % (Time.SECOND * 2) == 0) {
-				double
-						dX =
-						summonPos.iX() +
-								(summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
-				double
-						dZ =
-						summonPos.iZ() +
-								(summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
+				double dX = summonPos.iX()
+						+ (summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
+				double dZ = summonPos.iZ()
+						+ (summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
 				double y = (double) RadixLogic.getSpawnSafeTopLevel(summonWorld, (int) dX, (int) dZ);
-				NetworkRegistry.TargetPoint
-						lightningTarget =
-						new NetworkRegistry.TargetPoint(summonWorld.provider.getDimension(), dX, y, dZ, 64);
+				NetworkRegistry.TargetPoint lightningTarget = new NetworkRegistry.TargetPoint(
+						summonWorld.provider.getDimension(), dX, y, dZ, 64);
 				EntityLightningBolt lightning = new EntityLightningBolt(summonWorld, dX, y, dZ, false);
 
 				summonWorld.spawnEntity(lightning);
-				MCA.getPacketHandler()
-						.sendPacketToAllAround(new PacketSpawnLightning(new Point3D(dX, y, dZ)), lightningTarget);
+				MCA.getPacketHandler().sendPacketToAllAround(new PacketSpawnLightning(new Point3D(dX, y, dZ)),
+						lightningTarget);
 
-				//On the first lightning bolt, send the summon sound to all around the summon point.
+				// On the first lightning bolt, send the summon sound to all around the summon
+				// point.
 				if (summonCounter == 80) {
-					NetworkRegistry.TargetPoint
-							summonTarget =
-							new NetworkRegistry.TargetPoint(summonWorld.provider.getDimension(),
-									summonPos.iX(),
-									summonPos.iY(),
-									summonPos.iZ(),
-									32);
-					summonWorld.playSound(null,
-							new BlockPos(dX, y, dZ),
-							SoundsMCA.reaper_summon,
-							SoundCategory.HOSTILE,
-							1.0F,
-							1.0F);
+					NetworkRegistry.TargetPoint summonTarget = new NetworkRegistry.TargetPoint(
+							summonWorld.provider.getDimension(), summonPos.iX(), summonPos.iY(), summonPos.iZ(), 32);
+					summonWorld.playSound(null, new BlockPos(dX, y, dZ), SoundsMCA.reaper_summon, SoundCategory.HOSTILE,
+							1.0F, 1.0F);
 				}
 			}
 
@@ -272,7 +257,7 @@ public class EventHooksFML {
 		}
 
 		if (serverTickCounter <= 0 && MCA.getConfig().guardSpawnRate > 0) {
-			//Build a list of all humans on the server.
+			// Build a list of all humans on the server.
 			List<EntityVillagerMCA> humans = new ArrayList<EntityVillagerMCA>();
 
 			for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
@@ -284,14 +269,13 @@ public class EventHooksFML {
 			}
 
 			if (!humans.isEmpty()) {
-				//Pick three humans at random to perform guard spawning around.
+				// Pick three humans at random to perform guard spawning around.
 				for (int i = 0; i < 3; i++) {
 					EntityVillagerMCA human = humans.get(RadixMath.getNumberInRange(0, humans.size() - 1));
 
-					//Don't count guards in the total count of villagers.
-					List<EntityVillagerMCA>
-							villagersAroundMe =
-							RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, human, 50);
+					// Don't count guards in the total count of villagers.
+					List<EntityVillagerMCA> villagersAroundMe = RadixLogic
+							.getEntitiesWithinDistance(EntityVillagerMCA.class, human, 50);
 					int numberOfGuardsAroundMe = getNumberOfGuardsFromEntityList(villagersAroundMe);
 					int numberOfVillagersAroundMe = villagersAroundMe.size() - numberOfGuardsAroundMe;
 					int neededNumberOfGuards = numberOfVillagersAroundMe / MCA.getConfig().guardSpawnRate;
@@ -306,11 +290,11 @@ public class EventHooksFML {
 
 						final Vec3d pos = RandomPositionGenerator.findRandomTarget(human, 10, 1);
 
-						if (pos != null) //Ensure a random position was actually found.
+						if (pos != null) // Ensure a random position was actually found.
 						{
 							final Point3D posAsPoint = new Point3D(pos.x, pos.y, pos.z);
 
-							//Check that we can see the sky, no guards in caves or stuck in blocks.
+							// Check that we can see the sky, no guards in caves or stuck in blocks.
 							if (human.world.canBlockSeeSky(posAsPoint.toBlockPos())) {
 								guard.setPosition(pos.x, (int) human.posY, pos.z);
 								human.world.spawnEntity(guard);
@@ -323,9 +307,8 @@ public class EventHooksFML {
 			serverTickCounter = Time.MINUTE;
 		}
 
-		if (serverTickCounter <= 0 &&
-				MCA.getConfig().replenishEmptyVillages &&
-				RadixLogic.getBooleanWithProbability(25)) {
+		if (serverTickCounter <= 0 && MCA.getConfig().replenishEmptyVillages
+				&& RadixLogic.getBooleanWithProbability(25)) {
 			for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
 				for (Object obj : world.villageCollection.getVillageList()) {
 					Village village = (Village) obj;
@@ -336,51 +319,45 @@ public class EventHooksFML {
 					double posY = village.getCenter().getY();
 					double posZ = village.getCenter().getZ();
 
-					for (EntityVillagerMCA entity : RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class,
-							world,
-							posX,
-							posY,
-							posZ,
-							village.getVillageRadius())) {
+					for (EntityVillagerMCA entity : RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, world,
+							posX, posY, posZ, village.getVillageRadius())) {
 						EntityVillagerMCA human = (EntityVillagerMCA) entity;
 
-						//Count everyone except guards
+						// Count everyone except guards
 						if (human.attributes.getProfessionSkinGroup() != EnumProfessionSkinGroup.Guard) {
 							population++;
 						}
 
-						//Count babies with the villager population.
+						// Count babies with the villager population.
 						if (human.attributes.getBabyState() != EnumBabyState.NONE) {
 							population++;
 						}
 					}
 
-					//If the village can support more villagers, spawn.
+					// If the village can support more villagers, spawn.
 					int tries = 0;
 
 					if (population < populationCapacity) {
 						while (tries < 3) {
-							posX =
-									posX +
-											(world.rand.nextInt(village.getVillageRadius())) *
-													(RadixLogic.getBooleanWithProbability(50) ? 1 : -1);
-							posZ =
-									posZ +
-											(world.rand.nextInt(village.getVillageRadius())) *
-													(RadixLogic.getBooleanWithProbability(50) ? 1 : -1);
+							posX = posX + (world.rand.nextInt(village.getVillageRadius()))
+									* (RadixLogic.getBooleanWithProbability(50) ? 1 : -1);
+							posZ = posZ + (world.rand.nextInt(village.getVillageRadius()))
+									* (RadixLogic.getBooleanWithProbability(50) ? 1 : -1);
 
-							//Offset to the center of the block
+							// Offset to the center of the block
 							posX += 0.5D;
 							posZ += 0.5D;
 							double dY = RadixLogic.getSpawnSafeTopLevel(world, (int) posX, (int) posZ);
 
-							//Prevent spawning on roof by checking the safe spawn level against the center level
-							//and making sure it's not too high.
+							// Prevent spawning on roof by checking the safe spawn level against the center
+							// level
+							// and making sure it's not too high.
 							if (dY - posY <= 4.0F) {
 								Point3D pointOfSpawn = new Point3D(posX, dY, posZ);
 								MCA.naturallySpawnVillagers(pointOfSpawn, world, -1);
 								break;
-							} else //Try again up to 3 times if not.
+							}
+							else // Try again up to 3 times if not.
 							{
 								tries++;
 							}
@@ -395,7 +372,7 @@ public class EventHooksFML {
 
 	@SubscribeEvent
 	public void itemCraftedEventHandler(ItemCraftedEvent event) {
-		//Return damageable items to the inventory.
+		// Return damageable items to the inventory.
 		for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
 			ItemStack stack = event.craftMatrix.getStackInSlot(i);
 
@@ -406,37 +383,35 @@ public class EventHooksFML {
 					event.player.inventory.addItemStackToInventory(stack);
 				}
 			}
-
-			break;
+			break; //Why does he have this here?
 		}
 	}
 
 	public void doOverwriteVillager(EntityVillager villager) {
 		Biome biome = villager.world.getBiome(villager.getPos());
 		logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
-		if(biome.getBiomeName().contains("swamp")) {
+		if (biome.getBiomeName().toLowerCase().contains("swamp")) {
 			doOverwriteVillagerWithOrc(villager);
-		} else if(biome.getBiomeName().contains("forest")) {
+		}
+		else if (biome.getBiomeName().toLowerCase().contains("forest")) {
 			doOverwriteVillagerWithElf(villager);
-		} else {
+		}
+		else {
 			villager.setDead();
-			MCA.naturallySpawnVillagers(new Point3D(villager.posX, villager.posY, villager.posZ),
-					villager.world,
+			MCA.naturallySpawnVillagers(new Point3D(villager.posX, villager.posY, villager.posZ), villager.world,
 					villager.getProfession());
 		}
 	}
 
 	public void doOverwriteVillagerWithElf(EntityVillager villager) {
 		villager.setDead();
-		MCA.naturallySpawnElves(new Point3D(villager.posX, villager.posY, villager.posZ),
-		                       villager.world,
-		                       villager.getProfession());
+		MCA.naturallySpawnElves(new Point3D(villager.posX, villager.posY, villager.posZ), villager.world,
+				villager.getProfession());
 	}
 
 	public void doOverwriteVillagerWithOrc(EntityVillager villager) {
 		villager.setDead();
-		MCA.naturallySpawnOrcs(new Point3D(villager.posX, villager.posY, villager.posZ),
-				villager.world,
+		MCA.naturallySpawnOrcs(new Point3D(villager.posX, villager.posY, villager.posZ), villager.world,
 				villager.getProfession());
 	}
 

@@ -206,6 +206,7 @@ public class VillagerAttributes {
 //			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
 //					: skinGroup.getRandomFemaleSkin(getRaceEnum());
 			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+			setHeadTexture(skin);
 		}
 		
 		return skin;
@@ -227,7 +228,9 @@ public class VillagerAttributes {
 		if(skin == null || skin.isEmpty()) {
 //			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
 //					: skinGroup.getRandomFemaleSkin(getRaceEnum());
+			
 			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+			setClothesTexture(skin);
 		}
 		return skin;
 	}
@@ -260,10 +263,11 @@ public class VillagerAttributes {
 	}
 
 	public EnumProfession getProfessionEnum() {
-		if (dataManager.get(RACE).intValue() == EnumRace.Orc.getId()) {
+		int professionId = dataManager.get(PROFESSION);
+		if (professionId == EnumRace.Orc.getId()) {
 			return EnumProfession.Guard;
 		}
-		else if (dataManager.get(RACE).intValue() == EnumRace.Elf.getId()) {
+		else if (professionId == EnumRace.Elf.getId()) {
 			EnumGender sex = EnumGender.byId(dataManager.get(GENDER));
 			if (sex == EnumGender.MALE) {
 				return EnumProfession.Guard;
@@ -281,7 +285,8 @@ public class VillagerAttributes {
 		// } else if (dataManager.get(RACE) == EnumRace.Elf.getId()) {
 		// return EnumRace.Elf;
 		// }
-		return EnumProfession.getProfessionById(dataManager.get(PROFESSION).intValue()).getSkinGroup();
+
+		return getProfessionEnum().getSkinGroup();
 	}
 
 	public void setProfession(EnumProfession profession) {

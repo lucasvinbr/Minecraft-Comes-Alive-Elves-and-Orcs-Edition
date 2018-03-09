@@ -23,5 +23,8 @@ sourceCompatibility = targetCompatibility = "1.6"
 compileJava {
     sourceCompatibility = targetCompatibility = "1.6"
 }
+//dependencies {
+//    compile group: 'org.slf4j', name: 'jul-to-slf4j', version: '1.7.25'
+//}
 
 fileTree('gradle').include('*.gradle').collect().sort().each { apply from: it }

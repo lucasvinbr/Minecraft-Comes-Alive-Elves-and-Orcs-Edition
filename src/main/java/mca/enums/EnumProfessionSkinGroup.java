@@ -42,6 +42,7 @@ public enum EnumProfessionSkinGroup {
 			this.maleSkinList = new ArrayList<String>();
 			this.femaleSkinList = new ArrayList<String>();
 		}
+		
 	}
 
 	EnumProfessionSkinGroup(int vanillaId) {
