@@ -71,7 +71,7 @@ public class BlockVillagerSpawner extends Block
 				human.attributes.assignRandomPersonality();
 				human.attributes.assignRandomProfession();
 				human.attributes.assignRandomSkin();
-				human.attributes.assignRandomScale();
+//				human.attributes.assignRandomScale();
 				human.setPositionAndRotation((double) pos.getX() + 0.5F, (double) spawnY, (double) pos.getZ() + 0.5F, (float)random.nextInt(360) + 1, 0.0F);
 				world.spawnEntity(human);
 			}

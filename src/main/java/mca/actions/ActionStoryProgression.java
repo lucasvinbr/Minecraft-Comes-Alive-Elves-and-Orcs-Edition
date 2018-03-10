@@ -183,7 +183,7 @@ public class ActionStoryProgression extends AbstractAction
 			child.attributes.setIsChild(true);
 			child.attributes.assignRandomPersonality();
 			child.attributes.assignRandomProfession();
-			child.attributes.assignRandomScale();
+//			child.attributes.assignRandomScale();
 			child.attributes.assignRandomName();
 			child.attributes.assignRandomSkin();
 

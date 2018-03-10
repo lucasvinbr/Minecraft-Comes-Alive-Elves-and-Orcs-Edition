@@ -34,7 +34,7 @@ public class IngameTester
 			adam.attributes.assignRandomGender();
 			adam.attributes.assignRandomName();
 			adam.attributes.assignRandomPersonality();
-			adam.attributes.assignRandomScale();
+//			adam.attributes.assignRandomScale();
 			adam.attributes.assignRandomSkin();
 			
 			try

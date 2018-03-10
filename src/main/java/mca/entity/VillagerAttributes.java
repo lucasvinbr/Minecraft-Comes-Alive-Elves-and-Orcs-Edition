@@ -258,10 +258,6 @@ public class VillagerAttributes {
 		}
 	}
 
-	public void assignRandomScale() {
-
-	}
-
 	public EnumProfession getProfessionEnum() {
 		int professionId = dataManager.get(PROFESSION);
 		if (professionId == EnumRace.Orc.getId()) {
