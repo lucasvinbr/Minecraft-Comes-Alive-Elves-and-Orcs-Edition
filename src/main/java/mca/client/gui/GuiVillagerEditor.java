@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -34,7 +35,7 @@ public class GuiVillagerEditor extends GuiScreen {
 
 	private GuiTextField nameTextField;
 	private GuiTextField dummyTextField;
-	//private GuiTextField playerSkinTextField;
+	// private GuiTextField playerSkinTextField;
 
 	private GuiButton randomButton;
 	private GuiButton genderButton;
@@ -49,7 +50,7 @@ public class GuiVillagerEditor extends GuiScreen {
 	private GuiButton shiftTraitUpButton;
 	private GuiButton shiftTraitDownButton;
 
-	//Buttons on page 2
+	// Buttons on page 2
 	private GuiButton heightButton;
 	private GuiButton shiftHeightUpButton;
 	private GuiButton shiftHeightDownButton;
@@ -79,16 +80,17 @@ public class GuiVillagerEditor extends GuiScreen {
 
 	@Override
 	public void updateScreen() {
-		//Makes the cursor on the text box blink.
+		// Makes the cursor on the text box blink.
 		super.updateScreen();
 
 		try {
 			nameTextField.updateCursorCounter();
-			//playerSkinTextField.updateCursorCounter();
+			// playerSkinTextField.updateCursorCounter();
 
 			if (nameTextField.getText().isEmpty()) {
 				doneButton.enabled = false;
-			} else {
+			}
+			else {
 				doneButton.enabled = true;
 			}
 
@@ -98,18 +100,15 @@ public class GuiVillagerEditor extends GuiScreen {
 					nameTextField.setText(villager.attributes.getName());
 				}
 
-				genderButton.displayString =
-						MCA.getLocalizer().getString(("gui.button.setup.gender." + villager.attributes.getIsMale()));
-				textureButton.displayString =
-						"Texture: " +
-								villager.attributes.getHeadTexture()
-										.replace("mca:textures/skins/", "")
-										.replace("sleeping/", "")
-										.replace(".png", "");
-				professionButton.displayString =
-						"Job: " + villager.attributes.getProfessionEnum().getUserFriendlyForm(villager);
-				personalityButton.displayString =
-						"Personality: " + villager.attributes.getPersonality().getFriendlyName();
+				genderButton.displayString = MCA.getLocalizer()
+						.getString(("gui.button.setup.gender." + villager.attributes.getIsMale()));
+				textureButton.displayString = "Texture: " + villager.attributes.getHeadTexture()
+						.replace("mca:textures/skins/", "").replace("sleeping/", "").replace(".png", "");
+				professionButton.displayString = "Job: "
+						+ villager.attributes.getProfessionEnum().getUserFriendlyForm(villager);
+				raceButton.displayString = "Race: " + villager.attributes.getRaceEnum().getUserFriendlyForm(villager);
+				personalityButton.displayString = "Personality: "
+						+ villager.attributes.getPersonality().getFriendlyName();
 			}
 
 			if (currentPage == 2) {
@@ -121,8 +120,9 @@ public class GuiVillagerEditor extends GuiScreen {
 				isInfectedButton.displayString = "Is Infected: " + (villager.attributes.getIsInfected() ? "Yes" : "No");
 			}
 
-		} catch (final NullPointerException e) {
-
+		}
+		catch (final NullPointerException e) {
+			LogManager.getLogger(GuiVillagerEditor.class).warn(e);
 		}
 	}
 
@@ -150,84 +150,102 @@ public class GuiVillagerEditor extends GuiScreen {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.enabled == false) {
 			return;
-		} else if (guibutton == doneButton) {
+		}
+		else if (guibutton == doneButton) {
 			Minecraft.getMinecraft().displayGuiScreen(null);
-		} else if (guibutton == randomButton) {
+		}
+		else if (guibutton == randomButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.RANDOM_NAME));
 			nameTextField.mouseClicked(5, 5, 5);
 			drawEditorGuiPage1();
-		} else if (guibutton == genderButton) {
+		}
+		else if (guibutton == genderButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.SWAP_GENDER));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftTextureIndexUpButton) {
+		}
+		else if (guibutton == shiftTextureIndexUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.TEXTURE_UP));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftTextureIndexDownButton) {
+		}
+		else if (guibutton == shiftTextureIndexDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.TEXTURE_DOWN));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftProfessionUpButton) {
+		}
+		else if (guibutton == shiftProfessionUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.PROFESSION_UP));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftProfessionDownButton) {
+		}
+		else if (guibutton == shiftProfessionDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.PROFESSION_DOWN));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftRaceUpButton) {
+		}
+		else if (guibutton == shiftRaceUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.RACE_UP));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftRaceDownButton) {
+		}
+		else if (guibutton == shiftRaceDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.RACE_DOWN));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftTraitUpButton) {
+		}
+		else if (guibutton == shiftTraitUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.TRAIT_UP));
 			drawEditorGuiPage1();
-		} else if (guibutton == shiftTraitDownButton) {
+		}
+		else if (guibutton == shiftTraitDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.TRAIT_DOWN));
 			drawEditorGuiPage1();
-		} else if (guibutton == nextButton) {
+		}
+		else if (guibutton == nextButton) {
 			switch (currentPage) {
-				case 1:
-					drawEditorGuiPage2();
-					break;
-				case 2:
-					drawEditorGuiPage2();
-					break;
+			case 1:
+				drawEditorGuiPage2();
+				break;
+			case 2:
+				drawEditorGuiPage2();
+				break;
 			}
-		} else if (guibutton == backButton) {
+		}
+		else if (guibutton == backButton) {
 			switch (currentPage) {
-				case 1:
-					drawEditorGuiPage1();
-					break;
-				case 2:
-					drawEditorGuiPage1();
-					break;
+			case 1:
+				drawEditorGuiPage1();
+				break;
+			case 2:
+				drawEditorGuiPage1();
+				break;
 			}
-		} else if (guibutton == shiftHeightUpButton) {
+		}
+		else if (guibutton == shiftHeightUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.HEIGHT_UP));
 			drawEditorGuiPage2();
-		} else if (guibutton == shiftHeightDownButton) {
+		}
+		else if (guibutton == shiftHeightDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.HEIGHT_DOWN));
 			drawEditorGuiPage2();
-		} else if (guibutton == shiftGirthUpButton) {
+		}
+		else if (guibutton == shiftGirthUpButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.GIRTH_UP));
 			drawEditorGuiPage2();
-		} else if (guibutton == shiftGirthDownButton) {
+		}
+		else if (guibutton == shiftGirthDownButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.GIRTH_DOWN));
 			drawEditorGuiPage2();
-		} else if (guibutton == isInfectedButton) {
+		}
+		else if (guibutton == isInfectedButton) {
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.TOGGLE_INFECTED));
 			drawEditorGuiPage2();
@@ -238,16 +256,18 @@ public class GuiVillagerEditor extends GuiScreen {
 	protected void keyTyped(char c, int i) throws IOException {
 		if (i == Keyboard.KEY_ESCAPE) {
 			Minecraft.getMinecraft().displayGuiScreen(null);
-		} else if (currentPage == 1) {
+		}
+		else if (currentPage == 1) {
 			nameTextField.textboxKeyTyped(c, i);
 			final String text = nameTextField.getText().trim();
 			MCA.getPacketHandler()
 					.sendPacketToServer(new PacketEditVillager(villager.getEntityId(), EnumEditAction.SET_NAME, text));
 			villager.attributes.setName(text);
 
-			//playerSkinTextField.textboxKeyTyped(c, i);
+			// playerSkinTextField.textboxKeyTyped(c, i);
 			drawEditorGuiPage1();
-		} else {
+		}
+		else {
 			super.keyTyped(c, i);
 		}
 	}
@@ -258,7 +278,7 @@ public class GuiVillagerEditor extends GuiScreen {
 
 		if (currentPage == 1) {
 			nameTextField.mouseClicked(clickX, clickY, clicked);
-			//playerSkinTextField.mouseClicked(clickX, clickY, clicked);
+			// playerSkinTextField.mouseClicked(clickX, clickY, clicked);
 		}
 	}
 
@@ -271,96 +291,37 @@ public class GuiVillagerEditor extends GuiScreen {
 		currentPage = 1;
 
 		buttonList.clear();
-		buttonList.add(
-				randomButton =
-						new GuiButton(1,
-								width / 2 - 50,
-								height / 2 - 95,
-								60,
-								20,
-								MCA.getLocalizer().getString("gui.button.random")));
-		buttonList.add(
-				genderButton =
-						new GuiButton(2,
-								width / 2 - 190,
-								height / 2 - 60,
-								175,
-								20,
-								MCA.getLocalizer()
-										.getString("gui.button.setup.gender." + villager.attributes.getIsMale())));
-		buttonList.add(
-				textureButton =
-						new GuiButton(3,
-								width / 2 - 190,
-								height / 2 - 40,
-								175,
-								20,
-								"Texture: " +
-										villager.attributes.getHeadTexture()
-												.replace("mca:textures/skins/", "")
-												.replace(".png", "")));
+		buttonList.add(randomButton = new GuiButton(1, width / 2 - 50, height / 2 - 95, 60, 20,
+				MCA.getLocalizer().getString("gui.button.random")));
+		buttonList.add(genderButton = new GuiButton(2, width / 2 - 190, height / 2 - 60, 175, 20,
+				MCA.getLocalizer().getString("gui.button.setup.gender." + villager.attributes.getIsMale())));
+		buttonList.add(textureButton = new GuiButton(3, width / 2 - 190, height / 2 - 40, 175, 20, "Texture: "
+				+ villager.attributes.getHeadTexture().replace("mca:textures/skins/", "").replace(".png", "")));
 		buttonList.add(shiftTextureIndexUpButton = new GuiButton(4, width / 2 - 15, height / 2 - 40, 20, 20, ">>"));
 		buttonList.add(shiftTextureIndexDownButton = new GuiButton(5, width / 2 - 210, height / 2 - 40, 20, 20, "<<"));
 
-		buttonList.add(
-				professionButton =
-						new GuiButton(6,
-								width / 2 - 190,
-								height / 2 - 20,
-								175,
-								20,
-								"Job: " + villager.attributes.getProfessionEnum().getUserFriendlyForm(villager)));
+		buttonList.add(professionButton = new GuiButton(6, width / 2 - 190, height / 2 - 20, 175, 20,
+				"Job: " + villager.attributes.getProfessionEnum().getUserFriendlyForm(villager)));
 		buttonList.add(shiftProfessionUpButton = new GuiButton(7, width / 2 - 15, height / 2 - 20, 20, 20, ">>"));
 		buttonList.add(shiftProfessionDownButton = new GuiButton(8, width / 2 - 210, height / 2 - 20, 20, 20, "<<"));
 
-		buttonList.add(
-				raceButton =
-						new GuiButton(6,
-								width / 2 - 190,
-								height / 2 - 20,
-								175,
-								20,
-								"Race: " + villager.attributes.getRaceEnum().getUserFriendlyForm(villager)));
-		buttonList.add(shiftRaceUpButton = new GuiButton(7, width / 2 - 15, height / 2 - 20, 20, 20, ">>"));
-		buttonList.add(shiftRaceDownButton = new GuiButton(8, width / 2 - 210, height / 2 - 20, 20, 20, "<<"));
+		buttonList.add(raceButton = new GuiButton(6, width / 2 - 190, height / 2, 175, 20,
+				"Race: " + villager.attributes.getRaceEnum().getUserFriendlyForm(villager)));
+		buttonList.add(shiftRaceUpButton = new GuiButton(7, width / 2 - 15, height / 2, 20, 20, ">>"));
+		buttonList.add(shiftRaceDownButton = new GuiButton(8, width / 2 - 210, height / 2, 20, 20, "<<"));
 
-		buttonList.add(
-				personalityButton =
-						new GuiButton(12,
-								width / 2 - 190,
-								height / 2 + 0,
-								175,
-								20,
-								MCA.getLocalizer()
-										.getString("gui.info.personality",
-												villager.attributes.getPersonality().getFriendlyName())));
-		buttonList.add(shiftTraitUpButton = new GuiButton(13, width / 2 - 15, height / 2 + 0, 20, 20, ">>"));
-		buttonList.add(shiftTraitDownButton = new GuiButton(14, width / 2 - 210, height / 2 + 0, 20, 20, "<<"));
+		buttonList
+				.add(personalityButton = new GuiButton(12, width / 2 - 190, height / 2 + 85, 175, 20, MCA.getLocalizer()
+						.getString("gui.info.personality", villager.attributes.getPersonality().getFriendlyName())));
+		buttonList.add(shiftTraitUpButton = new GuiButton(13, width / 2 - 15, height / 2 + 85, 20, 20, ">>"));
+		buttonList.add(shiftTraitDownButton = new GuiButton(14, width / 2 - 210, height / 2 + 85, 20, 20, "<<"));
 
-		buttonList.add(
-				doneButton =
-						new GuiButton(17,
-								width / 2 - 50,
-								height / 2 + 85,
-								75,
-								20,
-								MCA.getLocalizer().getString("gui.button.done")));
-		buttonList.add(
-				nextButton =
-						new GuiButton(18,
-								width / 2 + 25,
-								height / 2 + 85,
-								50,
-								20,
-								MCA.getLocalizer().getString("gui.button.next")));
-		buttonList.add(
-				backButton =
-						new GuiButton(19,
-								width / 2 - 101,
-								height / 2 + 85,
-								50,
-								20,
-								MCA.getLocalizer().getString("gui.button.back")));
+		buttonList.add(doneButton = new GuiButton(17, width / 2 - 50, height / 2 + 105, 75, 20,
+				MCA.getLocalizer().getString("gui.button.done")));
+		buttonList.add(nextButton = new GuiButton(18, width / 2 + 25, height / 2 + 105, 50, 20,
+				MCA.getLocalizer().getString("gui.button.next")));
+		buttonList.add(backButton = new GuiButton(19, width / 2 - 101, height / 2 + 105, 50, 20,
+				MCA.getLocalizer().getString("gui.button.back")));
 
 		backButton.enabled = false;
 	}
@@ -374,49 +335,23 @@ public class GuiVillagerEditor extends GuiScreen {
 
 		currentPage = 2;
 		buttonList.clear();
-		buttonList.add(
-				heightButton =
-						new GuiButton(1, width / 2 - 190, height / 2 - 40, 175, 20, "Height Factor: " + displayHeight));
+		buttonList.add(heightButton = new GuiButton(1, width / 2 - 190, height / 2 - 40, 175, 20,
+				"Height Factor: " + displayHeight));
 		buttonList.add(shiftHeightUpButton = new GuiButton(2, width / 2 - 15, height / 2 - 40, 20, 20, ">>"));
 		buttonList.add(shiftHeightDownButton = new GuiButton(3, width / 2 - 210, height / 2 - 40, 20, 20, "<<"));
-		buttonList.add(
-				girthButton =
-						new GuiButton(4, width / 2 - 190, height / 2 - 20, 175, 20, "Girth Factor: " + displayGirth));
+		buttonList.add(girthButton = new GuiButton(4, width / 2 - 190, height / 2 - 20, 175, 20,
+				"Girth Factor: " + displayGirth));
 		buttonList.add(shiftGirthUpButton = new GuiButton(5, width / 2 - 15, height / 2 - 20, 20, 20, ">>"));
 		buttonList.add(shiftGirthDownButton = new GuiButton(6, width / 2 - 210, height / 2 - 20, 20, 20, "<<"));
-		buttonList.add(
-				isInfectedButton =
-						new GuiButton(7,
-								width / 2 - 190,
-								height / 2 - 0,
-								175,
-								20,
-								"Is Infected: " + villager.attributes.getIsInfected()));
+		buttonList.add(isInfectedButton = new GuiButton(7, width / 2 - 190, height / 2 - 0, 175, 20,
+				"Is Infected: " + villager.attributes.getIsInfected()));
 
-		buttonList.add(
-				doneButton =
-						new GuiButton(16,
-								width / 2 - 50,
-								height / 2 + 85,
-								75,
-								20,
-								MCA.getLocalizer().getString("gui.button.done")));
-		buttonList.add(
-				nextButton =
-						new GuiButton(17,
-								width / 2 + 25,
-								height / 2 + 85,
-								50,
-								20,
-								MCA.getLocalizer().getString("gui.button.next")));
-		buttonList.add(
-				backButton =
-						new GuiButton(18,
-								width / 2 - 101,
-								height / 2 + 85,
-								50,
-								20,
-								MCA.getLocalizer().getString("gui.button.back")));
+		buttonList.add(doneButton = new GuiButton(16, width / 2 - 50, height / 2 + 85, 75, 20,
+				MCA.getLocalizer().getString("gui.button.done")));
+		buttonList.add(nextButton = new GuiButton(17, width / 2 + 25, height / 2 + 85, 50, 20,
+				MCA.getLocalizer().getString("gui.button.next")));
+		buttonList.add(backButton = new GuiButton(18, width / 2 - 101, height / 2 + 85, 50, 20,
+				MCA.getLocalizer().getString("gui.button.back")));
 
 		nextButton.enabled = false;
 	}
@@ -440,10 +375,7 @@ public class GuiVillagerEditor extends GuiScreen {
 
 		if (currentPage == 1) {
 			drawString(fontRenderer, "Name:", width / 2 - 205, height / 2 - 110, 0xffffff);
-			drawString(fontRenderer,
-					MCA.getLocalizer().getString("gui.title.editor"),
-					width / 2 - 205,
-					height / 2 - 87,
+			drawString(fontRenderer, MCA.getLocalizer().getString("gui.title.editor"), width / 2 - 205, height / 2 - 87,
 					0xa0a0a0);
 
 			nameTextField.drawTextBox();
@@ -451,18 +383,15 @@ public class GuiVillagerEditor extends GuiScreen {
 
 		GL11.glPushMatrix();
 		GL11.glScalef(1.5F, 1.5F, 1.5F);
-		drawCenteredString(fontRenderer,
-				MCA.getLocalizer().getString("gui.title.editor"),
-				width / 2 - 75,
-				height / 2 - 125,
-				0xffffff);
+		drawCenteredString(fontRenderer, MCA.getLocalizer().getString("gui.title.editor"), width / 2 - 75,
+				height / 2 - 125, 0xffffff);
 		GL11.glPopMatrix();
 
 		super.drawScreen(sizeX, sizeY, offset);
 	}
 
 	private void sortTextureList(List<String> listToSort) {
-		Collections.sort(listToSort, new Comparator<String>() {
+		listToSort.sort(new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
 				final int skinNumber1 = Integer.parseInt(o1.replaceAll("[^0-9]+", " ").trim());

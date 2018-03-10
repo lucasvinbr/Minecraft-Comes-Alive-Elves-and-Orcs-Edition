@@ -70,7 +70,7 @@ public class PacketEditVillager extends AbstractPacket<PacketEditVillager> {
 
 	@Override
 	public void processOnGameThread(PacketEditVillager message, MessageContext context) {
-		PacketEditVillager packet = (PacketEditVillager) message;
+		PacketEditVillager packet = message;
 		EntityVillagerMCA villager = null;
 		EntityPlayer player = null;
 
@@ -88,6 +88,9 @@ public class PacketEditVillager extends AbstractPacket<PacketEditVillager> {
 
 			jobs = CyclicIntList.fromList(EnumProfession.getListOfIds());
 			jobs.setIndex(villager.attributes.getProfessionEnum().getId());
+			
+			races = CyclicIntList.fromList(EnumRace.getListOfIds());
+			races.setIndex(villager.attributes.getRaceEnum().getId());
 
 			personalities = CyclicIntList.fromList(EnumPersonality.getListOfIds());
 			personalities.setIndex(0); // Catch all just in case
@@ -126,11 +129,13 @@ public class PacketEditVillager extends AbstractPacket<PacketEditVillager> {
 				villager.attributes.assignRandomSkin();
 				break;
 			case RACE_DOWN:
-				villager.attributes.setRace(EnumRace.getRaceById(races.next()));
+				EnumRace race = EnumRace.getRaceById(races.next());
+				villager.attributes.setRace(race);
 				villager.attributes.assignRandomSkin();
 				break;
 			case RACE_UP:
-				villager.attributes.setRace(EnumRace.getRaceById(races.previous()));
+				EnumRace race1 = EnumRace.getRaceById(races.previous());
+				villager.attributes.setRace(race1);
 				villager.attributes.assignRandomSkin();
 				break;
 			case RANDOM_NAME:

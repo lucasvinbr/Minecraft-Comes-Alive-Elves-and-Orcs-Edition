@@ -51,20 +51,25 @@ public enum EnumProfessionSkinGroup {
 		orcSkins = new SkinManager(vanillaId);
 	}
 
-	public void addSkin(String locationInJAR, EnumRace race) {
-		String resourceLocation = locationInJAR.replace("/assets/mca/", "mca:");
+	public void addSkin(String filePath, EnumRace race) {
+		String resourceLocation = filePath.replace("/assets/mca/", "mca:");
+		String professionName = this.toString().toLowerCase();
 		SkinManager skinManager;
 		if(race == EnumRace.Orc) {
+			if(filePath.toLowerCase().contains(race.toString().toLowerCase())) {
+				professionName = race.toString().toLowerCase();
+			}
 			skinManager = orcSkins;
 		} else if(race == EnumRace.Elf) {
+			if(filePath.toLowerCase().contains(race.toString().toLowerCase())) {
+				professionName = race.toString().toLowerCase();
+			}
 			skinManager = elfSkins;
 		} else {
 			skinManager = villagerSkins;
 		}
 		skinManager.completeSkinList.add(resourceLocation);
-		String professionName = this.toString().toLowerCase();
-		String textureName = resourceLocation.replace(String.format("mca:textures/skins/%s", professionName), "");
-		String genderChar = textureName.substring(0, 1);
+		String genderChar = resourceLocation.replace("mca:textures/skins/" + professionName, "").substring(0, 1);
 
 		if (genderChar.equals("m")) {
 			skinManager.maleSkinList.add(resourceLocation);

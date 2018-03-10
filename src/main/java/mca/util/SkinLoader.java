@@ -32,15 +32,12 @@ public final class SkinLoader {
 
 			if (modFile.isFile()) {
 				loadSkinsFromFile(modFile);
-			}
-			else {
+			} else {
 				LogManager.getLogger(SkinLoader.class).fatal(new FileNotFoundException("Unable to locate MCA assets!"));
 			}
-		}
-		catch (final IOException e) {
+		} catch (final IOException e) {
 			LogManager.getLogger(SkinLoader.class).fatal(e);
-		}
-		catch (final NullPointerException e) {
+		} catch (final NullPointerException e) {
 			LogManager.getLogger(SkinLoader.class).fatal(e);
 		}
 	}
@@ -58,18 +55,19 @@ public final class SkinLoader {
 
 	private static File findModAsArchive() throws ZipException, IOException {
 		final File modsFolder = new File(RadixCore.getRunningDirectory() + "/mods");
-
-		for (final File fileInMods : modsFolder.listFiles()) {
-			if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar")) {
-				if (fileContainsModData(fileInMods)) {
-					return fileInMods;
+		if(modsFolder != null) {
+			for (final File fileInMods : modsFolder.listFiles()) {
+				if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar")) {
+					if (fileContainsModData(fileInMods)) {
+						return fileInMods;
+					}
 				}
-			}
-			else if (fileInMods.isDirectory()) {
-				final File modData = getModFileFromNestedFolder(fileInMods);
+				else if (fileInMods.isDirectory()) {
+					final File modData = getModFileFromNestedFolder(fileInMods);
 
-				if (modData != null) {
-					return modData;
+					if (modData != null) {
+						return modData;
+					}
 				}
 			}
 		}
@@ -90,17 +88,24 @@ public final class SkinLoader {
 			if (archiveFilePath.contains("textures/skins") && !archiveFilePath.contains("/sleeping/")) {
 				//TODO: Find a way to make orcs and elves have their own diverse set of profession skins.
 				//Right now, I am not even sure if villagers, elves, and orcs should have the same profession sets.
-				for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
-					if(file.getName().toLowerCase().contains("orc")) {
-						//Just load up the orc skins for any profession.
+				if(file.getName().toLowerCase().contains("orc")) {
+					//Just load up the orc skins for any profession.
+					for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
 						skinGroup.addSkin(archiveFilePath, EnumRace.Orc);
 						counter++;
-					} else if(file.getName().toLowerCase().contains("elf")) {
+					}
+				} else if(file.getName().toLowerCase().contains("elf")) {
+					//Just load up the elf skins for any profession.
+					for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
 						skinGroup.addSkin(archiveFilePath, EnumRace.Elf);
 						counter++;
-					} else if (file.getName().toLowerCase().contains(skinGroup.toString().toLowerCase())) {
-						skinGroup.addSkin(archiveFilePath, EnumRace.Villager);
-						counter++;
+					}
+				} else {
+					for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {
+						if (file.getName().toLowerCase().contains(skinGroup.toString().toLowerCase())) {
+							skinGroup.addSkin(archiveFilePath, EnumRace.Villager);
+							counter++;
+						}
 					}
 				}
 			}
@@ -112,14 +117,15 @@ public final class SkinLoader {
 
 	private static File getModFileFromNestedFolder(File nestedFolder) throws IOException {
 		final File[] nestedFiles = nestedFolder.listFiles();
-
-		for (final File file : nestedFiles) {
-			if (file.isDirectory()) {
-				getModFileFromNestedFolder(file);
-			}
-			else {
-				if (fileContainsModData(file)) {
-					return file;
+		if(nestedFiles != null) {
+			for (final File file : nestedFiles) {
+				if (file.isDirectory()) {
+					getModFileFromNestedFolder(file);
+				}
+				else {
+					if (fileContainsModData(file)) {
+						return file;
+					}
 				}
 			}
 		}

@@ -71,7 +71,11 @@ public enum EnumRace {
 		return Villager;
 	}
 
-	public String getUserFriendlyForm(EntityVillagerMCA villager) {
-		return MCA.getLocalizer().getString(getLocalizationId());
+	public String getUserFriendlyForm(EntityVillagerMCA human) {
+		//Player children have the "child" profession. Change their display title to "Villager" if they're grown up.
+				//All children will show the "Child" title, regardless of underlying profession. 
+		//When grown, their actual profession title will be shown.
+			return MCA.getLocalizer().getString(getLocalizationId());
+		
 	}
 }
