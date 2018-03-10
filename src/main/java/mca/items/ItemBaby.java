@@ -3,6 +3,9 @@ package mca.items;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import mca.core.Constants;
 import mca.core.MCA;
 import mca.data.NBTPlayerData;
@@ -35,8 +38,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import radixcore.constant.Font.Color;
 import radixcore.constant.Font.Format;
 import radixcore.constant.Time;
@@ -44,6 +45,7 @@ import radixcore.constant.Time;
 public class ItemBaby extends Item {
 	private static Logger logger = LogManager.getLogger(ItemBaby.class);
 	private final boolean isBoy;
+	private EnumRace myRace;
 
 	private String motherName = "N/A";
 	private UUID motherId = Constants.EMPTY_UUID;
@@ -56,6 +58,12 @@ public class ItemBaby extends Item {
 
 	public ItemBaby(boolean isBoy) {
 		this.isBoy = isBoy;
+		this.setMaxStackSize(1);
+	}
+	
+	public ItemBaby(boolean isBoy, EnumRace myRace) {
+		this.isBoy = isBoy;
+		this.myRace = myRace;
 		this.setMaxStackSize(1);
 	}
 
@@ -203,12 +211,18 @@ public class ItemBaby extends Item {
 				}
 
 				final EntityVillagerMCA child = new EntityVillagerMCA(world);
+				child.attributes.setRace(myRace);
 				child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
 				child.attributes.setIsChild(true);
-				child.attributes.setName(stack.getTagCompound().getString("name"));
+				if(stack.getTagCompound() != null) {
+					child.attributes.setName(stack.getTagCompound().getString("name"));
+				}
+				else {
+					child.attributes.assignRandomName();
+				}
 				child.attributes.setProfession(EnumProfession.Child);
 				child.attributes.assignRandomSkin();
-				child.attributes.assignRandomScale();
+//				child.attributes.assignRandomScale();
 				child.attributes.setMotherGender(motherGender);
 				child.attributes.setMotherName(motherName);
 				child.attributes.setMotherUUID(motherId);
@@ -272,8 +286,7 @@ public class ItemBaby extends Item {
 				motherRace = villager.attributes.getRaceEnum();
 			}
 
-			EntityVillagerMCA child = null;
-			child = new EntityVillagerMCA(world);
+			EntityVillagerMCA child = new EntityVillagerMCA(world);
 			if(villager.attributes.getRaceEnum() == EnumRace.Orc) {
 				if(baby.isBoy) {
 					child.attributes.setProfession(EnumProfession.Guard);
@@ -294,7 +307,7 @@ public class ItemBaby extends Item {
 			child.attributes.assignRandomName();
 //			child.attributes.setName(babyStack.getTagCompound().getString("name"));
 			child.attributes.assignRandomSkin();
-			child.attributes.assignRandomScale();
+//			child.attributes.assignRandomScale();
 			child.attributes.setMotherGender(motherGender);
 			child.attributes.setMotherName(motherName);
 			child.attributes.setMotherUUID(motherId);
@@ -368,7 +381,7 @@ public class ItemBaby extends Item {
 //			child.attributes.setName(babyStack.getTagCompound().getString("name"));
 			child.attributes.assignRandomName();
 			child.attributes.assignRandomSkin();
-			child.attributes.assignRandomScale();
+//			child.attributes.assignRandomScale();
 			child.attributes.setMotherGender(motherGender);
 			child.attributes.setMotherName(motherName);
 			child.attributes.setMotherUUID(motherId);
@@ -399,7 +412,7 @@ public class ItemBaby extends Item {
 
 		if (!world.isRemote && stack.getTagCompound().getString("name").equals("Unnamed")) {
 			ItemBaby baby = (ItemBaby) stack.getItem();
-			MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenBabyNameGUI(baby.isBoy), (EntityPlayerMP) player);
+			MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenBabyNameGUI(baby.isBoy), player);
 		}
 
 		return super.onItemRightClick(world, player, hand);
