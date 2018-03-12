@@ -114,7 +114,7 @@ public final class Config implements Serializable {
 						.getBoolean();
 
 		config.setCategoryComment("General", "General mod settings.");
-		
+
 		giveCrystalBall =
 				config.get("General",
 						"Give crystal ball",
