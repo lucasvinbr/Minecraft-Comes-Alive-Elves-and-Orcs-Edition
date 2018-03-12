@@ -86,8 +86,6 @@ public final class SkinLoader {
 			String archiveFilePath = "/" + file.getName();
 
 			if (archiveFilePath.contains("textures/skins") && !archiveFilePath.contains("/sleeping/")) {
-				//TODO: Find a way to make orcs and elves have their own diverse set of profession skins.
-				//Right now, I am not even sure if villagers, elves, and orcs should have the same profession sets.
 				if(file.getName().toLowerCase().contains("orc")) {
 					//Just load up the orc skins for any profession.
 					for (EnumProfessionSkinGroup skinGroup : EnumProfessionSkinGroup.values()) {

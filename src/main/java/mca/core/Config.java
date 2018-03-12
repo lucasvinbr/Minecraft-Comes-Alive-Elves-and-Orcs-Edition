@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import mca.enums.EnumRace;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.IConfigElement;
@@ -74,6 +75,9 @@ public final class Config implements Serializable {
 	public boolean allowCrashReporting;
 	public boolean allowUpdateChecking;
 	public boolean showPlayerDataMigrationErrors;
+	private int matingSeasonDuration;
+
+	private List<EnumRace> seasonalBreeders = new ArrayList<EnumRace>();
 
 	public Config(FMLPreInitializationEvent event) {
 		config = new Configuration(event.getSuggestedConfigurationFile());
@@ -81,6 +85,7 @@ public final class Config implements Serializable {
 	}
 
 	private void addConfigValues() {
+		seasonalBreeders.add(EnumRace.Orc);
 		config.setCategoryComment("Init", "Settings that affect how MCA starts up.");
 		baseEntityId =
 				config.get("Init",
@@ -109,7 +114,7 @@ public final class Config implements Serializable {
 						.getBoolean();
 
 		config.setCategoryComment("General", "General mod settings.");
-
+		
 		giveCrystalBall =
 				config.get("General",
 						"Give crystal ball",
@@ -331,6 +336,8 @@ public final class Config implements Serializable {
 						true,
 						"True if players can have the ability to revive villagers they are related to. Creates a file in [world name]/data/ that could become very large on big servers.")
 						.getBoolean();
+		setMatingSeasonDuration(config
+				.get("mating_season_time", "How long the orc mating season lasts in minutes.", 1).getInt());
 		showPlayerDataMigrationErrors =
 				config.get("Server",
 						"Show player data migration errors?",
@@ -386,5 +393,21 @@ public final class Config implements Serializable {
 		}
 
 		return false;
+	}
+
+	public int getMatingSeasonDuration() {
+		return matingSeasonDuration;
+	}
+
+	public void setMatingSeasonDuration(int matingSeasonDuration) {
+		this.matingSeasonDuration = matingSeasonDuration;
+	}
+
+	public List<EnumRace> getSeasonalBreeders() {
+		return seasonalBreeders;
+	}
+
+	public void setSeasonalBreeders(List<EnumRace> seasonalBreeders) {
+		this.seasonalBreeders = seasonalBreeders;
 	}
 }

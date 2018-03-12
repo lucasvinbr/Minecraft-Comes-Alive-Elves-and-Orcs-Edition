@@ -8,11 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.netty.buffer.ByteBuf;
 import mca.actions.AbstractAction;
 import mca.actions.ActionAttackResponse;
 import mca.actions.ActionCombat;
+import mca.actions.ActionMate;
 import mca.actions.ActionSleep;
+import mca.actions.ActionStoryProgression;
 import mca.actions.ActionUpdateMood;
 import mca.core.Constants;
 import mca.core.MCA;
@@ -28,8 +33,10 @@ import mca.enums.EnumMarriageState;
 import mca.enums.EnumMovementState;
 import mca.enums.EnumProfession;
 import mca.enums.EnumProfessionSkinGroup;
+import mca.enums.EnumProgressionStep;
 import mca.enums.EnumRace;
 import mca.enums.EnumRelation;
+import mca.enums.EnumSleepingState;
 import mca.items.ItemBaby;
 import mca.items.ItemMemorial;
 import mca.items.ItemVillagerEditor;
@@ -46,6 +53,7 @@ import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -77,22 +85,26 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import radixcore.constant.Font.Color;
+import radixcore.constant.Time;
 import radixcore.math.Point3D;
+import radixcore.modules.RadixBlocks;
 import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixMath;
 
 /**
- * The main class of MCA's villager. The class itself handles events, getters, setters, etc.
- * overridden from Minecraft. Also any events/actions that can be performed on a villager.
+ * The main class of MCA's villager. The class itself handles events, getters,
+ * setters, etc. overridden from Minecraft. Also any events/actions that can be
+ * performed on a villager.
  * <p>
- * To avoid an absurdly large class, the rest of the villager is split into 2 components:
+ * To avoid an absurdly large class, the rest of the villager is split into 2
+ * components:
  * <p>
- * The VillagerBehaviors object handles custom villager behaviors that run each tick.
+ * The VillagerBehaviors object handles custom villager behaviors that run each
+ * tick.
  * <p>
- * The VillagerAttributes object holds all villager data and their getters/setters.
+ * The VillagerAttributes object holds all villager data and their
+ * getters/setters.
  */
 public class EntityVillagerMCA extends EntityVillager implements IEntityAdditionalSpawnData {
 	@SideOnly(Side.CLIENT)
@@ -112,23 +124,28 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	private static final int FIELD_INDEX_WEALTH = 11;
 	private static final int FIELD_INDEX_LAST_BUYING_PLAYER = 12;
 	private int raceId = -1;
-	protected float pitch = (new Random().nextInt((13 - 7) + 1) + 7) / 10;
+	protected float pitch = 1.0f;
+	protected int deathCountDown = 3 * Time.SECOND;
+	protected DamageSource damageSource; // for when they die. I'm going to have a death clock countdown.
+	protected EntityTameable pet;
 
 	public EntityVillagerMCA(World world) {
 		super(world);
-
 		profiler = world.profiler;
 		attributes = new VillagerAttributes(this);
 		attributes.initialize();
 		behaviors = new VillagerBehaviors(this);
-		this.raceId=0;
+		this.raceId = 0;
 		this.attributes.setRace(EnumRace.Villager);
+		this.attributes.setIsBeingChased(false);
+		pitch = RadixMath.getNumberInRange(0.7f, 1.3f);
+		// pitch = (new Random().nextInt((13 - 7) + 1) + 7) / 10;
 		addAI();
 	}
 
 	public static boolean isProfessionSkinFighter(EnumProfessionSkinGroup professionSkinGroup) {
-		return professionSkinGroup == EnumProfessionSkinGroup.Guard ||
-		       professionSkinGroup == EnumProfessionSkinGroup.Warrior;
+		return professionSkinGroup == EnumProfessionSkinGroup.Guard
+				|| professionSkinGroup == EnumProfessionSkinGroup.Warrior;
 	}
 
 	public void addAI() {
@@ -139,22 +156,20 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.tasks.addTask(3, new EntityAIRestrictOpenDoor(this));
 		this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
 
-		int maxHealth = isProfessionSkinFighter(attributes.getProfessionSkinGroup()) ||
-				attributes.getRaceEnum() == EnumRace.Orc ?
-				MCA.getConfig().guardMaxHealth :
-				MCA.getConfig().villagerMaxHealth;
-//		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
-//			this.maxSwingProgressTicks = 6;
-//		}
+		int maxHealth = isProfessionSkinFighter(attributes.getProfessionSkinGroup())
+				|| attributes.getRaceEnum() == EnumRace.Orc ? MCA.getConfig().guardMaxHealth
+						: MCA.getConfig().villagerMaxHealth;
 		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
 		if (this.getHealth() > maxHealth || isProfessionSkinFighter(attributes.getProfessionSkinGroup())) {
 			this.setHealth(maxHealth);
 		}
-		if (!isProfessionSkinFighter(attributes.getProfessionSkinGroup()) ||
-		    attributes.getRaceEnum() == EnumRace.Elf ||
-		    attributes.getRaceEnum() == EnumRace.Orc) {
+		if (!isProfessionSkinFighter(attributes.getProfessionSkinGroup()) || attributes.getRaceEnum() == EnumRace.Elf
+				|| attributes.getRaceEnum() == EnumRace.Orc) {
 			this.tasks.addTask(2, new EntityAIMoveIndoors(this));
 		}
+		behaviors.getAction(ActionMate.class)
+				.setIsActive(MCA.getConfig().getSeasonalBreeders().contains(attributes.getRaceEnum()));
+		// behaviors.getAction(ActionRetreat.class).setIsActive(false);
 	}
 
 	private void updateSwinging() {
@@ -165,7 +180,8 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				swingProgressTicks = 0;
 				attributes.setIsSwinging(false);
 			}
-		} else {
+		}
+		else {
 			swingProgressTicks = 0;
 		}
 		swingProgress = (float) swingProgressTicks / (float) maxSwingProgressTicks;
@@ -187,12 +203,12 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		if (!world.isRemote) {
 			attributes.incrementTicksAlive();
 
-			//Tick player memories
+			// Tick player memories
 			for (PlayerMemory memory : attributes.getPlayerMemories().values()) {
 				memory.doTick();
 			}
 
-			//Tick babies in attributes.getInventory().
+			// Tick babies in attributes.getInventory().
 			for (int i = 0; i < attributes.getInventory().getSizeInventory(); i++) {
 				ItemStack stack = attributes.getInventory().getStackInSlot(i);
 
@@ -202,29 +218,47 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				}
 			}
 
-			//Check if inventory should be opened for player.
+			// Check if inventory should be opened for player.
 			if (attributes.getDoOpenInventory()) {
 				final EntityPlayer player = world.getClosestPlayerToEntity(this, 10.0D);
 
 				if (player != null) {
-					player.openGui(MCA.getInstance(),
-					               Constants.GUI_ID_INVENTORY,
-					               world,
-					               (int) posX,
-					               (int) posY,
-					               (int) posZ);
+					player.openGui(MCA.getInstance(), Constants.GUI_ID_INVENTORY, world, (int) posX, (int) posY,
+							(int) posZ);
 				}
 
 				attributes.setDoOpenInventory(false);
 			}
+			// if (attributes.getRaceEnum() == EnumRace.Orc) {
+			// behaviors.getAction(ActionMate.class).setIsActive(MCA.isOrcMatingSeason());
+			// }
 		}
-
+		if (this.pet != null && !this.pet.isDead) {
+			if (pet.getNavigator().noPath()) {
+				pet.getNavigator().tryMoveToEntityLiving(this, Constants.SPEED_WALK);
+			}
+		}
+		if (this.dead) {
+			if (deathCountDown >= 0) {
+				deathCountDown--;
+				Utilities.spawnParticlesAroundPointS(EnumParticleTypes.CLOUD, world, posX, posY, posZ, 10);
+			}
+			else {
+				try {
+					// System.gc();
+					super.onDeath(damageSource);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		profiler.endSection();
 	}
 
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand) {
-		if (getRidingEntity() == player) //Dismounts from a player on right-click
+		if (getRidingEntity() == player) // Dismounts from a player on right-click
 		{
 			dismountRidingEntity();
 			dismountEntity(player);
@@ -246,73 +280,195 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				heldItem.setTagCompound(stackNBT);
 
 				this.setDead();
-			} else {
+			}
+			else {
 				int guiId = item instanceof ItemVillagerEditor ? Constants.GUI_ID_EDITOR : Constants.GUI_ID_INTERACT;
-				MCA.getPacketHandler()
-				   .sendPacketToPlayer(new PacketOpenGUIOnEntity(this.getEntityId(), guiId),
-				                       (EntityPlayerMP) player);
+				MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenGUIOnEntity(this.getEntityId(), guiId),
+						player);
 			}
 		}
 
 		return true;
 	}
-	
+
 	public void playHurtSound() {
-		if(this.attributes.getRaceEnum() == EnumRace.Elf) {
-			if(this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2, 1.0f, this.getPitch());
-			} else {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2, 1.0f, this.getPitch());
+		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
+			if (this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(
+						new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2,
+						1.0f, this.getPitch());
 			}
-		} else if(this.attributes.getRaceEnum() == EnumRace.Orc) {
-			if(this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2, 1.0f, this.getPitch());
-			} else {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2, 1.0f, this.getPitch());
+			else {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2,
+						1.0f, this.getPitch());
 			}
-		} else {
-			if(this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2, 1.0f, this.getPitch());
-			} else {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2, 1.0f, this.getPitch());
+		}
+		else if (this.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2,
+						1.0f, this.getPitch());
 			}
+			else {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2,
+						1.0f, this.getPitch());
+			}
+		}
+		else {
+			if (this.attributes.getGender() == EnumGender.FEMALE) {
+				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1
+						: SoundsMCA.villager_female_hurt_2, 1.0f, this.getPitch());
+			}
+			else {
+				this.playSound(
+						new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2,
+						1.0f, this.getPitch());
+			}
+		}
+	}
+
+	public void lieDown() {
+		Point3D movePoint = new Point3D(this.getPositionVector().x, this.getPositionVector().y,
+				this.getPositionVector().z);
+		Point3D point = Utilities.movePointToGround(this, movePoint);
+		this.attemptTeleport(point.dX(), point.dY(), point.dZ());
+		this.getBehavior(ActionSleep.class).setIsInBed(true);
+	}
+
+	public void riseOutOfBed() {
+		this.getBehavior(ActionSleep.class).setIsInBed(false);
+	}
+
+	public void toggleLieDown() {
+		this.getBehavior(ActionSleep.class).setIsInBed(this.getBehavior(ActionSleep.class).getIsInBed());
+	}
+
+	public void mate(EntityVillagerMCA mate) {
+		if (mate.attributes.getSpouseUUID() != this.getUniqueID()) {
+
+			this.facePosition(
+					new Point3D(mate.getPos().getX(), mate.getPos().getY(), mate.getPos().getZ()));
+			// this.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mate));
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.HEART, this.getWorld(),
+					this.getPositionVector().x,
+					this.getPositionVector().y, this.getPositionVector().z, 3);
+			this.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mate));
+			mate.flee();
+		}
+		else if (mate.attributes.getGender() == EnumGender.FEMALE) {
+
+			// mate.getJumpHelper().doJump();
+			// this.swingArm(EnumHand.OFF_HAND);
+
+			mate.facePosition(new Point3D(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
+			mate.playSound(
+					mate.attributes.getRaceEnum() == EnumRace.Orc
+							? (new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6)
+							: (new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4),
+					1.0f, mate.getPitch());
+			mate.rotationYawHead += 40;
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.BLOCK_DUST, mate.getWorld(),
+					mate.getPositionVector().x,
+					mate.getPositionVector().y, mate.getPositionVector().z, 10);
+			this.rotationYawHead += 40;
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.VILLAGER_HAPPY, world, posX, posY, posZ, 10);
+			this.rotationPitch += 40;
+			this.getBehaviors().getAction(ActionStoryProgression.class)
+					.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
+			mate.getBehaviors().getAction(ActionStoryProgression.class)
+					.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
+
+			if (mate.attributes.getRaceEnum() == EnumRace.Orc) {
+				mate.playSound((new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6), 1.0f,
+						mate.getPitch());
+			}
+			else {
+				mate.playSound(new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4, 1.0f,
+						mate.getPitch());
+			}
+
+			for (int i = 0; i < 2; i++) {
+				if (RadixLogic.getBooleanWithProbability(50)) {
+					boolean isMale = new Random().nextBoolean();
+					ItemStack babyStack = new ItemStack(isMale ? ItemsMCA.BABY_BOY_ORC : ItemsMCA.BABY_GIRL_ORC);
+					ItemBaby baby = (ItemBaby) babyStack.getItem();
+					baby.setFather(this);
+					baby.setMother(mate);
+					mate.attributes.getInventory().addItem(babyStack);
+					mate.attributes.setBabyState(isMale ? EnumBabyState.MALE : EnumBabyState.FEMALE);
+					mate.getBehavior(ActionStoryProgression.class).setForceNextProgress(true);
+					mate.getVillagerInventory().addItem(babyStack);
+					mate.setHeldItem(baby);
+					// baby.setMaxStackSize(baby.getItemStackLimit()+1);
+				}
+			}
+
+			if (mate.attributes.getBabyState() != EnumBabyState.NONE) {
+				this.lieDown();
+				mate.lieDown();
+				getBehavior(ActionSleep.class).transitionSkinState(true);
+				mate.getBehavior(ActionSleep.class).setSleepingState(EnumSleepingState.SLEEPING);
+				mate.getBehavior(ActionSleep.class).transitionSkinState(true);
+				Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SLIME, mate.getWorld(),
+						mate.getPositionVector().x, mate.getPositionVector().y, mate.getPositionVector().z, 300);
+			}
+			else {
+				mate.riseOutOfBed();
+			}
+			if (mate.attributes.getRaceEnum() == EnumRace.Orc) {
+				mate.riseOutOfBed();
+			}
+			this.riseOutOfBed();
 		}
 	}
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		super.onDeath(damageSource);
-
+		this.damageSource = damageSource;
 		if (!world.isRemote) {
-			if(attributes.getRaceEnum() == EnumRace.Elf) {
-				if(attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1 : SoundsMCA.heroic_female_death_2, 1.0f, pitch);
-				} else {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2, 1.0f, pitch);
+			if (attributes.getRaceEnum() == EnumRace.Elf) {
+				if (attributes.getGender() == EnumGender.FEMALE) {
+					this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1
+							: SoundsMCA.heroic_female_death_2, 1.0f, pitch);
 				}
-			} else if(attributes.getRaceEnum() == EnumRace.Orc) {
-				if(attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2, 1.0f, pitch);
-				} else {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2, 1.0f, pitch);
-				}
-			} else {
-				if(attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_death_1 : SoundsMCA.villager_female_death_2, 1.0f, pitch);
-				} else {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2, 1.0f, pitch);
+				else {
+					this.playSound(
+							new Random().nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2,
+							1.0f, pitch);
 				}
 			}
-			//Switch to the sleeping skin and disable all chores/toggle AIs so they won't move
+			else if (attributes.getRaceEnum() == EnumRace.Orc) {
+				if (attributes.getGender() == EnumGender.FEMALE) {
+					this.playSound(
+							new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2,
+							1.0f, pitch);
+				}
+				else {
+					this.playSound(
+							new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2,
+							1.0f, pitch);
+				}
+			}
+			else {
+				if (attributes.getGender() == EnumGender.FEMALE) {
+					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_death_1
+							: SoundsMCA.villager_female_death_2, 1.0f, pitch);
+				}
+				else {
+					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_death_1
+							: SoundsMCA.villager_male_death_2, 1.0f, pitch);
+				}
+			}
+			// Switch to the sleeping skin and disable all chores/toggle AIs so they won't
+			// move
 			behaviors.disableAllToggleActions();
 			getBehavior(ActionSleep.class).transitionSkinState(true);
 
-			//The death of a villager negatively modifies the mood of nearby villagers
+			// The death of a villager negatively modifies the mood of nearby villagers
 			for (EntityVillagerMCA human : RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, this, 20)) {
 				human.getBehavior(ActionUpdateMood.class).modifyMoodLevel(-2.0F);
 			}
 
-			//Drop all items in the inventory
+			// Drop all items in the inventory
 			for (int i = 0; i < attributes.getInventory().getSizeInventory(); i++) {
 				ItemStack stack = attributes.getInventory().getStackInSlot(i);
 
@@ -321,8 +477,9 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				}
 			}
 
-			//Reset the marriage stats of the player/villager this one was married to
-			//If married to a player, this player takes priority in receiving the memorial item for revival.
+			// Reset the marriage stats of the player/villager this one was married to
+			// If married to a player, this player takes priority in receiving the memorial
+			// item for revival.
 			boolean memorialDropped = false;
 
 			if (attributes.isMarriedToAPlayer()) {
@@ -332,47 +489,47 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				playerData.setSpouseName("");
 				playerData.setSpouseUUID(EMPTY_UUID);
 
-				//Just in case something is added here later, be sure we're not false
+				// Just in case something is added here later, be sure we're not false
 				if (!memorialDropped) {
 					createMemorialChest(attributes.getPlayerMemoryWithoutCreating(attributes.getSpouseUUID()),
-					                    ItemsMCA.BROKEN_RING);
+							ItemsMCA.BROKEN_RING);
 					memorialDropped = true;
 				}
-			} else if (attributes.isMarriedToAVillager()) {
+			}
+			else if (attributes.isMarriedToAVillager()) {
 				EntityVillagerMCA partner = attributes.getVillagerSpouseInstance();
 
 				if (partner != null) {
 					partner.endMarriage();
 				}
 			}
-
-			//Alert parents/spouse of the death if they are online and handle dropping memorials
-			//Test against new iteration of player memory list each time to ensure the proper order
-			//of handling notifications and memorial spawning
+			// Alert parents/spouse of the death if they are online and handle dropping
+			// memorials
+			// Test against new iteration of player memory list each time to ensure the
+			// proper order
+			// of handling notifications and memorial spawning
 
 			for (PlayerMemory memory : attributes.getPlayerMemories().values()) {
-				//Alert parents and spouse of the death.
-				if (memory.getUUID().equals(attributes.getSpouseUUID()) ||
-				    attributes.isPlayerAParent(memory.getUUID())) {
+				// Alert parents and spouse of the death.
+				if (memory.getUUID().equals(attributes.getSpouseUUID())
+						|| attributes.isPlayerAParent(memory.getUUID())) {
 					EntityPlayer player = world.getPlayerEntityByUUID(memory.getUUID());
 
-					//If we hit a parent
+					// If we hit a parent
 					if (attributes.isPlayerAParent(memory.getUUID()) && !memorialDropped) {
 						createMemorialChest(memory,
-						                    attributes.getGender() == EnumGender.MALE ?
-						                    ItemsMCA.TOY_TRAIN :
-						                    ItemsMCA.CHILDS_DOLL);
+								attributes.getGender() == EnumGender.MALE ? ItemsMCA.TOY_TRAIN : ItemsMCA.CHILDS_DOLL);
 						memorialDropped = true;
 					}
 
-					if (player != null) //The player may not be online
-					{
-						player.sendMessage(new TextComponentString(Color.RED +
-						                                           attributes.getTitle(player) +
-						                                           " has died."));
+					if (player != null) {
+						// The player may not be online
+						player.sendMessage(
+								new TextComponentString(Color.RED + attributes.getTitle(player) + " has died."));
 					}
 				}
 			}
+			this.dead = true;
 		}
 	}
 
@@ -381,7 +538,8 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 		if (nearestAir == null) {
 			logger.warn("No available location to spawn villager death chest for " + this.getName());
-		} else {
+		}
+		else {
 			int y = nearestAir.iY();
 			Block block = Blocks.AIR;
 
@@ -405,17 +563,15 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				data.writeToNBT(stackNBT);
 				memorialStack.setTagCompound(stackNBT);
 
-				chest.setInventorySlotContents(0, memorialStack);
+				if (chest != null) {
+					chest.setInventorySlotContents(0, memorialStack);
+				}
+				LogManager.getLogger(EntityVillagerMCA.class).info(
+						"Spawned villager death chest at: " + nearestAir.iX() + ", " + y + ", " + nearestAir.iZ());
+			}
+			catch (Exception e) {
 				LogManager.getLogger(EntityVillagerMCA.class)
-				          .info("Spawned villager death chest at: " +
-				                nearestAir.iX() +
-				                ", " +
-				                y +
-				                ", " +
-				                nearestAir.iZ());
-			} catch (Exception e) {
-				LogManager.getLogger(EntityVillagerMCA.class)
-				          .error("Error spawning villager death chest: " + e.getMessage());
+						.error("Error spawning villager death chest: " + e.getMessage());
 				return;
 			}
 		}
@@ -428,8 +584,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		boolean isSleeping = sleepAI.getIsSleeping();
 
 		if (isSleeping) {
-			// Minecraft 1.8 moved the execution of tasks out of updateAITasks and into EntityAITasks.updateTasks().
-			// Get the 'tickCount' value per tick and set it to 1 when we don't want tasks to execute. This prevents
+			// Minecraft 1.8 moved the execution of tasks out of updateAITasks and into
+			// EntityAITasks.updateTasks().
+			// Get the 'tickCount' value per tick and set it to 1 when we don't want tasks
+			// to execute. This prevents
 			// The AI tasks from ever triggering an update.
 			ObfuscationReflectionHelper.setPrivateValue(EntityAITasks.class, tasks, 1, 4);
 		}
@@ -519,7 +677,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			sb.append(MCA.getConfig().villagerChatPrefix);
 		}
 
-		if(target != null) {
+		if (target != null) {
 			sb.append(attributes.getTitle(target));
 		}
 		sb.append(": ");
@@ -542,24 +700,22 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			return;
 		}
 
-		if (attributes.getIsInfected()) //Infected villagers moan when they speak, and will not say anything else.
+		if (attributes.getIsInfected()) // Infected villagers moan when they speak, and will not say anything else.
 		{
-			String
-					zombieMoan =
-					RadixLogic.getBooleanWithProbability(33) ?
-					"Raagh..." :
-					RadixLogic.getBooleanWithProbability(33) ? "Ughh..." : "Argh-gur...";
+			String zombieMoan = RadixLogic.getBooleanWithProbability(33) ? "Raagh..."
+					: RadixLogic.getBooleanWithProbability(33) ? "Ughh..." : "Argh-gur...";
 			target.sendMessage(new TextComponentString(attributes.getTitle(target) + ": " + zombieMoan));
 			this.playSound(SoundEvents.ENTITY_ZOMBIE_AMBIENT, 0.5F, pitch + 0.5F);
-		} else {
+		}
+		else {
 			final StringBuilder sb = new StringBuilder();
 
-			//Handle chat prefix.
+			// Handle chat prefix.
 			if (MCA.getConfig().villagerChatPrefix != null && !MCA.getConfig().villagerChatPrefix.equals("null")) {
 				sb.append(MCA.getConfig().villagerChatPrefix);
 			}
 
-			//Add title and text.
+			// Add title and text.
 			sb.append(attributes.getTitle(target));
 			sb.append(": ");
 			sb.append(MCA.getLocalizer().getString(phraseId, arguments));
@@ -575,10 +731,12 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	}
 
 	/**
-	 * Sets the given entity to be the spouse of the current villager. This is symmetric against the provided entity.
-	 * If null is provided, this villager's spouse information will be reset. This is **NOT** symmetric.
+	 * Sets the given entity to be the spouse of the current villager. This is
+	 * symmetric against the provided entity. If null is provided, this villager's
+	 * spouse information will be reset. This is **NOT** symmetric.
 	 *
-	 * @param either Either object containing an MCA villager or a player.
+	 * @param either
+	 *            Either object containing an MCA villager or a player.
 	 */
 	public void startMarriage(Either<EntityVillagerMCA, EntityPlayer> either) {
 		if (either.getLeft() != null) {
@@ -588,27 +746,32 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			attributes.setSpouseUUID(spouse.getUniqueID());
 			attributes.setSpouseGender(spouse.attributes.getGender());
 
-			if(spouse.attributes.getRaceEnum() == EnumRace.Elf) {
+			if (spouse.attributes.getRaceEnum() == EnumRace.Elf) {
 				attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
-			} else if(spouse.attributes.getRaceEnum() == EnumRace.Orc) {
+			}
+			else if (spouse.attributes.getRaceEnum() == EnumRace.Orc) {
 				attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
-			} else {
+			}
+			else {
 				attributes.setMarriageState(EnumMarriageState.MARRIED_TO_VILLAGER);
 			}
 
 			spouse.attributes.setSpouseName(this.attributes.getName());
 			spouse.attributes.setSpouseUUID(this.getUniqueID());
 			spouse.attributes.setSpouseGender(this.attributes.getGender());
-			if(attributes.getRaceEnum() == EnumRace.Elf) {
+			if (attributes.getRaceEnum() == EnumRace.Elf) {
 				spouse.attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
-			} else if(attributes.getRaceEnum() == EnumRace.Orc) {
+			}
+			else if (attributes.getRaceEnum() == EnumRace.Orc) {
 				spouse.attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
-			} else {
+			}
+			else {
 				spouse.attributes.setMarriageState(EnumMarriageState.MARRIED_TO_VILLAGER);
 			}
 
 			getBehaviors().onMarriageToVillager(spouse);
-		} else if (either.getRight() != null) {
+		}
+		else if (either.getRight() != null) {
 			EntityPlayer player = either.getRight();
 			NBTPlayerData playerData = MCA.getPlayerData(player);
 			PlayerMemory memory = attributes.getPlayerMemory(player);
@@ -623,23 +786,46 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			playerData.setSpouseName(this.getName());
 			playerData.setSpouseGender(attributes.getGender());
 			playerData.setSpouseUUID(this.getUniqueID());
-			if(attributes.getRaceEnum() == EnumRace.Elf) {
+			if (attributes.getRaceEnum() == EnumRace.Elf) {
 				playerData.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
-			} else if(attributes.getRaceEnum() == EnumRace.Orc) {
+			}
+			else if (attributes.getRaceEnum() == EnumRace.Orc) {
 				playerData.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
-			} else {
+			}
+			else {
 				playerData.setMarriageState(EnumMarriageState.MARRIED_TO_VILLAGER);
 			}
 
-
 			getBehaviors().onMarriageToPlayer();
-		} else {
+		}
+		else {
 			throw new IllegalArgumentException("Marriage target cannot be null");
 		}
 	}
 
+	public List<Point3D> findDoors(int maxDistance) {
+		List<Point3D> doors = new ArrayList<Point3D>();
+		List<Point3D> oakDoors = RadixLogic.getNearbyBlocks(this, Blocks.OAK_DOOR, maxDistance);
+		List<Point3D> darkOakDoors = RadixLogic.getNearbyBlocks(this, Blocks.DARK_OAK_DOOR, maxDistance);
+		List<Point3D> birchDoors = RadixLogic.getNearbyBlocks(this, Blocks.BIRCH_DOOR, maxDistance);
+		List<Point3D> spruceDoors = RadixLogic.getNearbyBlocks(this, Blocks.SPRUCE_DOOR, maxDistance);
+		doors.addAll(oakDoors);
+		doors.addAll(darkOakDoors);
+		doors.addAll(birchDoors);
+		doors.addAll(spruceDoors);
+
+		for (Point3D door : doors) {
+			// Point3D door = doors.get(RadixMath.getNumberInRange(0, doors.size() - 1));
+			// Only use the top of the door.
+			if (Utilities.blockIsADoor(RadixBlocks.getBlock(this.world, door.iX(), door.iY() - 1, door.iZ()))) {
+				door.set(door.iX(), door.iY() + 1, door.iZ());
+			}
+		}
+		return doors;
+	}
+
 	public void endMarriage() {
-		//Reset spouse information back to default
+		// Reset spouse information back to default
 		attributes.setSpouseName("");
 		attributes.setSpouseUUID(EMPTY_UUID);
 		attributes.setSpouseGender(EnumGender.UNASSIGNED);
@@ -699,59 +885,81 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		EnumRace race = attributes.getRaceEnum();
 		ItemStack itemStack = ItemStack.EMPTY;
 		if (babyState != EnumBabyState.NONE) {
-//			if(attributes.getInventory().contains(ItemBaby.class)) {
-//				itemStack = attributes.getInventory().getBestItemOfType(ItemBaby.class);
-//			} else {
+			// VillagerInventory inventory = this.attributes.getInventory();
+			// for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			// inventory.getStackInSlot(i);
+			// Item item = inventory.getBestItemOfType(ItemBaby.class).getItem();
+			// if (item.getClass() == ItemBaby.class) {
+			// ItemBaby itemBrat = (ItemBaby) item;
+			// }
+			// }
+			if (attributes.isMarriedToAnOrc()) {
+				itemStack = new ItemStack(
+						babyState == EnumBabyState.MALE ? ItemsMCA.BABY_BOY_ORC : ItemsMCA.BABY_GIRL_ORC);
+			}
+			else {
 				itemStack = new ItemStack(babyState == EnumBabyState.MALE ? ItemsMCA.BABY_BOY : ItemsMCA.BABY_GIRL);
-//			}
-		} else if (attributes.getInventory().contains(ItemsMCA.BABY_BOY) ||
-				attributes.getInventory().contains(ItemsMCA.BABY_GIRL)) {
+			}
+			// if(attributes.getInventory().contains(ItemBaby.class)) {
+			// itemStack = attributes.getInventory().getBestItemOfType(ItemBaby.class);
+			// } else {
+		}
+		else if (attributes.getInventory().contains(ItemBaby.class)) {
 			int slot = attributes.getInventory().getFirstSlotContainingItem(ItemsMCA.BABY_BOY);
 			slot = slot == -1 ? attributes.getInventory().getFirstSlotContainingItem(ItemsMCA.BABY_GIRL) : slot;
 
 			if (slot != -1) {
 				itemStack = attributes.getInventory().getStackInSlot(slot);
 			}
-		} else if (attributes.getIsInfected()) {
+		}
+		else if (attributes.getIsInfected()) {
 			itemStack = ItemStack.EMPTY;
-		} else if(race == EnumRace.Villager) {
-			if (profession == EnumProfession.Guard ||
-					profession == EnumProfession.Warrior) {
+		}
+		else if (race == EnumRace.Villager) {
+			if (profession == EnumProfession.Guard || profession == EnumProfession.Warrior) {
 				itemStack = new ItemStack(Items.IRON_SWORD);
-			} else if (profession == EnumProfession.Archer) {
-				itemStack = new ItemStack(Items.BOW);
-			} else if (attributes.getHeldItemSlot() != -1 && behaviors.isToggleActionActive()) {
-				itemStack = attributes.getInventory().getStackInSlot(attributes.getHeldItemSlot());
-			}/*  else if (profession == EnumProfession.Shepherd) {
-			itemStack = new ItemStack(Items.SHEARS);
-		} else if (profession == EnumProfession.Fisherman) {
-			itemStack = new ItemStack(Items.FISHING_ROD);
-		} else if (profession == EnumProfession.Farmer) {
-			itemStack = new ItemStack(Items.IRON_HOE);
-		}*/ else if (profession == EnumProfession.Miner) {
-				itemStack = new ItemStack(Items.IRON_PICKAXE);
 			}
-		} else if(race == EnumRace.Orc) {
+			else if (profession == EnumProfession.Archer) {
+				itemStack = new ItemStack(Items.BOW);
+			}
+			else if (attributes.getHeldItemSlot() != -1 && behaviors.isToggleActionActive()) {
+				itemStack = attributes.getInventory().getStackInSlot(attributes.getHeldItemSlot());
+			}
+			/*
+			 * else if (profession == EnumProfession.Shepherd) { itemStack = new
+			 * ItemStack(Items.SHEARS); } else if (profession == EnumProfession.Fisherman) {
+			 * itemStack = new ItemStack(Items.FISHING_ROD); } else if (profession ==
+			 * EnumProfession.Farmer) { itemStack = new ItemStack(Items.IRON_HOE); }
+			 */
+			// else if (profession == EnumProfession.Miner) {
+			// itemStack = new ItemStack(Items.IRON_PICKAXE);
+			// }
+		}
+		else if (race == EnumRace.Orc) {
 			itemStack = new ItemStack(Items.STONE_SWORD);
 			Enchantment knockback = Enchantment.getEnchantmentByID(19);
 			itemStack.addEnchantment(knockback, knockback.getMaxLevel());
-		} else if(race == EnumRace.Elf) {
-			if(attributes.getGender() == EnumGender.FEMALE) {
+		}
+		else if (race == EnumRace.Elf) {
+			if (attributes.getGender() == EnumGender.FEMALE) {
 				itemStack = new ItemStack(Items.BOW);
-				Enchantment power = Enchantment.getEnchantmentByID(48); //enchantment.arrowDamage
-				Enchantment punch = Enchantment.getEnchantmentByID(49); //enchantment.arrowKnockback
+				Enchantment power = Enchantment.getEnchantmentByID(48); // enchantment.arrowDamage
+				Enchantment punch = Enchantment.getEnchantmentByID(49); // enchantment.arrowKnockback
 				itemStack.addEnchantment(power, power.getMaxLevel());
 				itemStack.addEnchantment(punch, punch.getMaxLevel());
-			} else {
+			}
+			else {
 				itemStack = new ItemStack(Items.WOODEN_SWORD);
 				Enchantment unbreaking = Enchantment.getEnchantmentByID(34);
-				//			logger.trace(String.format("Unbreaking Enchantment: %s", unbreaking.getName()));
+				// logger.trace(String.format("Unbreaking Enchantment: %s",
+				// unbreaking.getName()));
 				Enchantment smite = Enchantment.getEnchantmentByID(17);
-				//			logger.trace(String.format("Smite Enchantment: %s", smite.getName()));
+				// logger.trace(String.format("Smite Enchantment: %s", smite.getName()));
 				Enchantment sharpness = Enchantment.getEnchantmentByID(16);
-				//			logger.trace(String.format("Sharpness Enchantment: %s", sharpness.getName()));
+				// logger.trace(String.format("Sharpness Enchantment: %s",
+				// sharpness.getName()));
 				Enchantment bane = Enchantment.getEnchantmentByID(18);
-				//			logger.trace(String.format("Bane Enchantment: %s", bane.getName()));
+				// logger.trace(String.format("Bane Enchantment: %s", bane.getName()));
 				itemStack.addEnchantment(unbreaking, unbreaking.getMaxLevel());
 				itemStack.addEnchantment(sharpness, sharpness.getMaxLevel());
 				itemStack.addEnchantment(smite, smite.getMaxLevel());
@@ -759,12 +967,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			}
 		}
 
-		if (attributes.isMarriedToAPlayer() ||
-		           profession == EnumProfession.Child) {
-			//Spouses, and player children all use weapons from the combat AI.
+		if (attributes.isMarriedToAPlayer() || profession == EnumProfession.Child) {
+			// Spouses, and player children all use weapons from the combat AI.
 			itemStack = getBehavior(ActionCombat.class).getHeldItem();
 		}
-		//		logger.debug(MessageFormat.format("Returning Item Stack: {0}", itemStack));
+		// logger.debug(MessageFormat.format("Returning Item Stack: {0}", itemStack));
 		return itemStack;
 	}
 
@@ -789,13 +996,15 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 						behaviors.disableAllToggleActions();
 						attributes.getInventory().setInventorySlotContents(slot, ItemStack.EMPTY);
 						return true;
-					} else {
+					}
+					else {
 						attributes.getInventory().setInventorySlotContents(slot, itemInSlot);
 						return false;
 					}
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -823,21 +1032,21 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	@Override
 	public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
 		switch (slotIn) {
-			case HEAD:
-				return attributes.getInventory().getStackInSlot(36);
-			case CHEST:
-				return attributes.getInventory().getStackInSlot(37);
-			case LEGS:
-				return attributes.getInventory().getStackInSlot(38);
-			case FEET:
-				return attributes.getInventory().getStackInSlot(39);
-			case MAINHAND:
-				return getHeldItem(EnumHand.MAIN_HAND);
-			case OFFHAND:
-				if (attributes.getProfessionEnum() == EnumProfession.Guard) {
-					return new ItemStack(Items.SHIELD);
-				}
-				return ItemStack.EMPTY;
+		case HEAD:
+			return attributes.getInventory().getStackInSlot(36);
+		case CHEST:
+			return attributes.getInventory().getStackInSlot(37);
+		case LEGS:
+			return attributes.getInventory().getStackInSlot(38);
+		case FEET:
+			return attributes.getInventory().getStackInSlot(39);
+		case MAINHAND:
+			return getHeldItem(EnumHand.MAIN_HAND);
+		case OFFHAND:
+			if (attributes.getProfessionEnum() == EnumProfession.Guard) {
+				return new ItemStack(Items.SHIELD);
+			}
+			return ItemStack.EMPTY;
 		}
 
 		return ItemStack.EMPTY;
@@ -884,7 +1093,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	public void cureInfection() {
 		attributes.setIsInfected(false);
 		addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 200, 0));
-		world.playEvent((EntityPlayer) null, 1027, new BlockPos((int) this.posX, (int) this.posY, (int) this.posZ), 0);
+		world.playEvent(null, 1027, new BlockPos((int) this.posX, (int) this.posY, (int) this.posZ), 0);
 		Utilities.spawnParticlesAroundEntityS(EnumParticleTypes.VILLAGER_HAPPY, this, 16);
 	}
 
@@ -906,14 +1115,15 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	}
 
 	/**
-	 * Overrides from EntityVillager that allow trades to work.
-	 * Issues arose from the profession not being set properly.
+	 * Overrides from EntityVillager that allow trades to work. Issues arose from
+	 * the profession not being set properly.
 	 *
-	 * @param professionId Profession ID
+	 * @param professionId
+	 *            Profession ID
 	 */
 	@Override
 	public void setProfession(int professionId) {
-		this.vanillaProfessionId = professionId;
+		this.vanillaProfessionId = professionId % 5;
 
 	}
 
@@ -947,19 +1157,21 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		EntityPlayer buyingPlayer = getPrivateValue(EntityVillager.class, this, FIELD_INDEX_BUYING_PLAYER);
 
 		if (recipe.getToolUses() == 1 || this.rand.nextInt(5) == 0) {
-			//timeUntilReset = 40;
+			// timeUntilReset = 40;
 			setEntityVillagerField(FIELD_INDEX_TIME_UNTIL_RESET, Integer.valueOf(40));
-			//needsInitialization = true;
+			// needsInitialization = true;
 			setEntityVillagerField(FIELD_INDEX_NEEDS_INITIALIZATION, true);
-			//isWillingToMate = true; (replaced with false to prevent any possible vanilla villager mating)
+			// isWillingToMate = true; (replaced with false to prevent any possible vanilla
+			// villager mating)
 			setEntityVillagerField(FIELD_INDEX_IS_WILLING_TO_MATE, false);
 
-			if (buyingPlayer != null) //this.buyingPlayer != null
+			if (buyingPlayer != null) // this.buyingPlayer != null
 			{
-				//this.lastBuyingPlayer = this.buyingPlayer.getUniqueID();
+				// this.lastBuyingPlayer = this.buyingPlayer.getUniqueID();
 				setEntityVillagerField(FIELD_INDEX_LAST_BUYING_PLAYER, buyingPlayer.getUniqueID());
-			} else {
-				//this.lastBuyingPlayer = null;
+			}
+			else {
+				// this.lastBuyingPlayer = null;
 				setEntityVillagerField(FIELD_INDEX_LAST_BUYING_PLAYER, null);
 			}
 
@@ -967,7 +1179,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		}
 
 		if (recipe.getItemToBuy().getItem() == Items.EMERALD) {
-			//wealth += recipe.getItemToBuy().getCount();
+			// wealth += recipe.getItemToBuy().getCount();
 			int wealth = getEntityVillagerField(FIELD_INDEX_WEALTH);
 			setEntityVillagerField(FIELD_INDEX_WEALTH, wealth + recipe.getItemToBuy().getCount());
 		}
@@ -993,12 +1205,60 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		return pitch;
 	}
 
-	//	public EnumRace getRace() {
-//
-//	}
-//
-//	//I probably don't want this method.
-//	public void setRace(int race) {
-//		this.raceId = race;
-//	}
+	public void flee() {
+		if (isPlayerSleeping()) {
+			return;
+		}
+		if (navigator.noPath() && !attributes.getIsBeingChased()) {
+			this.attributes.setIsBeingChased(true);
+			List<Point3D> doors = this.findDoors(10);
+			if (doors != null && doors.size() > 0) {
+				Point3D door = doors.get(RadixMath.getNumberInRange(0, doors.size() - 1));
+				navigator.tryMoveToXYZ(door.dX(), door.dY(), door.dZ(), Constants.SPEED_SPRINT);
+			}
+			else {
+				List<EntityVillagerMCA> possibleTargets = RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class,
+						this, 10);
+				for (EntityVillagerMCA target : possibleTargets) {
+					if (target.attributes.getRaceEnum() == this.attributes.getRaceEnum()
+							&& target.isFighter()) {
+						navigator.tryMoveToEntityLiving(target, Constants.SPEED_RUN);
+						break;
+					}
+				}
+				if (this.getHomePosition() != null) {
+					if (this.getNavigator().noPath()) {
+						this.getNavigator().tryMoveToXYZ(this.getHomePosition().getX(), this.getHomePosition().getY(),
+								this.getHomePosition().getZ(), Constants.SPEED_RUN);
+					}
+				}
+				// tryMoveToXYZ(door.dX(), door.dY(), door.dZ(), Constants.SPEED_SPRINT)
+			}
+		}
+		this.attributes.setIsBeingChased(false);
+		// this.behaviors.getAction(ActionRetreat.class).setIsActive(true);
+	}
+
+	public boolean isFighter() {
+		return this.attributes.getProfessionEnum() == EnumProfession.Archer
+				|| this.attributes.getProfessionEnum() == EnumProfession.Guard
+				|| this.attributes.getProfessionEnum() == EnumProfession.Warrior;
+	}
+
+	public EntityTameable getPet() {
+		return pet;
+	}
+
+	public void setPet(EntityTameable pet) {
+		this.pet = pet;
+	}
+
+	// public EnumRace getRace() {
+	//
+	// }
+	//
+	// //I probably don't want this method.
+	// public void setRace(int race) {
+	// this.raceId = race;
+	// }
 }

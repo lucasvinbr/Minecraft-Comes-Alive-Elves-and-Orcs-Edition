@@ -10,8 +10,8 @@ import mca.core.Constants;
 import mca.core.MCA;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerMemory;
-//import mca.entity.EntityElfMCA;
-//import mca.entity.EntityOrcMCA;
+import mca.entity.EntityElfMCA;
+import mca.entity.EntityOrcMCA;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumGender;
@@ -25,7 +25,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -144,111 +143,120 @@ public class ItemBaby extends Item {
 
 		ItemStack stack = player.getHeldItem(hand);
 		EnumActionResult result = EnumActionResult.FAIL;
-		if(hasMother() && hasFather()) {
-			logger.debug("Has both NPC parents.");
-			MCA.getLog().debug("Has both NPC parents.");
-			EntityVillagerMCA mother = new EntityVillagerMCA(world);
-			mother.attributes.setRace(motherRace);
-			mother.attributes.setName(motherName);
-			mother.attributes.setGender(motherGender);
-			mother.setUniqueId(motherId);
-			EntityVillagerMCA father = new EntityVillagerMCA(world);
-			father.attributes.setRace(fatherRace);
-			father.attributes.setName(fatherName);
-			father.attributes.setGender(fatherGender);
-			father.setUniqueId(fatherId);
+		try {
+			if(hasMother() && hasFather()) {
+				logger.debug("Has both NPC parents.");
+				MCA.getLog().debug("Has both NPC parents.");
+				EntityVillagerMCA mother = new EntityVillagerMCA(world);
+				mother.attributes.setRace(motherRace);
+				mother.attributes.setName(motherName);
+				mother.attributes.setGender(motherGender);
+				mother.setUniqueId(motherId);
+				EntityVillagerMCA father = new EntityVillagerMCA(world);
+				father.attributes.setRace(fatherRace);
+				father.attributes.setName(fatherName);
+				father.attributes.setGender(fatherGender);
+				father.setUniqueId(fatherId);
 
-			result = onItemUseByVillager(mother, father, world, stack, pos);
+				result = onItemUseByVillager(mother, father, world, stack, pos);
 
-		} else if(hasMother()) {
-			logger.debug("Only has NPC mother");
-			MCA.getLog().debug("Only has NPC mother");
-			EntityVillagerMCA mother = new EntityVillagerMCA(world);
-			mother.attributes.setRace(motherRace);
-			mother.attributes.setName(motherName);
-			mother.attributes.setGender(motherGender);
+			} else if(hasMother()) {
+				logger.debug("Only has NPC mother");
+				MCA.getLog().debug("Only has NPC mother");
+				EntityVillagerMCA mother = new EntityVillagerMCA(world);
+				mother.attributes.setRace(motherRace);
+				mother.attributes.setName(motherName);
+				mother.attributes.setGender(motherGender);
 
-			result = onItemUseByVillager(mother, world, stack, pos);
-		} else if (hasFather()) {
-			logger.debug("Only has NPC father");
-			MCA.getLog().debug("Only has NPC father");
-			EntityVillagerMCA father = new EntityVillagerMCA(world);
-			father.attributes.setRace(fatherRace);
-			father.attributes.setName(fatherName);
-			father.attributes.setGender(fatherGender);
-			father.setUniqueId(fatherId);
+				result = onItemUseByVillager(mother, world, stack, pos);
+			} else if (hasFather()) {
+				logger.debug("Only has NPC father");
+				MCA.getLog().debug("Only has NPC father");
+				EntityVillagerMCA father = new EntityVillagerMCA(world);
+				father.attributes.setRace(fatherRace);
+				father.attributes.setName(fatherName);
+				father.attributes.setGender(fatherGender);
+				father.setUniqueId(fatherId);
 
-			result = onItemUseByVillager(father, world, stack, pos);
-		} else {
-			logger.debug("Player's child.");
-			MCA.getLog().debug("Player's child.");
-			int posX = pos.getX();
-			int posY = pos.getY();
-			int posZ = pos.getZ();
+				result = onItemUseByVillager(father, world, stack, pos);
+			} else {
+				logger.debug("Player's child.");
+				MCA.getLog().debug("Player's child.");
+				int posX = pos.getX();
+				int posY = pos.getY();
+				int posZ = pos.getZ();
 
-			if (!world.isRemote && isReadyToGrowUp(stack)) {
-				ItemBaby baby = (ItemBaby) stack.getItem();
-				NBTPlayerData data = MCA.getPlayerData(player);
-				boolean isPlayerMale = data.getGender() == EnumGender.MALE;
+				if (!world.isRemote && isReadyToGrowUp(stack)) {
+					ItemBaby baby = (ItemBaby) stack.getItem();
+					NBTPlayerData data = MCA.getPlayerData(player);
+					boolean isPlayerMale = data.getGender() == EnumGender.MALE;
 
 
-				if (isPlayerMale) {
-					motherName = data.getSpouseName();
-					motherId = data.getSpouseUUID();
-					motherGender = data.getSpouseGender();
-					fatherName = player.getName();
-					fatherId = data.getUUID();
-					fatherGender = data.getGender();
-					fatherRace = data.getRace();
-				} else {
-					fatherName = data.getSpouseName();
-					fatherId = data.getSpouseUUID();
-					fatherGender = data.getSpouseGender();
-					motherName = player.getName();
-					motherId = data.getUUID();
-					motherGender = data.getGender();
-					motherRace = data.getSpouseRace();
-				}
+					if (isPlayerMale) {
+						motherName = data.getSpouseName();
+						motherId = data.getSpouseUUID();
+						motherGender = data.getSpouseGender();
+						fatherName = player.getName();
+						fatherId = data.getUUID();
+						fatherGender = data.getGender();
+						fatherRace = data.getRace();
+					} else {
+						fatherName = data.getSpouseName();
+						fatherId = data.getSpouseUUID();
+						fatherGender = data.getSpouseGender();
+						motherName = player.getName();
+						motherId = data.getUUID();
+						motherGender = data.getGender();
+						motherRace = data.getSpouseRace();
+					}
 
-				final EntityVillagerMCA child = new EntityVillagerMCA(world);
-				child.attributes.setRace(myRace);
-				child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
-				child.attributes.setIsChild(true);
-				if(stack.getTagCompound() != null) {
-					child.attributes.setName(stack.getTagCompound().getString("name"));
-				}
-				else {
-					child.attributes.assignRandomName();
-				}
-				child.attributes.setProfession(EnumProfession.Child);
-				child.attributes.assignRandomSkin();
+					final EntityVillagerMCA child = new EntityVillagerMCA(world);
+					child.attributes.setRace(myRace);
+					child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
+					child.attributes.setIsChild(true);
+					if(stack.getTagCompound() != null) {
+						child.attributes.setName(stack.getTagCompound().getString("name"));
+					}
+					else {
+						child.attributes.assignRandomName();
+					}
+					child.attributes.setProfession(EnumProfession.Child);
+					child.attributes.assignRandomSkin();
 //				child.attributes.assignRandomScale();
-				child.attributes.setMotherGender(motherGender);
-				child.attributes.setMotherName(motherName);
-				child.attributes.setMotherUUID(motherId);
-				child.attributes.setFatherGender(fatherGender);
-				child.attributes.setFatherName(fatherName);
-				child.attributes.setFatherUUID(fatherId);
+					if (fatherId != null) {
+						child.attributes.setFatherGender(fatherGender);
+						child.attributes.setFatherName(fatherName);
+						child.attributes.setFatherUUID(fatherId);
+					}
+					if (motherId != null) {
+						child.attributes.setMotherUUID(motherId);
+						child.attributes.setMotherGender(motherGender);
+						child.attributes.setMotherName(motherName);
+					}
 
-				child.setPosition(posX, posY + 1, posZ);
+					child.setPosition(posX, posY + 1, posZ);
 
-				if (stack.getTagCompound().getBoolean("isInfected")) {
-					child.attributes.setIsInfected(true);
+					if (stack.getTagCompound().getBoolean("isInfected")) {
+						child.attributes.setIsInfected(true);
+					}
+
+					world.spawnEntity(child);
+
+					PlayerMemory childMemory = child.attributes.getPlayerMemory(player);
+					childMemory.setHearts(100);
+					childMemory.setDialogueType(EnumDialogueType.CHILDP);
+					childMemory.setRelation(child.attributes.getGender() == EnumGender.MALE ?
+					                        EnumRelation.SON :
+					                        EnumRelation.DAUGHTER);
+
+					//player.addStat(AchievementsMCA.babyToChild);
+
+					data.setOwnsBaby(false);
 				}
-
-				world.spawnEntity(child);
-
-				PlayerMemory childMemory = child.attributes.getPlayerMemory(player);
-				childMemory.setHearts(100);
-				childMemory.setDialogueType(EnumDialogueType.CHILDP);
-				childMemory.setRelation(child.attributes.getGender() == EnumGender.MALE ?
-				                        EnumRelation.SON :
-				                        EnumRelation.DAUGHTER);
-
-				//player.addStat(AchievementsMCA.babyToChild);
-
-				data.setOwnsBaby(false);
 			}
+		}
+		catch (Exception e) {
+			logger.error(e.getLocalizedMessage(), e);
 		}
 		if(result == EnumActionResult.PASS) {
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
@@ -257,11 +265,11 @@ public class ItemBaby extends Item {
 	}
 
 	public boolean hasFather() {
-		return fatherId != Constants.EMPTY_UUID;
+		return fatherId != null && fatherId != Constants.EMPTY_UUID;
 	}
 
 	public boolean hasMother() {
-		return motherId != Constants.EMPTY_UUID;
+		return motherId != null && motherId != Constants.EMPTY_UUID;
 	}
 
 	public EnumActionResult onItemUseByVillager(EntityVillagerMCA villager, World world, ItemStack babyStack, BlockPos pos) {

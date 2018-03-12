@@ -73,13 +73,13 @@
   "femalehurt5": {
     "category": "neutral",
     "sounds": [
-      "mca:femalehurt4"
+      "mca:femalehurt5"
     ]
   },
   "femalehurt6": {
     "category": "neutral",
     "sounds": [
-      "mca:femalehurt4"
+      "mca:femalehurt6"
     ]
   },
   "femaleattack1": {

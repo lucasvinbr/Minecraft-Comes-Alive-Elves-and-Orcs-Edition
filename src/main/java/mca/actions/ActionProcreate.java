@@ -86,7 +86,7 @@ public class ActionProcreate extends AbstractAction {
 						//playerSpouse.addStat(achievement);
 
 						MCA.getPacketHandler()
-						   .sendPacketToPlayer(new PacketOpenBabyNameGUI(isMale), (EntityPlayerMP) playerSpouse);
+						   .sendPacketToPlayer(new PacketOpenBabyNameGUI(isMale), playerSpouse);
 					}
 				} else {
 					final EntityVillagerMCA spouse = actor.attributes.getVillagerSpouseInstance();
