@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+
 import com.google.common.base.Optional;
 
 import io.netty.buffer.ByteBuf;
@@ -38,7 +40,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import org.apache.logging.log4j.LogManager;
 import radixcore.modules.RadixNettyIO;
 
 public class VillagerAttributes {
@@ -101,6 +102,8 @@ public class VillagerAttributes {
 			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Integer> MARRIAGE_STATE = EntityDataManager
 			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
+	private static final DataParameter<Boolean> IS_BEING_CHASED = EntityDataManager
+			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
 
 	private int timesWarnedForLowHearts;
 	private int ticksAlive;
@@ -142,6 +145,7 @@ public class VillagerAttributes {
 		dataManager.register(BABY_STATE, EnumBabyState.NONE.getId());
 		dataManager.register(MOVEMENT_STATE, EnumMovementState.MOVE.getId());
 		dataManager.register(IS_CHILD, Boolean.valueOf(false));
+		dataManager.register(IS_BEING_CHASED, Boolean.valueOf(false));
 		dataManager.register(AGE, Integer.valueOf(0));
 		dataManager.register(SCALE_HEIGHT, Float.valueOf(0));
 		dataManager.register(SCALE_WIDTH, Float.valueOf(0));
@@ -177,6 +181,7 @@ public class VillagerAttributes {
 		setBabyState(data.getBabyState());
 		setMovementState(data.getMovementState());
 		setIsChild(data.getIsChild());
+		setIsBeingChased(data.getIsBeingChased());
 		setAge(data.getAge());
 		setScaleHeight(data.getScaleHeight());
 		setScaleWidth(data.getScaleWidth());
@@ -611,6 +616,11 @@ public class VillagerAttributes {
 	}
 
 	public EnumMarriageState getMarriageState() {
+		EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		if (spouse == null || spouse.isDead) {
+			villager.endMarriage();
+			setMarriageState(EnumMarriageState.NOT_MARRIED);
+		}
 		return EnumMarriageState.byId(dataManager.get(MARRIAGE_STATE));
 	}
 
@@ -716,14 +726,29 @@ public class VillagerAttributes {
 	}
 
 	public boolean isMarriedToAVillager() {
+		EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		if (spouse == null || spouse.isDead) {
+			villager.endMarriage();
+			setMarriageState(EnumMarriageState.NOT_MARRIED);
+		}
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_VILLAGER;
 	}
 
 	public boolean isMarriedToAnOrc() {
+		EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		if(spouse == null || spouse.isDead) {
+			villager.endMarriage();
+			setMarriageState(EnumMarriageState.NOT_MARRIED);
+		}
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_ORC;
 	}
 
 	public boolean isMarriedToAnElf() {
+		EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		if (spouse == null || spouse.isDead) {
+			villager.endMarriage();
+			setMarriageState(EnumMarriageState.NOT_MARRIED);
+		}
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_ELF;
 	}
 
@@ -1022,5 +1047,13 @@ public class VillagerAttributes {
 
 	public UUID getVillagerUUID() {
 		return villager.getPersistentID();
+	}
+
+	public void setIsBeingChased(boolean isBeingChased) {
+		dataManager.set(IS_BEING_CHASED, isBeingChased);
+	}
+
+	public boolean getIsBeingChased() {
+		return dataManager.get(IS_BEING_CHASED);
 	}
 }

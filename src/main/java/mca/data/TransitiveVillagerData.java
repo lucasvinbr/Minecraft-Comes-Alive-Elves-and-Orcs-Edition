@@ -20,6 +20,10 @@ import net.minecraft.nbt.NBTTagCompound;
  * Used to carry around villager attributes without using the data manager, ex. in memorial objects.
  */
 public class TransitiveVillagerData implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7020252051060420636L;
 	private final UUID uuid;
 	private final String name;
 	private final String headTexture;
@@ -47,6 +51,7 @@ public class TransitiveVillagerData implements Serializable {
 	private final Boolean isSwinging;
 	private final Integer heldItemSlot;
 	private final Boolean isInfected;
+	private final Boolean isBeingChased;
 	private final Boolean doOpenInventory;
 	private final Integer marriageState;
 	private final Map<UUID, PlayerMemory> playerMemories;
@@ -82,6 +87,7 @@ public class TransitiveVillagerData implements Serializable {
 		this.doOpenInventory = attributes.getDoOpenInventory();
 		this.marriageState = attributes.getMarriageState().getId();
 		this.playerMemories = attributes.getPlayerMemories();
+		this.isBeingChased = attributes.getIsBeingChased();
 	}
 
 	public TransitiveVillagerData(NBTTagCompound nbt) {
@@ -105,6 +111,7 @@ public class TransitiveVillagerData implements Serializable {
 		this.babyState = nbt.getInteger("babyState");
 		this.movementState = nbt.getInteger("movementState");
 		this.isChild = nbt.getBoolean("isChild");
+		this.isBeingChased = nbt.getBoolean("isBeingChased");
 		this.age = nbt.getInteger("age");
 		this.scaleHeight = nbt.getFloat("scaleHeight");
 		this.scaleWidth = nbt.getFloat("scaleWidth");
@@ -281,6 +288,7 @@ public class TransitiveVillagerData implements Serializable {
 		nbt.setBoolean("isSwinging", isSwinging);
 		nbt.setInteger("heldItemSlot", heldItemSlot);
 		nbt.setBoolean("isInfected", isInfected);
+		nbt.setBoolean("isBeingChased", getIsBeingChased());
 		nbt.setBoolean("doOpenInventory", doOpenInventory);
 		nbt.setInteger("marriageState", marriageState);
 
@@ -290,5 +298,9 @@ public class TransitiveVillagerData implements Serializable {
 			pair.getValue().writePlayerMemoryToNBT(nbt);
 			counter++;
 		}
+	}
+
+	public Boolean getIsBeingChased() {
+		return isBeingChased;
 	}
 }

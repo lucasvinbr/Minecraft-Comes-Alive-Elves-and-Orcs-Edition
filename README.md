@@ -1,5 +1,4 @@
-#Minecraft Comes Alive
-##Elves and Orcs Edition
+#Minecraft Comes Alive: Elves and Orcs Edition
 =====================
 This is a fantasy spin-off of the original _Minecraft Comes Alive_ mod by [SheWolfDeadly](https://twitter.com/SheWolfDeadly) and [WildBamaBoy](https://twitter.com/wildbamaboy).  
 

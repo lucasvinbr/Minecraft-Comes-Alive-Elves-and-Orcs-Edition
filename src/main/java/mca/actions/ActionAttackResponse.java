@@ -2,25 +2,22 @@ package mca.actions;
 
 import mca.core.Constants;
 import mca.core.MCA;
-import mca.core.minecraft.SoundsMCA;
 import mca.data.PlayerMemory;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumPersonality;
-import mca.enums.EnumProfessionSkinGroup;
 import mca.enums.EnumRace;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.util.FakePlayer;
+import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixMath;
-
-import java.util.Random;
 
 public class ActionAttackResponse extends AbstractAction {
 	private String targetPlayerName;
@@ -107,6 +104,22 @@ public class ActionAttackResponse extends AbstractAction {
 									EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup()) ?
 									MCA.getConfig().guardAttackDamage :
 									MCA.getConfig().villagerAttackDamage;
+							if (actor.attributes.getRaceEnum() == EnumRace.Orc
+									|| actor.attributes.getRaceEnum() == EnumRace.Elf) {
+								actor.getBehavior(ActionCombat.class).setAttackTarget((EntityLivingBase) target);
+							}
+							if (!EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup())) {
+								if (actor.attributes.getGender() == EnumGender.FEMALE
+										|| (actor.attributes.getGender() == EnumGender.MALE
+												&& RadixLogic.getBooleanWithProbability(33))) {
+									actor.flee();
+								}
+							}
+							if(actor.getPet() != null) {
+								if (target instanceof EntityLivingBase) {
+									actor.getPet().setAttackTarget((EntityLivingBase) target);
+								}
+							}
 						}
 						actor.swingItem();
 						target.attackEntityFrom(DamageSource.GENERIC, attackDamage);

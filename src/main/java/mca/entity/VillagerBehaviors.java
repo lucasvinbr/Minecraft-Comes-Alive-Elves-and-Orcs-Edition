@@ -18,6 +18,7 @@ import mca.actions.ActionGreet;
 import mca.actions.ActionGrow;
 import mca.actions.ActionHunt;
 import mca.actions.ActionIdle;
+import mca.actions.ActionMate;
 import mca.actions.ActionMine;
 import mca.actions.ActionPatrol;
 import mca.actions.ActionProcreate;
@@ -43,7 +44,6 @@ public class VillagerBehaviors {
 	public VillagerBehaviors(EntityVillagerMCA actor) {
 		this.actor = actor;
 		this.actions = new ArrayList<AbstractAction>();
-
 		addAction(new ActionIdle(actor));
 		addAction(new ActionRegenerate(actor));
 		addAction(new ActionSleep(actor));
@@ -64,6 +64,8 @@ public class VillagerBehaviors {
 		addAction(new ActionFarm(actor));
 		addAction(new ActionFish(actor));
 		addAction(new ActionDefend(actor));
+		addAction(new ActionMate(actor));
+		// addAction(new ActionRetreat(actor));
 		addAction(new ActionWander(actor));
 		addAction(new ActionCombat(actor));
 	}
@@ -147,6 +149,15 @@ public class VillagerBehaviors {
 			if (action instanceof AbstractToggleAction) {
 				AbstractToggleAction tAction = (AbstractToggleAction) action;
 				tAction.setIsActive(false);
+			}
+		}
+	}
+
+	public void enableAllToggleActions() {
+		for (final AbstractAction action : actions) {
+			if (action instanceof AbstractToggleAction) {
+				AbstractToggleAction tAction = (AbstractToggleAction) action;
+				tAction.setIsActive(true);
 			}
 		}
 	}

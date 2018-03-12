@@ -1,21 +1,25 @@
 package mca.entity;
 
+import java.util.Random;
+
+import mca.actions.ActionMate;
 import mca.enums.EnumProfession;
 import mca.enums.EnumRace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
-
-import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.getPrivateValue;
-import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.setPrivateValue;
+import radixcore.constant.Time;
 
 public class EntityOrcMCA extends EntityVillagerMCA {
+	private int timeUntilNext;
+	private static final int TARGET_SEARCH_INTERVAL = Time.MINUTE * 5;
 	public EntityOrcMCA(World world) {
 		super(world);
 		maxSwingProgressTicks = 10;
 //		this.attributes.setProfession(EnumProfession.Orc);
 		this.attributes.setProfession(EnumProfession.Warrior);
 		this.attributes.setRace(EnumRace.Orc);
+		pitch = (new Random().nextFloat() * (1.0f - 0.5f)) + 0.5f;
 	}
 
 	@Override
@@ -33,6 +37,18 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	public void say(String phraseId, EntityPlayer target) {
 		say(phraseId, target, this, target);
 	}
+
+
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+	}
+
+	public void addAI() {
+		super.addAI();
+		behaviors.getAction(ActionMate.class).setIsActive(true);
+	}
+
 //
 //	/**
 //	 * Sets the given entity to be the spouse of the current villager. This is symmetric against the provided entity.

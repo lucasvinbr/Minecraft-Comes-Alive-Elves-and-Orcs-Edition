@@ -1,6 +1,7 @@
 package mca.items;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -20,10 +21,7 @@ public class ItemTooltipAppender extends Item
 	
 	public ItemTooltipAppender setTooltip(String... lines)
 	{
-		for (String line : lines)
-		{
-			info.add(line);
-		}
+		Collections.addAll(info, lines);
 		
 		return this;
 	}

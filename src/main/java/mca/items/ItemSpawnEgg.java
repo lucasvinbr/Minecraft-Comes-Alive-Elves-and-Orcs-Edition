@@ -56,5 +56,9 @@ public class ItemSpawnEgg extends Item {
 		villager.attributes.setRace(EnumRace.Villager);
 		villager.setPosition(posX, posY, posZ);
 		world.spawnEntity(villager);
+		// if (RadixLogic.getBooleanWithProbability(2)) {
+		// MCA.naturallySpawnVillagers(new Point3D(posX, posY, posZ), world,
+		// villager.getProfession());
+		// }
 	}
 }

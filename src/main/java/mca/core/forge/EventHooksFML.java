@@ -4,6 +4,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import mca.core.Constants;
 import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
@@ -43,8 +46,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import radixcore.constant.Time;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
@@ -195,6 +196,9 @@ public class EventHooksFML {
 								else if (biome.getBiomeName().toLowerCase().contains("forest")) {
 									doOverwriteVillagerWithElf(villager);
 									continue;
+								}
+								else {
+									doOverwriteVillager(villager);
 								}
 							} 
 							if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
@@ -390,16 +394,18 @@ public class EventHooksFML {
 	public void doOverwriteVillager(EntityVillager villager) {
 		Biome biome = villager.world.getBiome(villager.getPos());
 		logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
-		if (biome.getBiomeName().toLowerCase().contains("swamp")) {
-			doOverwriteVillagerWithOrc(villager);
-		}
-		else if (biome.getBiomeName().toLowerCase().contains("forest")) {
-			doOverwriteVillagerWithElf(villager);
+		if (villager.getProfession() % 5 == 5) {
+			if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+				doOverwriteVillagerWithOrc(villager);
+			}
+			else if (biome.getBiomeName().toLowerCase().contains("forest")) {
+				doOverwriteVillagerWithElf(villager);
+			}
 		}
 		else {
 			villager.setDead();
 			MCA.naturallySpawnVillagers(new Point3D(villager.posX, villager.posY, villager.posZ), villager.world,
-					villager.getProfession());
+					villager.getProfession() % 5);
 		}
 	}
 

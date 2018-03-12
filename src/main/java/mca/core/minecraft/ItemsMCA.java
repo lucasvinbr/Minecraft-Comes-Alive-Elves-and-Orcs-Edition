@@ -4,14 +4,15 @@ import java.util.ArrayList;
 
 import mca.core.MCA;
 import mca.enums.EnumMemorialType;
+import mca.enums.EnumRace;
 import mca.items.ItemBaby;
 import mca.items.ItemCrystalBall;
 import mca.items.ItemGuideBook;
 import mca.items.ItemMemorial;
 import mca.items.ItemNewOutfit;
 import mca.items.ItemSpawnEgg;
-import mca.items.ItemSpawnEggForOrcs;
 import mca.items.ItemSpawnEggForElves;
+import mca.items.ItemSpawnEggForOrcs;
 import mca.items.ItemSpawnGrimReaper;
 import mca.items.ItemStaffOfLife;
 import mca.items.ItemTombstone;
@@ -50,8 +51,8 @@ public final class ItemsMCA {
 			.setTooltip("Gift to your spouse to end your marriage.").setMaxStackSize(1);
 	public static final ItemBaby BABY_BOY = new ItemBaby(true);
 	public static final ItemBaby BABY_GIRL = new ItemBaby(false);
-	public static final Item BABY_GIRL_ORC = new ItemBaby(true);
-	public static final Item BABY_BOY_ORC = new ItemBaby(false);
+	public static final Item BABY_GIRL_ORC = new ItemBaby(false, EnumRace.Orc);
+	public static final Item BABY_BOY_ORC = new ItemBaby(true, EnumRace.Orc);
 	public static final ItemSpawnEgg EGG_MALE = new ItemSpawnEgg(true);
 	public static final ItemSpawnEgg EGG_FEMALE = new ItemSpawnEgg(false);
 	public static final ItemSpawnEgg EGG_ORC = new ItemSpawnEggForOrcs(true); // They're dudes by default?
@@ -83,7 +84,8 @@ public final class ItemsMCA {
 
 	public static void register(RegistryEvent.Register<Item> event) {
 		final Item[] items = { WEDDING_RING, WEDDING_RING_RG, ENGAGEMENT_RING, ENGAGEMENT_RING_RG, MATCHMAKERS_RING,
-				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, EGG_MALE, EGG_FEMALE, EGG_ORC, EGG_ELF, EGG_GRIM_REAPER,
+				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, BABY_BOY_ORC, BABY_GIRL_ORC, EGG_MALE, EGG_FEMALE, EGG_ORC,
+				EGG_ELF, EGG_GRIM_REAPER,
 				CRYSTAL_BALL, ROSE_GOLD_INGOT, ROSE_GOLD_DUST, GOLD_DUST, NEW_OUTFIT, NEEDLE_AND_STRING, CLOTH,
 				TOMBSTONE, WHISTLE, VILLAGER_EDITOR, BROKEN_RING, CHILDS_DOLL, TOY_TRAIN, STAFF_OF_LIFE, BOOK_DEATH,
 				BOOK_ROMANCE, BOOK_FAMILY, BOOK_ROSE_GOLD, BOOK_INFECTION };

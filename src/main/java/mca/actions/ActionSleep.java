@@ -53,7 +53,7 @@ public class ActionSleep extends AbstractAction {
 		if (actor.getBehaviors().isToggleActionActive()
 				|| actor.attributes.getMovementState() == EnumMovementState.FOLLOW || actor.getRidingEntity() != null
 				|| (EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup())
-						&& !actor.attributes.getIsMarried())) {
+				&& !actor.attributes.getIsMarried())) {
 			if (!isDaytime && getSleepingState() != EnumSleepingState.INTERRUPTED) {
 				setSleepingState(EnumSleepingState.INTERRUPTED);
 			}
@@ -62,48 +62,46 @@ public class ActionSleep extends AbstractAction {
 		}
 
 		switch (getSleepingState()) {
-		case AWAKE:
-			if (!isDaytime && hasHomePoint() && isHomePointValid()) {
-				if (hasHomePoint() && isHomePointValid()) {
-					actor.setPosition(homePosX, homePosY, homePosZ);
-					trySleepInBed();
-					setSleepingState(EnumSleepingState.SLEEPING);
+			case AWAKE:
+				if (!isDaytime && hasHomePoint() && isHomePointValid()) {
+					if (hasHomePoint() && isHomePointValid()) {
+						actor.setPosition(homePosX, homePosY, homePosZ);
+						trySleepInBed();
+						setSleepingState(EnumSleepingState.SLEEPING);
+					}
+				} else if (!hasHomePoint() || !isHomePointValid()) {
+					final String phrase = !hasHomePoint() ? "sleep.nohome" : "sleep.invalid";
+					EntityPlayer influentialPlayer = getInfluentialPlayer();
+
+					if (influentialPlayer != null) {
+						actor.say(phrase, influentialPlayer);
+						setSleepingState(EnumSleepingState.NO_HOME);
+					} else {
+						setHomePoint(actor.posX, actor.posY, actor.posZ);
+					}
 				}
-			} else if (!hasHomePoint() || !isHomePointValid()) {
-				final String phrase = !hasHomePoint() ? "sleep.nohome" : "sleep.invalid";
-				EntityPlayer influentialPlayer = getInfluentialPlayer();
 
-				if (influentialPlayer != null) {
-					actor.say(phrase, influentialPlayer);
-					setSleepingState(EnumSleepingState.NO_HOME);
+				break;
+
+			case SLEEPING:
+				if (isDaytime) {
+					setSleepingState(EnumSleepingState.AWAKE);
 				}
 
-				else {
-					setHomePoint(actor.posX, actor.posY, actor.posZ);
+				break;
+
+			case INTERRUPTED:
+				if (isDaytime) // To reset sleep cycle and trigger new notifications. Will also trigger the no
+				// home notification as sleep state is set to interrupted when the person is
+				// talked to.
+				{
+					setSleepingState(EnumSleepingState.AWAKE);
 				}
-			}
 
-			break;
+				break;
 
-		case SLEEPING:
-			if (isDaytime) {
-				setSleepingState(EnumSleepingState.AWAKE);
-			}
-
-			break;
-
-		case INTERRUPTED:
-			if (isDaytime) // To reset sleep cycle and trigger new notifications. Will also trigger the no
-							// home notification as sleep state is set to interrupted when the person is
-							// talked to.
-			{
-				setSleepingState(EnumSleepingState.AWAKE);
-			}
-
-			break;
-
-		case NO_HOME:
-			break;
+			case NO_HOME:
+				break;
 		}
 
 	}
@@ -139,9 +137,7 @@ public class ActionSleep extends AbstractAction {
 	private EntityPlayer getInfluentialPlayer() {
 		if (actor.attributes.isMarriedToAPlayer()) {
 			return actor.attributes.getPlayerSpouseInstance();
-		}
-
-		else if (!actor.attributes.getMotherUUID().equals(Constants.EMPTY_UUID)
+		} else if (!actor.attributes.getMotherUUID().equals(Constants.EMPTY_UUID)
 				|| !actor.attributes.getFatherUUID().equals(Constants.EMPTY_UUID)) {
 			for (Object obj : actor.world.playerEntities) {
 				EntityPlayer player = (EntityPlayer) obj;
@@ -164,16 +160,16 @@ public class ActionSleep extends AbstractAction {
 
 		if (state == EnumSleepingState.SLEEPING) {
 			transitionSkinState(true);
-		}
-
-		else {
+		} else {
 			transitionSkinState(false);
 			setIsInBed(false);
 
 			try {
 				final TileEntityBed villagerBed = (TileEntityBed) actor.world.getTileEntity(getBedPos());
 
-				final NBTTagCompound villagerBedNBT = villagerBed != null ? villagerBed.getTileData() : new NBTTagCompound();
+				final NBTTagCompound
+						villagerBedNBT =
+						villagerBed != null ? villagerBed.getTileData() : new NBTTagCompound();
 				villagerBedNBT.setUniqueId("sleepingVillagerUUID", Constants.EMPTY_UUID);
 				villagerBedNBT.setBoolean("villagerIsSleepingIn", false);
 			} catch (Exception e) {
@@ -197,16 +193,14 @@ public class ActionSleep extends AbstractAction {
 		if (Utilities.isPointClear(actor.world, point.iX(), point.iY(), point.iZ())
 				&& Utilities.isPointClear(actor.world, point.iX(), point.iY() + 1, point.iZ())) {
 			return true;
-		}
-
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	public boolean hasHomePoint() {
 		return homePosY != -1.0D; // This will never naturally happen. Good test point without using another
-									// variable.
+		// variable.
 	}
 
 	public void invalidateHomePoint() {
@@ -225,9 +219,7 @@ public class ActionSleep extends AbstractAction {
 			bedPosY = 0;
 			bedPosZ = 0;
 			return true;
-		}
-
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -241,9 +233,7 @@ public class ActionSleep extends AbstractAction {
 
 		if (toSleeping && !skinValue.contains("sleeping")) {
 			actor.attributes.setHeadTexture(skinValue.replace("/skins/", "/skins/sleeping/"));
-		}
-
-		else if (!toSleeping && skinValue.contains("sleeping")) {
+		} else if (!toSleeping && skinValue.contains("sleeping")) {
 			actor.attributes.setHeadTexture(skinValue.replace("/skins/sleeping/", "/skins/"));
 		}
 	}
@@ -256,7 +246,7 @@ public class ActionSleep extends AbstractAction {
 			if (blockAtBed instanceof BlockBed) {
 				try {
 					final TileEntityBed villagerBed = (TileEntityBed) actor.world.getTileEntity(getBedPos());
-					if(villagerBed != null) {
+					if (villagerBed != null) {
 						final NBTTagCompound villagerBedNBT = villagerBed.getTileData();
 
 						if (!villagerBedNBT.getBoolean("villagerIsSleepingIn")) {
@@ -268,26 +258,18 @@ public class ActionSleep extends AbstractAction {
 							actor.setPosition(bedPosX, bedPosY, bedPosZ);
 						}
 					}
-				}
-
-				catch (ClassCastException e) // Common issue when using with other mods with tile entities nearby. Not
-												// sure why this happens.
+				} catch (ClassCastException e) // Common issue when using with other mods with tile entities nearby. Not
+				// sure why this happens.
 				{
 					hasBed = false;
-				}
-
-				catch (NullPointerException e) {
+				} catch (NullPointerException e) {
 					hasBed = false;
 				}
-			}
-
-			else // Bed is no longer instance of a villager bed.
+			} else // Bed is no longer instance of a villager bed.
 			{
 				hasBed = false;
 			}
-		}
-
-		else // Search for a bed.
+		} else // Search for a bed.
 		{
 			List<Point3D> bedsNearby = RadixLogic.getNearbyBlocks(actor, BlockBed.class, 8);
 			List<Point3D> bedFeetNearby = new ArrayList<Point3D>();
@@ -308,29 +290,25 @@ public class ActionSleep extends AbstractAction {
 				final Point3D nearestBed = Point3D
 						.getNearestPointInList(new Point3D(actor.posX, actor.posY, actor.posZ), bedFeetNearby);
 				final TileEntityBed villagerBed = (TileEntityBed) actor.world.getTileEntity(nearestBed.toBlockPos());
-				if(villagerBed != null) {
-					final NBTTagCompound villagerBedNBT = villagerBed.getTileData();
+				final NBTTagCompound villagerBedNBT = villagerBed.getTileData();
 
-					if (villagerBedNBT != null && !villagerBedNBT.getBoolean("villagerIsSleepingIn")) {
-						try {
-							IBlockState state = actor.world.getBlockState(nearestBed.toBlockPos());
-							BlockBed bed = (BlockBed) state.getBlock();
-							villagerBedNBT.setUniqueId("sleepingVillagerUUID", actor.getPersistentID());
-							villagerBedNBT.setBoolean("villagerIsSleepingIn", true);
+				if (villagerBedNBT != null && !villagerBedNBT.getBoolean("villagerIsSleepingIn")) {
+					try {
+						IBlockState state = actor.world.getBlockState(nearestBed.toBlockPos());
+						BlockBed bed = (BlockBed) state.getBlock();
+						villagerBedNBT.setUniqueId("sleepingVillagerUUID", actor.getPersistentID());
+						villagerBedNBT.setBoolean("villagerIsSleepingIn", true);
 
-							bedPosX = nearestBed.iX();
-							bedPosY = nearestBed.iY();
-							bedPosZ = nearestBed.iZ();
-							hasBed = true;
-							setBedMeta(bed.getMetaFromState(state));
-							setIsInBed(true);
-							actor.halt();
-							actor.setPosition(bedPosX, bedPosY, bedPosZ);
-						}
-
-						catch (ClassCastException e) {
-							hasBed = false;
-						}
+						bedPosX = nearestBed.iX();
+						bedPosY = nearestBed.iY();
+						bedPosZ = nearestBed.iZ();
+						hasBed = true;
+						setBedMeta(bed.getMetaFromState(state));
+						setIsInBed(true);
+						actor.halt();
+						actor.setPosition(bedPosX, bedPosY, bedPosZ);
+					} catch (ClassCastException e) {
+						hasBed = false;
 					}
 				}
 			}

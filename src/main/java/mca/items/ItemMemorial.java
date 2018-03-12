@@ -45,20 +45,22 @@ public class ItemMemorial extends Item
 			pos = pos.add(0, 1, 0);
 			worldIn.setBlockState(pos, BlocksMCA.memorial.getDefaultState(), 2);
 			TileMemorial tile = (TileMemorial) worldIn.getTileEntity(pos);
-			
-			tile.setType(this.type);
-			tile.setTransitiveVillagerData(new TransitiveVillagerData(stack.getTagCompound()));
-			tile.setOwnerName(stack.getTagCompound().getString("ownerName"));
-			tile.setOwnerUUID(stack.getTagCompound().getUniqueId("ownerUUID"));
-			
-			if (stack.hasTagCompound())
-			{
-				tile.setRelation(EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")));
-			}
-			
-			else
-			{
-				tile.setRelation(EnumRelation.NONE);
+
+			if (tile != null) {
+				tile.setType(this.type);
+				tile.setTransitiveVillagerData(new TransitiveVillagerData(stack.getTagCompound()));
+				tile.setOwnerName(stack.getTagCompound().getString("ownerName"));
+				tile.setOwnerUUID(stack.getTagCompound().getUniqueId("ownerUUID"));
+
+				if (stack.hasTagCompound())
+				{
+					tile.setRelation(EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")));
+				}
+
+				else
+				{
+					tile.setRelation(EnumRelation.NONE);
+				}
 			}
 
 			playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);

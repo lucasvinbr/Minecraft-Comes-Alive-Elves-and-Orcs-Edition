@@ -3,9 +3,6 @@ package mca.core;
 import java.util.Random;
 import java.util.UUID;
 
-import mca.entity.EntityElfMCA;
-import mca.entity.EntityOrcMCA;
-import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,10 +28,14 @@ import mca.core.radix.CrashWatcher;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerDataCollection;
 import mca.entity.EntityChoreFishHook;
+import mca.entity.EntityElfMCA;
 import mca.entity.EntityGrimReaper;
+import mca.entity.EntityOrcMCA;
 import mca.entity.EntityVillagerMCA;
+import mca.entity.EntityWolfMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
+import mca.enums.EnumRace;
 import mca.network.PacketHandlerMCA;
 import mca.tile.TileMemorial;
 import mca.tile.TileTombstone;
@@ -43,6 +44,8 @@ import mca.util.SkinLoader;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIFollowOwner;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityOcelot;
@@ -97,6 +100,7 @@ public class MCA {
 	private static Localizer localizer;
 	private static PacketHandlerMCA packetHandler;
 	private static CrashWatcher crashWatcher;
+	private static long orcMatingSeasonStart;
 
 	private static Logger logger = LogManager.getLogger(MCA.class);
 
@@ -153,6 +157,7 @@ public class MCA {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		startOrcMatingSeason();
 		proxy.registerModelMeshers();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
@@ -163,6 +168,8 @@ public class MCA {
 				EntityVillagerMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "OrcMCA"), EntityOrcMCA.class,
 				EntityOrcMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "WolfMCA"), EntityWolfMCA.class,
+				EntityWolfMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "ElfMCA"), EntityElfMCA.class,
 				EntityElfMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "FishHookMCA"), EntityChoreFishHook.class,
@@ -468,10 +475,12 @@ public class MCA {
 		RegistryMCA.addWeddingGift(new WeddingGift(Blocks.OBSIDIAN, 4, 8), EnumGiftCategory.BEST);
 		RegistryMCA.addWeddingGift(new WeddingGift(Items.EMERALD, 4, 6), EnumGiftCategory.BEST);
 		RegistryMCA.addWeddingGift(new WeddingGift(ItemsMCA.BOOK_DEATH, 1, 1), EnumGiftCategory.BEST);
+		startOrcMatingSeason();
 	}
 
 	@EventHandler
 	public void serverStarting(FMLServerStartingEvent event) {
+		startOrcMatingSeason();
 		event.registerServerCommand(new CommandMCA());
 	}
 
@@ -525,8 +534,7 @@ public class MCA {
 	public static NBTPlayerData getPlayerData(EntityPlayer player) {
 		if (!player.world.isRemote) {
 			return PlayerDataCollection.get().getPlayerData(player.getUniqueID());
-		}
-		else {
+		} else {
 			return myPlayerData;
 		}
 	}
@@ -537,13 +545,25 @@ public class MCA {
 
 	public static void naturallySpawnOrcs(Point3D pointOfSpawn, World world, int originalProfession) {
 		MCA.getLog().debug(String.format("Original Profession newly spawned orc: %d", originalProfession));
-		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
+		boolean hasFamily = RadixLogic.getBooleanWithProbability(75);
 
 		final EntityOrcMCA orc = new EntityOrcMCA(world);
 		orc.attributes.setGender(EnumGender.MALE);
 		orc.attributes.assignRandomName();
 		orc.attributes.assignRandomSkin();
 		orc.attributes.assignRandomPersonality();
+		if (RadixLogic.getBooleanWithProbability(75)) {
+			EntityWolf wolf = new EntityWolf(world);
+			wolf.setPosition(orc.posX, orc.posY, orc.posZ);
+			wolf.setTamed(false);
+			wolf.setOwnerId(orc.getUniqueID());
+			EntityAIBase aiFollowOwner = new EntityAIFollowOwner(wolf, 1.0D, 10.0F, 2.0F);
+			wolf.tasks.addTask(1, aiFollowOwner);
+			wolf.setCustomNameTag(String.format("%s's wolf", orc.getName()));
+			orc.setPet(wolf);
+			wolf.setDropItemsWhenDead(true);
+			world.spawnEntity(wolf);
+		}
 
 		orc.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
 		if (hasFamily) {
@@ -554,6 +574,17 @@ public class MCA {
 			wench.attributes.assignRandomPersonality();
 			wench.setPosition(orc.posX, orc.posY, orc.posZ - 1);
 			world.spawnEntity(wench);
+			if (RadixLogic.getBooleanWithProbability(75)) {
+				EntityOcelot cat = new EntityOcelot(world);
+				cat.setPosition(wench.posX, wench.posY, wench.posZ);
+				cat.setTamed(false);
+				cat.setOwnerId(wench.getUniqueID());
+				EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
+				cat.tasks.addTask(1, aiFollowOwner);
+				cat.setCustomNameTag(String.format("%s's cat", wench.getName()));
+				wench.setPet(cat);
+				world.spawnEntity(cat);
+			}
 
 			orc.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(wench));
 
@@ -564,16 +595,32 @@ public class MCA {
 				}
 				EntityOrcMCA brat = new EntityOrcMCA(world);
 				boolean bratIsMale = RadixLogic.getBooleanWithProbability(75);
+				wench.createChild(brat);
 				brat.attributes.setGender(bratIsMale ? EnumGender.MALE : EnumGender.FEMALE);
 				brat.attributes.assignRandomName();
 				brat.attributes.assignRandomSkin();
 				brat.attributes.assignRandomPersonality();
 				brat.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(wench));
 				brat.attributes.setFather(Either.<EntityVillagerMCA, EntityPlayer>withL(orc));
+				brat.setGrowingAge(-100);
 				brat.attributes.setIsChild(true);
 
 				brat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
 				world.spawnEntity(brat);
+				if (RadixLogic.getBooleanWithProbability(75)) {
+					EntityWolf wolf = new EntityWolf(world);
+					// wolf.setGrowingAge(-100);
+					wolf.setPosition(brat.posX, brat.posY, brat.posZ);
+					// wolf.setGrowingAge(-100);
+					wolf.setTamed(false);
+					wolf.setOwnerId(brat.getUniqueID());
+					EntityAIBase aiFollowOwner = new EntityAIFollowOwner(wolf, 1.0D, 10.0F, 2.0F);
+					wolf.tasks.addTask(1, aiFollowOwner);
+					wolf.setCustomNameTag(String.format("%s's wolf", brat.getName()));
+					brat.setPet(wolf);
+					wolf.getPassengers().add(brat);
+					world.spawnEntity(wolf);
+				}
 			}
 		}
 		world.spawnEntity(orc);
@@ -635,7 +682,8 @@ public class MCA {
 		final EntityVillagerMCA villager = new EntityVillagerMCA(world);
 		villager.attributes.setGender(adult1IsMale ? EnumGender.MALE : EnumGender.FEMALE);
 		villager.attributes
-				.setProfession(originalProfession != -1 ? EnumProfession.getNewProfessionFromVanilla(Math.abs(originalProfession))
+				.setProfession(originalProfession != -1
+						? EnumProfession.getNewProfessionFromVanilla(Math.abs(originalProfession % 5))
 						: EnumProfession.getAtRandom());
 		villager.attributes.assignRandomName();
 		villager.attributes.assignRandomSkin();
@@ -726,7 +774,7 @@ public class MCA {
 				world.spawnEntity(child);
 			}
 		}
-		Biome biome = villager.world.getBiome(villager.getPos());
+		// Biome biome = villager.world.getBiome(villager.getPos());
 
 //		villager.sayRaw(String.format("I was born in a %s biome ", biome.getBiomeName()), closestPlayer);
 		world.spawnEntity(villager);
@@ -744,5 +792,33 @@ public class MCA {
 		}
 
 		return null;
+	}
+
+	private static boolean matingSeasonStarted = true;
+	public static void startOrcMatingSeason() {
+		matingSeasonStarted = true;
+		orcMatingSeasonStart = System.currentTimeMillis();
+	}
+
+	public static boolean isMyRacesMatingSeason(EnumRace race) {
+		if (config.getSeasonalBreeders().contains(race)) {
+			return isMatingSeason();
+		}
+		return true;
+	}
+
+	public static boolean isMatingSeason() {
+		if (!matingSeasonStarted) {
+			if (RadixLogic.getBooleanWithProbability(1)) {
+				startOrcMatingSeason();
+			}
+			matingSeasonStarted = false;
+		}
+		else {
+			long orcMatingSeasonDuration = config.getOrcMatingSeasonDuration() * 60000L;
+			long matingSeasonTimeElapsed = (System.currentTimeMillis() - orcMatingSeasonStart);
+			matingSeasonStarted = (matingSeasonTimeElapsed <= orcMatingSeasonDuration);
+		}
+		return matingSeasonStarted;
 	}
 }
