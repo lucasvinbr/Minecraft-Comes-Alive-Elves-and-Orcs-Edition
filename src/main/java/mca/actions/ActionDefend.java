@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.AbstractChestHorse;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
@@ -63,7 +64,7 @@ public class ActionDefend extends AbstractAction {
 					timeUntilTargetSearch--;
 				}
 			}
-			else if (target != null) {
+			else {
 				double distanceToTarget = RadixMath.getDistanceToEntity(actor, target);
 
 				if (target.isDead || distanceToTarget >= 15.0D) {
@@ -74,7 +75,7 @@ public class ActionDefend extends AbstractAction {
 				if (actor.attributes.getProfessionEnum() == EnumProfession.Archer
 						|| (actor.attributes.getRaceEnum() == EnumRace.Elf
 								&& actor.attributes.getGender() == EnumGender.FEMALE)) {
-					actor.getLookHelper().setLookPosition(target.posX, target.posY + (double) target.getEyeHeight(),
+					actor.getLookHelper().setLookPosition(target.posX, target.posY + target.getEyeHeight(),
 							target.posZ, 10.0F, actor.getVerticalFaceSpeed());
 
 					if (rangedAttackTime <= 0) {
@@ -96,7 +97,7 @@ public class ActionDefend extends AbstractAction {
 						}
 						try {
 							if (target instanceof EntityVillagerMCA) {
-								EntityVillagerMCA mcaVillager = (EntityVillagerMCA) target;
+								// EntityVillagerMCA mcaVillager = (EntityVillagerMCA) target;
 								// if (mcaVillager.attributes.getGender() == EnumGender.FEMALE
 								// && actor.attributes.getRaceEnum() == EnumRace.Orc) {
 								// if (actor.attributes.getIsMale()) {
@@ -200,7 +201,7 @@ public class ActionDefend extends AbstractAction {
 		}
 		else {
 			if (actor.getPet() != null) {
-				EntityMob monster = (EntityMob) RadixLogic.getClosestEntityExclusive(actor, 15, EntityMob.class);
+				EntityMob monster = RadixLogic.getClosestEntityExclusive(actor, 15, EntityMob.class);
 				actor.getPet().setAttackTarget(monster);
 			}
 		}
@@ -223,7 +224,7 @@ public class ActionDefend extends AbstractAction {
 								if (mcaVillager.attributes.getRaceEnum() != EnumRace.Elf || !EntityVillagerMCA
 										.isProfessionSkinFighter(mcaVillager.attributes.getProfessionSkinGroup())) {
 									if (mcaVillager.attributes.getGender() == EnumGender.FEMALE
-											|| (RadixLogic.getBooleanWithProbability(50))) {
+											|| (RadixLogic.getBooleanWithProbability(25))) {
 										 mcaVillager.flee();
 									}
 								}
@@ -247,10 +248,13 @@ public class ActionDefend extends AbstractAction {
 						possibleTargets.add(animal);
 					}
 				}
-				if (actor.getPet() != null) {
-					EntityAnimal animal = animals.get(RadixMath.getNumberInRange(0, animals.size() - 1));
-					actor.getPet().setAttackTarget(animal);
-				}
+				// if (actor.getPet() != null) {
+				// EntityLivingBase animal = possibleTargets
+				// .get(RadixMath.getNumberInRange(0, possibleTargets.size() - 1));
+				// actor.getPet().setAttackTarget(animal);
+				// }
+				List<EntitySlime> slimes = RadixLogic.getEntitiesWithinDistance(EntitySlime.class, actor, 15);
+				possibleTargets.addAll(slimes);
 			}
 		}
 		else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
@@ -288,6 +292,12 @@ public class ActionDefend extends AbstractAction {
 		// possibleTargets.add(closestPlayer);
 		// }
 		// }
+
+		if (actor.getPet() != null && possibleTargets != null && possibleTargets.size() > 0) {
+			EntityLivingBase petTarget = possibleTargets.get(RadixMath.getNumberInRange(0, possibleTargets.size() - 1));
+			actor.getPet().setAttackTarget(petTarget);
+		}
+
 		for (Entity entity : possibleTargets) {
 			// if (!(entity instanceof EntityCreeper) && actor.canEntityBeSeen(entity)) {
 			if (actor.canEntityBeSeen(entity)) {
@@ -312,18 +322,18 @@ public class ActionDefend extends AbstractAction {
 		}
 		EntityArrow entityarrow = new EntityTippedArrow(shooter.world, shooter);
 		double d0 = target.posX - shooter.posX;
-		double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - entityarrow.posY;
+		double d1 = target.getEntityBoundingBox().minY + target.height / 3.0F - entityarrow.posY;
 		double d2 = target.posZ - shooter.posZ;
-		double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+		double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 		entityarrow.setThrowableHeading(d0, d1 + d3 * 0.2D, d2, 1.6F,
-				(float) (14 - shooter.world.getDifficulty().getDifficultyId() * 4));
+				14 - shooter.world.getDifficulty().getDifficultyId() * 4);
 		int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, shooter);
 		int j = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, shooter);
-		entityarrow.setDamage((double) (velocity * 2.0F) + shooter.getRNG().nextGaussian() * 0.25D
-				+ (double) ((float) shooter.world.getDifficulty().getDifficultyId() * 0.11F));
+		entityarrow.setDamage(velocity * 2.0F + shooter.getRNG().nextGaussian() * 0.25D
+				+ shooter.world.getDifficulty().getDifficultyId() * 0.11F);
 
 		if (i > 0) {
-			entityarrow.setDamage(entityarrow.getDamage() + (double) i * 0.5D + 0.5D);
+			entityarrow.setDamage(entityarrow.getDamage() + i * 0.5D + 0.5D);
 		}
 
 		if (j > 0) {

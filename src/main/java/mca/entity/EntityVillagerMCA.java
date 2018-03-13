@@ -21,6 +21,7 @@ import mca.actions.ActionStoryProgression;
 import mca.actions.ActionUpdateMood;
 import mca.core.Constants;
 import mca.core.MCA;
+import mca.core.minecraft.BlocksMCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.core.minecraft.SoundsMCA;
 import mca.data.NBTPlayerData;
@@ -39,12 +40,15 @@ import mca.enums.EnumRelation;
 import mca.enums.EnumSleepingState;
 import mca.items.ItemBaby;
 import mca.items.ItemMemorial;
+import mca.items.ItemTombstone;
 import mca.items.ItemVillagerEditor;
 import mca.packets.PacketOpenGUIOnEntity;
+import mca.tile.TileTombstone;
 import mca.util.Either;
 import mca.util.Utilities;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
@@ -66,6 +70,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.profiler.Profiler;
@@ -245,7 +250,6 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			}
 			else {
 				try {
-					// System.gc();
 					super.onDeath(damageSource);
 				}
 				catch (Exception e) {
@@ -366,7 +370,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 							: (new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4),
 					1.0f, mate.getPitch());
 			mate.rotationYawHead += 40;
-			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.BLOCK_DUST, mate.getWorld(),
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.VILLAGER_HAPPY, mate.getWorld(),
 					mate.getPositionVector().x,
 					mate.getPositionVector().y, mate.getPositionVector().z, 10);
 			this.rotationYawHead += 40;
@@ -408,7 +412,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				getBehavior(ActionSleep.class).transitionSkinState(true);
 				mate.getBehavior(ActionSleep.class).setSleepingState(EnumSleepingState.SLEEPING);
 				mate.getBehavior(ActionSleep.class).transitionSkinState(true);
-				Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SLIME, mate.getWorld(),
+				Utilities.spawnParticlesAroundPointS(EnumParticleTypes.CRIT, mate.getWorld(),
 						mate.getPositionVector().x, mate.getPositionVector().y, mate.getPositionVector().z, 300);
 			}
 			else {
@@ -423,8 +427,21 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
+
 		this.damageSource = damageSource;
 		if (!world.isRemote) {
+			ItemTombstone tombstone = new ItemTombstone();
+			EntityDataManager data = getDataManager();
+			List<String> stats = new ArrayList<String>();
+			for (int i = 0; i < data.getAll().size() - 1; i++) {
+				if (data.getAll().get(i) != null) {
+					String value = data.getAll().get(i).toString();
+					stats.add(value);
+				}
+			}
+			ItemStack tombStack = new ItemStack(tombstone);
+			tombstone.addInformation(tombStack, world, stats, ITooltipFlag.TooltipFlags.NORMAL);
+			getVillagerInventory().addItem(tombStack);
 			if (attributes.getRaceEnum() == EnumRace.Elf) {
 				if (attributes.getGender() == EnumGender.FEMALE) {
 					this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1
@@ -482,6 +499,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			// item for revival.
 			boolean memorialDropped = false;
 
+
 			if (attributes.isMarriedToAPlayer()) {
 				NBTPlayerData playerData = MCA.getPlayerData(world, attributes.getSpouseUUID());
 
@@ -496,10 +514,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 					memorialDropped = true;
 				}
 			}
-			else if (attributes.isMarriedToAVillager()) {
+			else {
 				EntityVillagerMCA partner = attributes.getVillagerSpouseInstance();
-
 				if (partner != null) {
+					partner.getVillagerInventory().addItem(tombStack);
 					partner.endMarriage();
 				}
 			}
@@ -529,7 +547,77 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 					}
 				}
 			}
+			if (!memorialDropped && attributes.isImportant()) {
+				getVillagerInventory().addItem(tombStack);
+				createTombstone(tombStack);
+			}
+			if (pet != null) {
+				pet.setTamed(false);
+				pet.setOwnerId(Constants.EMPTY_UUID);
+				if (attributes.getRaceEnum() == EnumRace.Orc) {
+					pet.isDead = true;
+					pet.onKillCommand();
+				}
+			}
 			this.dead = true;
+		}
+
+
+		try {
+			super.onDeath(damageSource);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createTombstone(ItemStack tombStack) {
+		Point3D nearestAir = RadixLogic.getNearestBlock(this, 3, Blocks.AIR);
+
+		if (nearestAir == null) {
+			logger.warn("No available location to spawn villager death chest for " + this.getName());
+		}
+		else {
+			int y = nearestAir.iY();
+			Block block = Blocks.AIR;
+
+			while (block == Blocks.AIR) {
+				y--;
+				block = world.getBlockState(new BlockPos(nearestAir.iX(), y, nearestAir.iZ())).getBlock();
+			}
+
+			y += 1;
+			world.setBlockState(new BlockPos(nearestAir.iX(), y, nearestAir.iZ()),
+					BlocksMCA.tombstone.getDefaultState());
+
+			try {
+				TileTombstone tomb = (TileTombstone) world.getTileEntity(nearestAir.toBlockPos());
+				if (tomb != null) {
+					tomb.signText[1] = new TextComponentString(
+							RadixLogic.getBooleanWithProbability(50) ? MCA.getLocalizer().getString("name.male")
+									: MCA.getLocalizer().getString("name.female"));
+					tomb.signText[2] = new TextComponentString("RIP");
+					RadixBlocks.setBlock(world,
+							new Point3D(tomb.getPos().getX(), tomb.getPos().getY(), tomb.getPos().getZ()),
+							BlocksMCA.tombstone);
+				}
+				TransitiveVillagerData data = new TransitiveVillagerData(attributes);
+
+				NBTTagCompound stackNBT = new NBTTagCompound();
+
+				stackNBT.setString("ownerName", data.getName());
+				stackNBT.setUniqueId("ownerUUID", data.getUUID());
+				data.writeToNBT(stackNBT);
+				tombStack.setTagCompound(stackNBT);
+				getVillagerInventory().addItem(tombStack);
+				LogManager.getLogger(EntityVillagerMCA.class).info(
+						"Spawned villager death chest at: " + nearestAir.iX() + ", " + y + ", " + nearestAir.iZ());
+			}
+			catch (Exception e) {
+				LogManager.getLogger(EntityVillagerMCA.class)
+						.error("Error spawning villager death chest: " + e.getMessage());
+				return;
+			}
 		}
 	}
 
@@ -849,7 +937,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		double midZ = position.dZ() - this.posZ;
 		double d1 = 0;
 
-		double d3 = (double) MathHelper.sqrt(midX * midX + midZ * midZ);
+		double d3 = MathHelper.sqrt(midX * midX + midZ * midZ);
 		float f2 = (float) (Math.atan2(midZ, midX) * 180.0D / Math.PI) - 90.0F;
 		float f3 = (float) (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
 		this.rotationPitch = this.updateRotation(this.rotationPitch, f3, 16.0F);

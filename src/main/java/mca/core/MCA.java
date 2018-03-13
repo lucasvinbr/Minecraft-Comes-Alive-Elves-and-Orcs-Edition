@@ -557,8 +557,9 @@ public class MCA {
 			wolf.setPosition(orc.posX, orc.posY, orc.posZ);
 			wolf.setTamed(false);
 			wolf.setOwnerId(orc.getUniqueID());
-			EntityAIBase aiFollowOwner = new EntityAIFollowOwner(wolf, 1.0D, 10.0F, 2.0F);
-			wolf.tasks.addTask(1, aiFollowOwner);
+			// EntityAIBase aiFollowOwner = new EntityAIFollowOwner(wolf, 1.0D, 10.0F,
+			// 2.0F);
+			// wolf.tasks.addTask(1, aiFollowOwner);
 			wolf.setCustomNameTag(String.format("%s's wolf", orc.getName()));
 			orc.setPet(wolf);
 			wolf.setDropItemsWhenDead(true);
@@ -579,8 +580,8 @@ public class MCA {
 				cat.setPosition(wench.posX, wench.posY, wench.posZ);
 				cat.setTamed(false);
 				cat.setOwnerId(wench.getUniqueID());
-				EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
-				cat.tasks.addTask(1, aiFollowOwner);
+				// EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
+				// cat.tasks.addTask(1, aiFollowOwner);
 				cat.setCustomNameTag(String.format("%s's cat", wench.getName()));
 				wench.setPet(cat);
 				world.spawnEntity(cat);
@@ -609,7 +610,7 @@ public class MCA {
 				world.spawnEntity(brat);
 				if (RadixLogic.getBooleanWithProbability(75)) {
 					EntityWolf wolf = new EntityWolf(world);
-					// wolf.setGrowingAge(-100);
+					wolf.setGrowingAge(brat.getGrowingAge());
 					wolf.setPosition(brat.posX, brat.posY, brat.posZ);
 					// wolf.setGrowingAge(-100);
 					wolf.setTamed(false);
@@ -618,7 +619,6 @@ public class MCA {
 					wolf.tasks.addTask(1, aiFollowOwner);
 					wolf.setCustomNameTag(String.format("%s's wolf", brat.getName()));
 					brat.setPet(wolf);
-					wolf.getPassengers().add(brat);
 					world.spawnEntity(wolf);
 				}
 			}

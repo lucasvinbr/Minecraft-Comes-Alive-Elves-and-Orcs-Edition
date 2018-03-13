@@ -40,6 +40,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixNettyIO;
 
 public class VillagerAttributes {
@@ -111,6 +112,7 @@ public class VillagerAttributes {
 	private final VillagerInventory inventory;
 
 	public VillagerAttributes(EntityVillagerMCA villager) {
+
 		this.villager = villager;
 		this.dataManager = villager.getDataManager();
 		playerMemories = new HashMap<UUID, PlayerMemory>();
@@ -616,11 +618,11 @@ public class VillagerAttributes {
 	}
 
 	public EnumMarriageState getMarriageState() {
-		EntityVillagerMCA spouse = getVillagerSpouseInstance();
-		if (spouse == null || spouse.isDead) {
-			villager.endMarriage();
-			setMarriageState(EnumMarriageState.NOT_MARRIED);
-		}
+		// EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		// if (spouse == null || spouse.isDead) {
+		// villager.endMarriage();
+		// setMarriageState(EnumMarriageState.NOT_MARRIED);
+		// }
 		return EnumMarriageState.byId(dataManager.get(MARRIAGE_STATE));
 	}
 
@@ -726,29 +728,29 @@ public class VillagerAttributes {
 	}
 
 	public boolean isMarriedToAVillager() {
-		EntityVillagerMCA spouse = getVillagerSpouseInstance();
-		if (spouse == null || spouse.isDead) {
-			villager.endMarriage();
-			setMarriageState(EnumMarriageState.NOT_MARRIED);
-		}
+		// EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		// if (spouse == null || spouse.isDead) {
+		// villager.endMarriage();
+		// setMarriageState(EnumMarriageState.NOT_MARRIED);
+		// }
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_VILLAGER;
 	}
 
 	public boolean isMarriedToAnOrc() {
-		EntityVillagerMCA spouse = getVillagerSpouseInstance();
-		if(spouse == null || spouse.isDead) {
-			villager.endMarriage();
-			setMarriageState(EnumMarriageState.NOT_MARRIED);
-		}
+		// EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		// if(spouse == null || spouse.isDead) {
+		// villager.endMarriage();
+		// setMarriageState(EnumMarriageState.NOT_MARRIED);
+		// }
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_ORC;
 	}
 
 	public boolean isMarriedToAnElf() {
-		EntityVillagerMCA spouse = getVillagerSpouseInstance();
-		if (spouse == null || spouse.isDead) {
-			villager.endMarriage();
-			setMarriageState(EnumMarriageState.NOT_MARRIED);
-		}
+		// EntityVillagerMCA spouse = getVillagerSpouseInstance();
+		// if (spouse == null || spouse.isDead) {
+		// villager.endMarriage();
+		// setMarriageState(EnumMarriageState.NOT_MARRIED);
+		// }
 		return getMarriageState() == EnumMarriageState.MARRIED_TO_ELF;
 	}
 
@@ -917,23 +919,23 @@ public class VillagerAttributes {
 					String paramName = f.getName();
 
 					if (typeName.contains("Boolean")) {
-						DataParameter<Boolean> bParam = (DataParameter<Boolean>) param;
+						DataParameter<Boolean> bParam = param;
 						nbt.setBoolean(paramName, dataManager.get(bParam).booleanValue());
 					}
 					else if (typeName.contains("Integer")) {
-						DataParameter<Integer> iParam = (DataParameter<Integer>) param;
+						DataParameter<Integer> iParam = param;
 						nbt.setInteger(paramName, dataManager.get(iParam).intValue());
 					}
 					else if (typeName.contains("String")) {
-						DataParameter<String> sParam = (DataParameter<String>) param;
+						DataParameter<String> sParam = param;
 						nbt.setString(paramName, dataManager.get(sParam));
 					}
 					else if (typeName.contains("Float")) {
-						DataParameter<Float> fParam = (DataParameter<Float>) param;
+						DataParameter<Float> fParam = param;
 						nbt.setFloat(paramName, dataManager.get(fParam).floatValue());
 					}
 					else if (typeName.contains("Optional<java.util.UUID>")) {
-						DataParameter<Optional<UUID>> uuParam = (DataParameter<Optional<UUID>>) param;
+						DataParameter<Optional<UUID>> uuParam = param;
 						nbt.setUniqueId(paramName, dataManager.get(uuParam).get());
 					}
 					else {
@@ -969,23 +971,23 @@ public class VillagerAttributes {
 					String paramName = f.getName();
 
 					if (typeName.contains("Boolean")) {
-						DataParameter<Boolean> bParam = (DataParameter<Boolean>) param;
+						DataParameter<Boolean> bParam = param;
 						dataManager.set(bParam, nbt.getBoolean(paramName));
 					}
 					else if (typeName.contains("Integer")) {
-						DataParameter<Integer> iParam = (DataParameter<Integer>) param;
+						DataParameter<Integer> iParam = param;
 						dataManager.set(iParam, nbt.getInteger(paramName));
 					}
 					else if (typeName.contains("String")) {
-						DataParameter<String> sParam = (DataParameter<String>) param;
+						DataParameter<String> sParam = param;
 						dataManager.set(sParam, nbt.getString(paramName));
 					}
 					else if (typeName.contains("Float")) {
-						DataParameter<Float> fParam = (DataParameter<Float>) param;
+						DataParameter<Float> fParam = param;
 						dataManager.set(fParam, nbt.getFloat(paramName));
 					}
 					else if (typeName.contains("Optional<java.util.UUID>")) {
-						DataParameter<Optional<UUID>> uuParam = (DataParameter<Optional<UUID>>) param;
+						DataParameter<Optional<UUID>> uuParam = param;
 						dataManager.set(uuParam, Optional.of(nbt.getUniqueId(paramName)));
 					}
 					else {
@@ -1055,5 +1057,9 @@ public class VillagerAttributes {
 
 	public boolean getIsBeingChased() {
 		return dataManager.get(IS_BEING_CHASED);
+	}
+
+	public boolean isImportant() {
+		return RadixLogic.getBooleanWithProbability(1);
 	}
 }

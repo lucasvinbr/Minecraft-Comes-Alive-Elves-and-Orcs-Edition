@@ -3,12 +3,14 @@ package mca.entity;
 import java.util.Random;
 
 import mca.actions.ActionMate;
+import mca.core.MCA;
 import mca.enums.EnumProfession;
 import mca.enums.EnumRace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 import radixcore.constant.Time;
+import radixcore.modules.RadixLogic;
 
 public class EntityOrcMCA extends EntityVillagerMCA {
 	private int timeUntilNext;
@@ -42,8 +44,12 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
+		if (RadixLogic.getBooleanWithProbability(1)) {
+			behaviors.getAction(ActionMate.class).setIsActive(MCA.isMatingSeason());
+		}
 	}
 
+	@Override
 	public void addAI() {
 		super.addAI();
 		behaviors.getAction(ActionMate.class).setIsActive(true);

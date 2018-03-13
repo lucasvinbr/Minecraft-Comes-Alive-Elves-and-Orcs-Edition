@@ -23,12 +23,10 @@ import radixcore.constant.Font.Color;
 import radixcore.constant.Font.Format;
 
 /** Class for an item dropped containing data about the villager who died. */
-public class ItemMemorial extends Item
-{
+public class ItemMemorial extends Item {
 	private EnumMemorialType type;
 
-	public ItemMemorial(EnumMemorialType type)
-	{
+	public ItemMemorial(EnumMemorialType type) {
 		super();
 
 		this.type = type;
@@ -36,12 +34,11 @@ public class ItemMemorial extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) 
-	{
+	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand,
+			EnumFacing facing, float hitX, float hitY, float hitZ) {
 		ItemStack stack = playerIn.getHeldItem(hand);
-		
-		if (!worldIn.isRemote && stack.hasTagCompound())
-		{
+
+		if (!worldIn.isRemote && stack.hasTagCompound()) {
 			pos = pos.add(0, 1, 0);
 			worldIn.setBlockState(pos, BlocksMCA.memorial.getDefaultState(), 2);
 			TileMemorial tile = (TileMemorial) worldIn.getTileEntity(pos);
@@ -49,16 +46,16 @@ public class ItemMemorial extends Item
 			if (tile != null) {
 				tile.setType(this.type);
 				tile.setTransitiveVillagerData(new TransitiveVillagerData(stack.getTagCompound()));
-				tile.setOwnerName(stack.getTagCompound().getString("ownerName"));
-				tile.setOwnerUUID(stack.getTagCompound().getUniqueId("ownerUUID"));
+				if(stack.getTagCompound() != null) {
+					tile.setOwnerName(stack.getTagCompound().getString("ownerName"));
+					tile.setOwnerUUID(stack.getTagCompound().getUniqueId("ownerUUID"));
+				}
 
-				if (stack.hasTagCompound())
-				{
+				if (stack.hasTagCompound()) {
 					tile.setRelation(EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")));
 				}
 
-				else
-				{
+				else {
 					tile.setRelation(EnumRelation.NONE);
 				}
 			}
@@ -66,53 +63,47 @@ public class ItemMemorial extends Item
 			playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
 			return EnumActionResult.SUCCESS;
 		}
-		
+
 		return EnumActionResult.PASS;
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) 
-	{
+	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 
-		if (stack.hasTagCompound())
-		{
+		if (stack.hasTagCompound()) {
 			TransitiveVillagerData data = new TransitiveVillagerData(stack.getTagCompound());
 			String ownerName = stack.getTagCompound().getString("ownerName");
 			String name = data.getName();
-			String relationId = EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")).getPhraseId(); 
-			
+			String relationId = EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")).getPhraseId();
+
 			tooltip.add(Color.WHITE + "Belonged to: ");
 
-			if (!relationId.equals("relation.none"))
-			{
+			if (!relationId.equals("relation.none")) {
 				tooltip.add(Color.GREEN + name + ", " + MCA.getLocalizer().getString(relationId) + " of " + ownerName);
 			}
-			
-			else
-			{
-				tooltip.add(Color.GREEN + name + " the " + MCA.getLocalizer().getString(data.getProfession().getLocalizationId()));
+
+			else {
+				tooltip.add(Color.GREEN + name + " the "
+						+ MCA.getLocalizer().getString(data.getProfession().getLocalizationId()));
 				tooltip.add("Captured by: " + ownerName);
 			}
 		}
 
-		else
-		{
+		else {
 			tooltip.add(Color.GREEN + "CREATIVE " + Format.RESET + "- No villager attached.");
 			tooltip.add("Right-click a villager to attach them");
 			tooltip.add("to this object.");
 		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
-		{
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			tooltip.add("");
 			tooltip.add("An item once owned by a");
 			tooltip.add("villager who has died. Revive ");
 			tooltip.add("them using the " + Color.YELLOW + "Staff of Life" + Color.GRAY + ".");
 		}
 
-		else
-		{
+		else {
 			tooltip.add("");
 			tooltip.add("Hold " + Color.YELLOW + "SHIFT" + Color.GRAY + " for info.");
 		}
