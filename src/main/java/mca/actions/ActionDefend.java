@@ -21,6 +21,7 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.AbstractChestHorse;
+import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
@@ -244,7 +245,8 @@ public class ActionDefend extends AbstractAction {
 			else {
 				List<EntityAnimal> animals = RadixLogic.getEntitiesWithinDistance(EntityAnimal.class, actor, 15);
 				for (EntityAnimal animal : animals) {
-					if (!(animal instanceof AbstractChestHorse) && !(animal instanceof EntityTameable)) {
+					if (!(animal instanceof AbstractHorse) && !(animal instanceof AbstractChestHorse)
+							&& !(animal instanceof EntityTameable)) {
 						possibleTargets.add(animal);
 					}
 				}
