@@ -5,7 +5,6 @@ import mca.entity.EntityOrcMCA;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
-import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.world.World;
@@ -54,15 +53,15 @@ public class ItemSpawnEggForOrcs extends ItemSpawnEgg {
 				world.spawnEntity(cat);
 			}
 		}
-		else {
-			EntityHorse horse = new EntityHorse(orc.world);
-			horse.setPosition(orc.posX, orc.posY, orc.posZ);
-			horse.setOwnerUniqueId(orc.getUniqueID());
-			horse.setHorseTamed(true);
-			horse.setHorseSaddled(true);
-			// horse.getPassengers().add(orc);
-			world.spawnEntity(horse);
-		}
+		// else {
+		// EntityHorse horse = new EntityHorse(orc.world);
+		// horse.setPosition(orc.posX, orc.posY, orc.posZ);
+		// horse.setOwnerUniqueId(orc.getUniqueID());
+		// horse.setHorseTamed(true);
+		// horse.setHorseSaddled(true);
+		// // horse.getPassengers().add(orc);
+		// world.spawnEntity(horse);
+		// }
 		if (RadixLogic.getBooleanWithProbability(50)) {
 			MCA.naturallySpawnOrcs(new Point3D(posX, posY, posZ), world, orc.getProfession());
 			// MCA.startOrcMatingSeason();

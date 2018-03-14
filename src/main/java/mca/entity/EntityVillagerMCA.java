@@ -143,7 +143,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.raceId = 0;
 		this.attributes.setRace(EnumRace.Villager);
 		this.attributes.setIsBeingChased(false);
-		pitch = RadixMath.getNumberInRange(0.7f, 1.3f);
+		if (this.attributes.getGender() == EnumGender.FEMALE) {
+			pitch = RadixMath.getNumberInRange(1.0f, 1.3f);
+		} else {
+			pitch = RadixMath.getNumberInRange(0.7f, 1.0f);
+		}
 		// pitch = (new Random().nextInt((13 - 7) + 1) + 7) / 10;
 		addAI();
 	}

@@ -2,9 +2,7 @@ package mca.actions;
 
 import java.util.List;
 
-import mca.core.MCA;
 import mca.entity.EntityVillagerMCA;
-import mca.enums.EnumRace;
 import mca.util.Utilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -37,9 +35,6 @@ public class ActionPatrol extends AbstractAction {
 		else {
 			timeUntilTick = 20;
 		}
-		if(actor.attributes.getRaceEnum() == EnumRace.Orc) {
-			actor.getBehavior(ActionMate.class).setIsActive(MCA.isMatingSeason());
-		}
 
 		if (EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup())
 				&& !actor.world.isDaytime()) {
@@ -57,7 +52,7 @@ public class ActionPatrol extends AbstractAction {
 					movePoint = new Point3D(doorPoint.iX(), doorPoint.iY(), doorPoint.iZ());
 					hasDoor = true;
 
-					Block block = (Block) RadixBlocks.getBlock(actor.world, doorPoint.iX(), doorPoint.iY(),
+					Block block = RadixBlocks.getBlock(actor.world, doorPoint.iX(), doorPoint.iY(),
 							doorPoint.iZ());
 					BlockDoor door = null;
 

@@ -337,7 +337,8 @@ public final class Config implements Serializable {
 						"True if players can have the ability to revive villagers they are related to. Creates a file in [world name]/data/ that could become very large on big servers.")
 						.getBoolean();
 		setMatingSeasonDuration(config
-				.get("mating_season_time", "How long the orc mating season lasts in minutes.", 1).getInt());
+				.get("mating_season_time", "How long the mating season lasts in minutes (not yet implemented).", 1)
+				.getInt());
 		showPlayerDataMigrationErrors =
 				config.get("Server",
 						"Show player data migration errors?",
@@ -372,7 +373,7 @@ public final class Config implements Serializable {
 		for (String s : config.getCategoryNames()) {
 			if (!s.equals("server")) {
 				IConfigElement element = new ConfigElement(config.getCategory(s));
-				for (IConfigElement e : (List<IConfigElement>) element.getChildElements()) {
+				for (IConfigElement e : element.getChildElements()) {
 					elements.add(e);
 				}
 			}

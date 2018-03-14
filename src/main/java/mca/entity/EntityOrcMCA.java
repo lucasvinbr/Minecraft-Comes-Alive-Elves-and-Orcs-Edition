@@ -3,14 +3,13 @@ package mca.entity;
 import java.util.Random;
 
 import mca.actions.ActionMate;
-import mca.core.MCA;
+import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
 import mca.enums.EnumRace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 import radixcore.constant.Time;
-import radixcore.modules.RadixLogic;
 
 public class EntityOrcMCA extends EntityVillagerMCA {
 	private int timeUntilNext;
@@ -21,7 +20,12 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 //		this.attributes.setProfession(EnumProfession.Orc);
 		this.attributes.setProfession(EnumProfession.Warrior);
 		this.attributes.setRace(EnumRace.Orc);
-		pitch = (new Random().nextFloat() * (1.0f - 0.5f)) + 0.5f;
+		if (this.attributes.getGender() == EnumGender.FEMALE) {
+			pitch = (new Random().nextFloat() * (1.3f - 1.0f)) + 1.0f;
+		}
+		else {
+			pitch = (new Random().nextFloat() * (1.0f - 0.5f)) + 0.5f;
+		}
 	}
 
 	@Override
@@ -41,14 +45,13 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 	}
 
 
-	@Override
-	public void onUpdate() {
-		super.onUpdate();
-		if (RadixLogic.getBooleanWithProbability(1)) {
-			behaviors.getAction(ActionMate.class).setIsActive(MCA.isMatingSeason());
-		}
-	}
-
+	// @Override
+	// public void onUpdate() {
+	// super.onUpdate();
+	// if (RadixLogic.getBooleanWithProbability(1)) {
+	// behaviors.getAction(ActionMate.class).setIsActive(MCA.isMatingSeason());
+	// }
+	// }
 	@Override
 	public void addAI() {
 		super.addAI();

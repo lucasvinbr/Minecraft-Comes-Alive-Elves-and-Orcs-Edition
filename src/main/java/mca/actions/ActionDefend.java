@@ -341,7 +341,7 @@ public class ActionDefend extends AbstractAction {
 		if (j > 0) {
 			entityarrow.setKnockbackStrength(j);
 		}
-		actor.swingArm(EnumHand.OFF_HAND);
+		actor.swingArm(EnumHand.MAIN_HAND);
 		shooter.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (shooter.getRNG().nextFloat() * 0.4F + 0.8F));
 		shooter.world.spawnEntity(entityarrow);
 	}

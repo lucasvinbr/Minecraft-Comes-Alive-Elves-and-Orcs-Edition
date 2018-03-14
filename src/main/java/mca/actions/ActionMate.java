@@ -120,10 +120,10 @@ public class ActionMate extends AbstractToggleAction {
 				tryAssignMate();
 			}
 		}
-		else {
-			setIsActive(false);
-			return;
-		}
+		// else {
+		// setIsActive(false);
+		// return;
+		// }
 
 	}
 

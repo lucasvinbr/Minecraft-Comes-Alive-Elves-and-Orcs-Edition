@@ -5,7 +5,7 @@ import mca.entity.EntityElfMCA;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
-import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.EntityParrot;
 import net.minecraft.world.World;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
@@ -27,13 +27,22 @@ public class ItemSpawnEggForElves extends ItemSpawnEgg {
 		elf.attributes.assignRandomSkin();
 		elf.setPosition(posX, posY, posZ);
 		world.spawnEntity(elf);
+		// if (RadixLogic.getBooleanWithProbability(50)) {
+		// EntityHorse horse = new EntityHorse(elf.world);
+		// horse.setPosition(elf.posX, elf.posY, elf.posZ);
+		// horse.setOwnerUniqueId(elf.getUniqueID());
+		// horse.setHorseTamed(true);
+		// horse.setHorseSaddled(true);
+		// elf.setPosition(elf.posX, elf.posY + 1, elf.posZ);
+		// world.spawnEntity(horse);
+		// }
 		if (RadixLogic.getBooleanWithProbability(75)) {
-			EntityHorse horse = new EntityHorse(elf.world);
-			horse.setPosition(elf.posX, elf.posY, elf.posZ);
-			horse.setOwnerUniqueId(elf.getUniqueID());
-			horse.setHorseTamed(true);
-			horse.setHorseSaddled(true);
-			world.spawnEntity(horse);
+			EntityParrot parrot = new EntityParrot(elf.world);
+			parrot.setOwnerId(elf.getUniqueID());
+			elf.setPet(parrot);
+			parrot.setTamed(true);
+			parrot.setPosition(elf.posX, elf.posY + 1, elf.posZ);
+			world.spawnEntity(parrot);
 		}
 		if (RadixLogic.getBooleanWithProbability(10)) {
 			MCA.naturallySpawnElves(new Point3D(posX, posY, posZ), world, elf.getProfession());
