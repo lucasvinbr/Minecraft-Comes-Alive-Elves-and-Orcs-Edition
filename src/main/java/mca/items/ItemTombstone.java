@@ -37,16 +37,12 @@ public class ItemTombstone extends Item {
 
 		if (side != EnumFacing.UP) {
 			return EnumActionResult.PASS;
-		}
-
-		else {
+		} else {
 			pos = pos.offset(side);
 
 			if (!BlocksMCA.tombstone.canPlaceBlockAt(world, pos)) {
 				return EnumActionResult.FAIL;
-			}
-
-			else {
+			} else {
 				int i = MathHelper.floor((double) ((player.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
 				world.setBlockState(pos,
 						BlocksMCA.tombstone.getDefaultState().withProperty(BlockTombstone.ROTATION, i),
@@ -73,7 +69,7 @@ public class ItemTombstone extends Item {
 		if (stack.hasTagCompound()) {
 			TransitiveVillagerData data = new TransitiveVillagerData(stack.getTagCompound());
 			String ownerName = null;
-			if(stack.getTagCompound() != null) {
+			if (stack.getTagCompound() != null) {
 				ownerName = stack.getTagCompound().getString("ownerName");
 			}
 			String name = data.getName();
@@ -83,16 +79,12 @@ public class ItemTombstone extends Item {
 
 			if (!relationId.equals("relation.none")) {
 				tooltip.add(Color.GREEN + name + ", " + MCA.getLocalizer().getString(relationId) + " of " + ownerName);
-			}
-
-			else {
+			} else {
 				tooltip.add(Color.GREEN + name + " the "
 						+ MCA.getLocalizer().getString(data.getProfession().getLocalizationId()));
 				tooltip.add("Captured by: " + ownerName);
 			}
-		}
-
-		else {
+		} else {
 			tooltip.add(Color.GREEN + "CREATIVE " + Format.RESET + "- No villager attached.");
 			tooltip.add("Right-click a villager to attach them");
 			tooltip.add("to this object.");
@@ -103,9 +95,7 @@ public class ItemTombstone extends Item {
 			tooltip.add("An item once owned by a");
 			tooltip.add("villager who has died. Revive ");
 			tooltip.add("them using the " + Color.YELLOW + "Staff of Life" + Color.GRAY + ".");
-		}
-
-		else {
+		} else {
 			tooltip.add("");
 			tooltip.add("Hold " + Color.YELLOW + "SHIFT" + Color.GRAY + " for info.");
 		}

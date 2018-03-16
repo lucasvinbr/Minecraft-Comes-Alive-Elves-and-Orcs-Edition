@@ -13,6 +13,7 @@ import mca.items.ItemNewOutfit;
 import mca.items.ItemSpawnEgg;
 import mca.items.ItemSpawnEggForElves;
 import mca.items.ItemSpawnEggForOrcs;
+import mca.items.ItemSpawnEggForWitch;
 import mca.items.ItemSpawnGrimReaper;
 import mca.items.ItemStaffOfLife;
 import mca.items.ItemTombstone;
@@ -53,6 +54,7 @@ public final class ItemsMCA {
 	public static final ItemBaby BABY_GIRL = new ItemBaby(false);
 	public static final Item BABY_GIRL_ORC = new ItemBaby(false, EnumRace.Orc);
 	public static final Item BABY_BOY_ORC = new ItemBaby(true, EnumRace.Orc);
+	public static final ItemSpawnEggForWitch EGG_WITCH = new ItemSpawnEggForWitch();
 	public static final ItemSpawnEgg EGG_MALE = new ItemSpawnEgg(true);
 	public static final ItemSpawnEgg EGG_FEMALE = new ItemSpawnEgg(false);
 	public static final ItemSpawnEgg EGG_ORC = new ItemSpawnEggForOrcs(true); // They're dudes by default?
@@ -84,7 +86,8 @@ public final class ItemsMCA {
 
 	public static void register(RegistryEvent.Register<Item> event) {
 		final Item[] items = { WEDDING_RING, WEDDING_RING_RG, ENGAGEMENT_RING, ENGAGEMENT_RING_RG, MATCHMAKERS_RING,
-				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, BABY_BOY_ORC, BABY_GIRL_ORC, EGG_MALE, EGG_FEMALE, EGG_ORC,
+				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, BABY_BOY_ORC, BABY_GIRL_ORC, EGG_WITCH, EGG_MALE,
+				EGG_FEMALE, EGG_ORC,
 				EGG_ELF, EGG_GRIM_REAPER,
 				CRYSTAL_BALL, ROSE_GOLD_INGOT, ROSE_GOLD_DUST, GOLD_DUST, NEW_OUTFIT, NEEDLE_AND_STRING, CLOTH,
 				TOMBSTONE, WHISTLE, VILLAGER_EDITOR, BROKEN_RING, CHILDS_DOLL, TOY_TRAIN, STAFF_OF_LIFE, BOOK_DEATH,
@@ -100,6 +103,7 @@ public final class ItemsMCA {
 		setItemName(BABY_BOY_ORC, "baby_boy_orc");
 		setItemName(BABY_GIRL, "baby_girl");
 		setItemName(BABY_GIRL_ORC, "baby_girl_orc");
+		setItemName(EGG_WITCH, "egg_witch");
 		setItemName(EGG_MALE, "egg_male");
 		setItemName(EGG_FEMALE, "egg_female");
 		setItemName(EGG_ORC, "egg_orc");
@@ -377,6 +381,7 @@ public final class ItemsMCA {
 
 	private static void setItemName(Item item, String itemName) {
 		item.setUnlocalizedName(itemName);
-		item.setRegistryName(new ResourceLocation(MCA.ID + ":" + itemName));
+		String resourceLocationName = String.format("%s:%s", MCA.ID, itemName);
+		item.setRegistryName(new ResourceLocation(resourceLocationName));
 	}
 }

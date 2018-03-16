@@ -1,16 +1,18 @@
 [
-{
-  "modid": "mcaoe",
-  "name": "Minecraft Comes Alive: Elves and Orcs Edition",
-  "description": "Replaces villagers with humans, adds marriage, children, and more!",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://github.com/adkins2010/Minecraft-Comes-Alive-Elves-and-Orcs-Edition",
-  "updateUrl": "https://github.com/adkins2010/Minecraft-Comes-Alive-Elves-and-Orcs-Edition",
-  "authorList": ["adkins2010"],
-  "credits": "Original work by WildBamaBoy & SheWolfDeadly.",
-  "logoFile": "mca.png",
-  "screenshots": [],
-  "dependencies": []
-}
+  {
+    "modid": "mcaoe",
+    "name": "Minecraft Comes Alive: Elves and Orcs Edition",
+    "description": "Replaces villagers with humans, adds marriage, children, and more!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/adkins2010/Minecraft-Comes-Alive-Elves-and-Orcs-Edition",
+    "updateUrl": "https://github.com/adkins2010/Minecraft-Comes-Alive-Elves-and-Orcs-Edition",
+    "authorList": [
+      "adkins2010"
+    ],
+    "credits": "Original work by WildBamaBoy & SheWolfDeadly.",
+    "logoFile": "mca.png",
+    "screenshots": [],
+    "dependencies": []
+  }
 ]

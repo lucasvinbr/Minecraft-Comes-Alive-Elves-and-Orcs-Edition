@@ -22,7 +22,9 @@ import net.minecraft.world.World;
 import radixcore.constant.Font.Color;
 import radixcore.constant.Font.Format;
 
-/** Class for an item dropped containing data about the villager who died. */
+/**
+ * Class for an item dropped containing data about the villager who died.
+ */
 public class ItemMemorial extends Item {
 	private EnumMemorialType type;
 
@@ -46,16 +48,14 @@ public class ItemMemorial extends Item {
 			if (tile != null) {
 				tile.setType(this.type);
 				tile.setTransitiveVillagerData(new TransitiveVillagerData(stack.getTagCompound()));
-				if(stack.getTagCompound() != null) {
+				if (stack.getTagCompound() != null) {
 					tile.setOwnerName(stack.getTagCompound().getString("ownerName"));
 					tile.setOwnerUUID(stack.getTagCompound().getUniqueId("ownerUUID"));
 				}
 
 				if (stack.hasTagCompound()) {
 					tile.setRelation(EnumRelation.getById(stack.getTagCompound().getInteger("ownerRelation")));
-				}
-
-				else {
+				} else {
 					tile.setRelation(EnumRelation.NONE);
 				}
 			}
@@ -81,16 +81,12 @@ public class ItemMemorial extends Item {
 
 			if (!relationId.equals("relation.none")) {
 				tooltip.add(Color.GREEN + name + ", " + MCA.getLocalizer().getString(relationId) + " of " + ownerName);
-			}
-
-			else {
+			} else {
 				tooltip.add(Color.GREEN + name + " the "
 						+ MCA.getLocalizer().getString(data.getProfession().getLocalizationId()));
 				tooltip.add("Captured by: " + ownerName);
 			}
-		}
-
-		else {
+		} else {
 			tooltip.add(Color.GREEN + "CREATIVE " + Format.RESET + "- No villager attached.");
 			tooltip.add("Right-click a villager to attach them");
 			tooltip.add("to this object.");
@@ -101,9 +97,7 @@ public class ItemMemorial extends Item {
 			tooltip.add("An item once owned by a");
 			tooltip.add("villager who has died. Revive ");
 			tooltip.add("them using the " + Color.YELLOW + "Staff of Life" + Color.GRAY + ".");
-		}
-
-		else {
+		} else {
 			tooltip.add("");
 			tooltip.add("Hold " + Color.YELLOW + "SHIFT" + Color.GRAY + " for info.");
 		}

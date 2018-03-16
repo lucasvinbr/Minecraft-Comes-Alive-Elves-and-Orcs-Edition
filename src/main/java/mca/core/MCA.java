@@ -32,7 +32,7 @@ import mca.entity.EntityElfMCA;
 import mca.entity.EntityGrimReaper;
 import mca.entity.EntityOrcMCA;
 import mca.entity.EntityVillagerMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.EntityWitchMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
 import mca.enums.EnumRace;
@@ -41,6 +41,7 @@ import mca.tile.TileMemorial;
 import mca.tile.TileTombstone;
 import mca.util.Either;
 import mca.util.SkinLoader;
+import mca.util.Utilities;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -58,6 +59,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFishFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -168,14 +170,19 @@ public class MCA {
 				EntityVillagerMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "OrcMCA"), EntityOrcMCA.class,
 				EntityOrcMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
-		EntityRegistry.registerModEntity(new ResourceLocation(ID, "WolfMCA"), EntityWolfMCA.class,
-				EntityWolfMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "ElfMCA"), EntityElfMCA.class,
 				EntityElfMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "FishHookMCA"), EntityChoreFishHook.class,
 				EntityChoreFishHook.class.getSimpleName(), config.baseEntityId + 1, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "GrimReaperMCA"), EntityGrimReaper.class,
 				EntityGrimReaper.class.getSimpleName(), config.baseEntityId + 2, this, 50, 2, true);
+		// EntityRegistry.registerModEntity(new ResourceLocation(ID, "WolfMCA"),
+		// EntityWolfMCA.class,
+		// EntityWolfMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2, true);
+		// EntityRegistry.registerModEntity(new ResourceLocation(ID, "WitchMCA"),
+		// EntityWitchMCA.class,
+		// EntityWitchMCA.class.getSimpleName(), config.baseEntityId, this, 50, 2,
+		// true);
 
 		// Tile registry
 		GameRegistry.registerTileEntity(TileTombstone.class, TileTombstone.class.getSimpleName());
@@ -671,6 +678,15 @@ public class MCA {
 		}
 
 		world.spawnEntity(elf);
+	}
+
+	public static void naturallySpawnWitches(Point3D pointOfSpawn, World world) {
+		EntityWitchMCA witch = new EntityWitchMCA(world);
+		witch.setAggressive(new Random().nextBoolean());
+		witch.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
+		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
+				witch.getPosition().getY(), witch.getPosition().getZ(), 2);
+		world.spawnEntity(witch);
 	}
 
 	public static void naturallySpawnVillagers(Point3D pointOfSpawn, World world, int originalProfession) {

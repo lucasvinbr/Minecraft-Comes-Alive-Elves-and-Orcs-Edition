@@ -9,26 +9,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class ItemTooltipAppender extends Item 
-{
+public class ItemTooltipAppender extends Item {
 	private List<String> info;
 
-	public ItemTooltipAppender()
-	{
+	public ItemTooltipAppender() {
 		super();
 		info = new ArrayList<String>();
 	}
-	
-	public ItemTooltipAppender setTooltip(String... lines)
-	{
+
+	public ItemTooltipAppender setTooltip(String... lines) {
 		Collections.addAll(info, lines);
-		
+
 		return this;
 	}
-	
+
 	@Override
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) 
-	{
+	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		tooltip.addAll(info);
 	}

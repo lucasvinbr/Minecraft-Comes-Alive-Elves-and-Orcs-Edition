@@ -21,81 +21,73 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentUtils;
 import net.minecraft.world.World;
 
-public class ItemGuideBook extends ItemWrittenBook 
-{
-	public ItemGuideBook()
-	{
+public class ItemGuideBook extends ItemWrittenBook {
+	public ItemGuideBook() {
 		super();
 	}
-	
+
 	@Override
-	public void onUpdate(ItemStack itemStack, World world, Entity entity, int unknownInt, boolean unknownBoolean)
-	{
+	public void onUpdate(ItemStack itemStack, World world, Entity entity, int unknownInt, boolean unknownBoolean) {
 		super.onUpdate(itemStack, world, entity, unknownInt, unknownBoolean);
 
-		if (!world.isRemote)
-		{
-			if (!itemStack.hasTagCompound())
-			{
+		if (!world.isRemote) {
+			if (!itemStack.hasTagCompound()) {
 				ItemsMCA.setBookNBT(itemStack);
 			}
 		}
 	}
-	
+
 	@Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        
-        if (worldIn.isRemote)
-        {
-        	playerIn.openGui(MCA.getInstance(), Constants.GUI_ID_GUIDEBOOK, worldIn, (int)playerIn.posX, (int)playerIn.posY, (int)playerIn.posZ);
-        }
-        
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
-    }
-	
-	private void resolveContents(ItemStack stack, EntityPlayer player)
-    {
-        if (stack.getTagCompound() != null)
-        {
-            NBTTagCompound nbttagcompound = stack.getTagCompound();
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+		ItemStack itemstack = playerIn.getHeldItem(handIn);
 
-            if (!nbttagcompound.getBoolean("resolved"))
-            {
-                nbttagcompound.setBoolean("resolved", true);
+		if (worldIn.isRemote) {
+			playerIn.openGui(MCA.getInstance(),
+					Constants.GUI_ID_GUIDEBOOK,
+					worldIn,
+					(int) playerIn.posX,
+					(int) playerIn.posY,
+					(int) playerIn.posZ);
+		}
 
-                if (validBookTagContents(nbttagcompound))
-                {
-                    NBTTagList nbttaglist = nbttagcompound.getTagList("pages", 8);
+		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+	}
 
-                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                    {
-                        String s = nbttaglist.getStringTagAt(i);
-                        ITextComponent itextcomponent;
+	private void resolveContents(ItemStack stack, EntityPlayer player) {
+		if (stack.getTagCompound() != null) {
+			NBTTagCompound nbttagcompound = stack.getTagCompound();
 
-                        try
-                        {
-                            itextcomponent = ITextComponent.Serializer.fromJsonLenient(s);
-                            itextcomponent = TextComponentUtils.processComponent(player, itextcomponent, player);
-                        }
-                        catch (Exception var9)
-                        {
-                            itextcomponent = new TextComponentString(s);
-                        }
+			if (!nbttagcompound.getBoolean("resolved")) {
+				nbttagcompound.setBoolean("resolved", true);
 
-                        nbttaglist.set(i, new NBTTagString(ITextComponent.Serializer.componentToJson(itextcomponent)));
-                    }
+				if (validBookTagContents(nbttagcompound)) {
+					NBTTagList nbttaglist = nbttagcompound.getTagList("pages", 8);
 
-                    nbttagcompound.setTag("pages", nbttaglist);
+					for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+						String s = nbttaglist.getStringTagAt(i);
+						ITextComponent itextcomponent;
 
-                    if (player instanceof EntityPlayerMP && player.getHeldItemMainhand() == stack)
-                    {
-                        Slot slot = player.openContainer.getSlotFromInventory(player.inventory, player.inventory.currentItem);
-                        ((EntityPlayerMP)player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
-                    }
-                }
-            }
-        }
-    }
+						try {
+							itextcomponent = ITextComponent.Serializer.fromJsonLenient(s);
+							itextcomponent = TextComponentUtils.processComponent(player, itextcomponent, player);
+						} catch (Exception var9) {
+							itextcomponent = new TextComponentString(s);
+						}
+
+						nbttaglist.set(i, new NBTTagString(ITextComponent.Serializer.componentToJson(itextcomponent)));
+					}
+
+					nbttagcompound.setTag("pages", nbttaglist);
+
+					if (player instanceof EntityPlayerMP && player.getHeldItemMainhand() == stack) {
+						Slot
+								slot =
+								player.openContainer.getSlotFromInventory(player.inventory,
+										player.inventory.currentItem);
+						((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
+					}
+				}
+			}
+		}
+	}
 }

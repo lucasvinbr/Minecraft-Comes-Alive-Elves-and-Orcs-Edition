@@ -39,9 +39,7 @@ public class ItemCrystalBall extends ItemSingle {
 
 			if (mc.isIntegratedServerRunning()) {
 				spawnDestinyRoom(player);
-			}
-
-			else if (!mc.isIntegratedServerRunning()) {
+			} else if (!mc.isIntegratedServerRunning()) {
 				player.openGui(MCA.getInstance(), Constants.GUI_ID_SETUP, world, (int) player.posX, (int) player.posY,
 						(int) player.posZ);
 			}

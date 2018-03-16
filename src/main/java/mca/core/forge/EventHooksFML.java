@@ -23,11 +23,12 @@ import mca.packets.PacketSpawnLightning;
 import mca.packets.PacketSyncConfig;
 import mca.util.Utilities;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -91,11 +92,11 @@ public class EventHooksFML {
 		}
 
 		// Sync the server's configuration, for display settings.
-		MCA.getPacketHandler().sendPacketToPlayer(new PacketSyncConfig(MCA.getConfig()), (EntityPlayerMP) event.player);
+		MCA.getPacketHandler().sendPacketToPlayer(new PacketSyncConfig(MCA.getConfig()), event.player);
 
 		// Send copy of the player data to the client.
 		if (nbtData != null) {
-			MCA.getPacketHandler().sendPacketToPlayer(new PacketPlayerDataLogin(nbtData), (EntityPlayerMP) player);
+			MCA.getPacketHandler().sendPacketToPlayer(new PacketPlayerDataLogin(nbtData), player);
 
 			if (setPermanentId) {
 				nbtData.setUUID(player.getUniqueID());
@@ -135,7 +136,7 @@ public class EventHooksFML {
 		}
 
 		if (playPortalAnimation) {
-			EntityPlayerSP player = (EntityPlayerSP) mc.player;
+			EntityPlayerSP player = mc.player;
 
 			if (player == null) {
 				return; // Crash when kicked from a server while using the ball. Client-side, so just
@@ -175,10 +176,10 @@ public class EventHooksFML {
 		if (serverTickCounter % 40 == 0) {
 			for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
 				for (int i = 0; i < world.loadedEntityList.size(); i++) {
-					Object obj = world.loadedEntityList.get(i);
-
-					if (obj instanceof EntityVillager) {
-						EntityVillager villager = (EntityVillager) obj;
+					Entity entity = world.loadedEntityList.get(i);
+					Biome biome = entity.world.getBiome(entity.getPosition());
+					if (entity instanceof EntityVillager) {
+						EntityVillager villager = (EntityVillager) entity;
 						logger.trace(MessageFormat.format("Villager Data: {0}", villager));
 						logger.debug(String.format("Profession Number: %d, Profession Name: %s",
 								villager.getProfession(), villager.getDisplayName()));
@@ -187,7 +188,7 @@ public class EventHooksFML {
 						try {
 							if (villager.getProfession() == 5) {
 
-								Biome biome = villager.world.getBiome(villager.getPos());
+								// Biome biome = villager.world.getBiome(villager.getPos());
 								logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
 								if (biome.getBiomeName().toLowerCase().contains("swamp")) {
 									doOverwriteVillagerWithOrc(villager);
@@ -213,6 +214,15 @@ public class EventHooksFML {
 							continue;
 						}
 					}
+					else if (entity instanceof EntityWitch) {
+						EntityWitch witch = (EntityWitch) entity;
+						// Biome biome = witch.world.getBiome(witch.getPosition());
+						logger.info(String.format("Spawning witch in %s biome ", biome.getBiomeName()));
+						if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+							doOverwriteWitchWithPrettyWitch(witch);
+							continue;
+						}
+					}
 				}
 			}
 		}
@@ -231,7 +241,7 @@ public class EventHooksFML {
 						+ (summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
 				double dZ = summonPos.iZ()
 						+ (summonWorld.rand.nextInt(6) * (RadixLogic.getBooleanWithProbability(50) ? 1 : -1));
-				double y = (double) RadixLogic.getSpawnSafeTopLevel(summonWorld, (int) dX, (int) dZ);
+				double y = RadixLogic.getSpawnSafeTopLevel(summonWorld, (int) dX, (int) dZ);
 				NetworkRegistry.TargetPoint lightningTarget = new NetworkRegistry.TargetPoint(
 						summonWorld.provider.getDimension(), dX, y, dZ, 64);
 				EntityLightningBolt lightning = new EntityLightningBolt(summonWorld, dX, y, dZ, false);
@@ -325,7 +335,7 @@ public class EventHooksFML {
 
 					for (EntityVillagerMCA entity : RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, world,
 							posX, posY, posZ, village.getVillageRadius())) {
-						EntityVillagerMCA human = (EntityVillagerMCA) entity;
+						EntityVillagerMCA human = entity;
 
 						// Count everyone except guards
 						if (human.attributes.getProfessionSkinGroup() != EnumProfessionSkinGroup.Guard) {
@@ -419,6 +429,11 @@ public class EventHooksFML {
 		villager.setDead();
 		MCA.naturallySpawnOrcs(new Point3D(villager.posX, villager.posY, villager.posZ), villager.world,
 				villager.getProfession());
+	}
+
+	public void doOverwriteWitchWithPrettyWitch(EntityWitch witch) {
+		witch.setDead();
+		MCA.naturallySpawnWitches(new Point3D(witch.posX, witch.posY, witch.posZ), witch.world);
 	}
 
 	public static void setReaperSummonPoint(World world, Point3D point) {

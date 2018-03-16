@@ -728,7 +728,16 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 	@Override
 	public void readSpawnData(ByteBuf buffer) {
-		attributes.readSpawnData(buffer);
+		System.out.println("ByteBuf: " + buffer.toString());
+		try {
+			attributes.readSpawnData(buffer);
+		}
+		catch (Exception e) {
+			System.out.println("Reader Index: " + buffer.readerIndex());
+			System.out.println("Writer Index: " + buffer.writerIndex());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

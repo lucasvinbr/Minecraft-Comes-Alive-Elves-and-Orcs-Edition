@@ -10,10 +10,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemSpawnGrimReaper extends Item
-{
-	public ItemSpawnGrimReaper()
-	{
+public class ItemSpawnGrimReaper extends Item {
+	public ItemSpawnGrimReaper() {
 		final String itemName = "EggGrimReaper";
 
 		this.setCreativeTab(MCA.getCreativeTab());
@@ -22,28 +20,32 @@ public class ItemSpawnGrimReaper extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) 
-	{
+	public EnumActionResult onItemUse(EntityPlayer playerIn,
+			World worldIn,
+			BlockPos pos,
+			EnumHand hand,
+			EnumFacing facing,
+			float hitX,
+			float hitY,
+			float hitZ) {
 		int posX = pos.getX();
 		int posY = pos.getY() + 1;
 		int posZ = pos.getZ();
-		
-		if (!worldIn.isRemote)
-		{
+
+		if (!worldIn.isRemote) {
 			double verticalOffset = 0.0D;
 
 			EntityGrimReaper reaper = new EntityGrimReaper(worldIn);
 			reaper.setPosition(posX + 0.5D, posY + verticalOffset, posZ + 0.5D);
 			reaper.world.spawnEntity(reaper);
-			
-			if (!playerIn.capabilities.isCreativeMode)
-			{
+
+			if (!playerIn.capabilities.isCreativeMode) {
 				playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
 			}
-			
+
 			return EnumActionResult.SUCCESS;
 		}
-		
+
 		return EnumActionResult.PASS;
 	}
 }

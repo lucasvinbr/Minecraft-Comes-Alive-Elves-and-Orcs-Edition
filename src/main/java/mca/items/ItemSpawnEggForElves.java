@@ -13,12 +13,13 @@ import radixcore.modules.RadixLogic;
 public class ItemSpawnEggForElves extends ItemSpawnEgg {
 	public ItemSpawnEggForElves(boolean isMale) {
 		super(isMale);
+		maxStackSize = 64;
 	}
 
 	@Override
 	public void spawnCreature(World world, double posX, double posY, double posZ) {
 		EntityVillagerMCA elf = new EntityElfMCA(world);
-		
+
 		elf.attributes.setGender(RadixLogic.getBooleanWithProbability(25) ? EnumGender.MALE : EnumGender.FEMALE);
 		elf.attributes.setRace(EnumRace.Elf);
 		elf.attributes.assignRandomName();

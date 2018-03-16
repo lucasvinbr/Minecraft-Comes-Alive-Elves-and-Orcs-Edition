@@ -59,28 +59,29 @@ public class ItemBaby extends Item {
 		this.isBoy = isBoy;
 		this.setMaxStackSize(1);
 	}
-	
+
 	public ItemBaby(boolean isBoy, EnumRace myRace) {
 		this.isBoy = isBoy;
 		this.myRace = myRace;
 		this.setMaxStackSize(1);
 	}
 
-//	public EntityVillagerMCA getFather() {
-//		return father;
-//	}
-//
+	//	public EntityVillagerMCA getFather() {
+	//		return father;
+	//	}
+	//
 	public void setFather(EntityVillagerMCA father) {
 		fatherName = father.attributes.getName();
 		fatherId = father.getUniqueID();
 		fatherGender = father.attributes.getGender();
 		fatherRace = father.attributes.getRaceEnum();
 	}
-//
-//	public EntityVillagerMCA getMother() {
-//		return mother;
-//	}
-//
+
+	//
+	//	public EntityVillagerMCA getMother() {
+	//		return mother;
+	//	}
+	//
 	public void setMother(EntityVillagerMCA mother) {
 		motherName = mother.attributes.getSpouseName();
 		motherId = mother.getUniqueID();
@@ -116,8 +117,8 @@ public class ItemBaby extends Item {
 
 					if (player.capabilities.isCreativeMode) {
 						TutorialManager.sendMessageToPlayer(player,
-						                                    "You can name a baby retrieved from",
-						                                    "creative mode by right-clicking the air.");
+								"You can name a baby retrieved from",
+								"creative mode by right-clicking the air.");
 					}
 				}
 			} else {
@@ -128,13 +129,13 @@ public class ItemBaby extends Item {
 
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player,
-	                                  World world,
-	                                  BlockPos pos,
-	                                  EnumHand hand,
-	                                  EnumFacing side,
-	                                  float hitX,
-	                                  float hitY,
-	                                  float hitZ) {
+			World world,
+			BlockPos pos,
+			EnumHand hand,
+			EnumFacing side,
+			float hitX,
+			float hitY,
+			float hitZ) {
 		logger.debug("onItemUse");
 		MCA.getLog().debug("onItemUse");
 		if (hand == EnumHand.OFF_HAND) {
@@ -144,7 +145,7 @@ public class ItemBaby extends Item {
 		ItemStack stack = player.getHeldItem(hand);
 		EnumActionResult result = EnumActionResult.FAIL;
 		try {
-			if(hasMother() && hasFather()) {
+			if (hasMother() && hasFather()) {
 				logger.debug("Has both NPC parents.");
 				MCA.getLog().debug("Has both NPC parents.");
 				EntityVillagerMCA mother = new EntityVillagerMCA(world);
@@ -160,7 +161,7 @@ public class ItemBaby extends Item {
 
 				result = onItemUseByVillager(mother, father, world, stack, pos);
 
-			} else if(hasMother()) {
+			} else if (hasMother()) {
 				logger.debug("Only has NPC mother");
 				MCA.getLog().debug("Only has NPC mother");
 				EntityVillagerMCA mother = new EntityVillagerMCA(world);
@@ -214,15 +215,14 @@ public class ItemBaby extends Item {
 					child.attributes.setRace(myRace);
 					child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
 					child.attributes.setIsChild(true);
-					if(stack.getTagCompound() != null) {
+					if (stack.getTagCompound() != null) {
 						child.attributes.setName(stack.getTagCompound().getString("name"));
-					}
-					else {
+					} else {
 						child.attributes.assignRandomName();
 					}
 					child.attributes.setProfession(EnumProfession.Child);
 					child.attributes.assignRandomSkin();
-//				child.attributes.assignRandomScale();
+					//				child.attributes.assignRandomScale();
 					if (fatherId != null) {
 						child.attributes.setFatherGender(fatherGender);
 						child.attributes.setFatherName(fatherName);
@@ -254,11 +254,10 @@ public class ItemBaby extends Item {
 					data.setOwnsBaby(false);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getLocalizedMessage(), e);
 		}
-		if(result == EnumActionResult.PASS) {
+		if (result == EnumActionResult.PASS) {
 			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 		}
 		return result;
@@ -272,7 +271,10 @@ public class ItemBaby extends Item {
 		return motherId != null && motherId != Constants.EMPTY_UUID;
 	}
 
-	public EnumActionResult onItemUseByVillager(EntityVillagerMCA villager, World world, ItemStack babyStack, BlockPos pos) {
+	public EnumActionResult onItemUseByVillager(EntityVillagerMCA villager,
+			World world,
+			ItemStack babyStack,
+			BlockPos pos) {
 		int posX = pos.getX();
 		int posY = pos.getY();
 		int posZ = pos.getZ();
@@ -295,8 +297,8 @@ public class ItemBaby extends Item {
 			}
 
 			EntityVillagerMCA child = new EntityVillagerMCA(world);
-			if(villager.attributes.getRaceEnum() == EnumRace.Orc) {
-				if(baby.isBoy) {
+			if (villager.attributes.getRaceEnum() == EnumRace.Orc) {
+				if (baby.isBoy) {
 					child.attributes.setProfession(EnumProfession.Guard);
 					child.attributes.setRace(EnumRace.Orc);
 				} else {
@@ -305,7 +307,7 @@ public class ItemBaby extends Item {
 				}
 			} else {
 				child.attributes.setProfession(EnumProfession.Child);
-				if(villager.attributes.getRaceEnum() == EnumRace.Elf) {
+				if (villager.attributes.getRaceEnum() == EnumRace.Elf) {
 					child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 					child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 				}
@@ -313,9 +315,9 @@ public class ItemBaby extends Item {
 			child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
 			child.attributes.setIsChild(true);
 			child.attributes.assignRandomName();
-//			child.attributes.setName(babyStack.getTagCompound().getString("name"));
+			//			child.attributes.setName(babyStack.getTagCompound().getString("name"));
 			child.attributes.assignRandomSkin();
-//			child.attributes.assignRandomScale();
+			//			child.attributes.assignRandomScale();
 			child.attributes.setMotherGender(motherGender);
 			child.attributes.setMotherName(motherName);
 			child.attributes.setMotherUUID(motherId);
@@ -339,7 +341,11 @@ public class ItemBaby extends Item {
 		return EnumActionResult.FAIL;
 	}
 
-	public EnumActionResult onItemUseByVillager(EntityVillagerMCA mother, EntityVillagerMCA father, World world, ItemStack babyStack, BlockPos pos) {
+	public EnumActionResult onItemUseByVillager(EntityVillagerMCA mother,
+			EntityVillagerMCA father,
+			World world,
+			ItemStack babyStack,
+			BlockPos pos) {
 
 		int posX = pos.getX();
 		int posY = pos.getY();
@@ -359,16 +365,18 @@ public class ItemBaby extends Item {
 			fatherRace = father.attributes.getRaceEnum();
 
 			EntityVillagerMCA child = new EntityVillagerMCA(world);
-			if(father.attributes.getRaceEnum() == EnumRace.Orc && mother.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (father.attributes.getRaceEnum() == EnumRace.Orc && mother.attributes.getRaceEnum() == EnumRace.Orc) {
 				child.attributes.setProfession(EnumProfession.Unassigned);
 				child.attributes.setRace(EnumRace.Orc);
-			} else if(father.attributes.getRaceEnum() == EnumRace.Elf && mother.attributes.getRaceEnum() == EnumRace.Elf) {
+			} else if (father.attributes.getRaceEnum() == EnumRace.Elf &&
+					mother.attributes.getRaceEnum() == EnumRace.Elf) {
 				child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 				child.attributes.setRace(EnumRace.Elf);
 			} else {
 
-				if(father.attributes.getRaceEnum() == EnumRace.Orc || mother.attributes.getRaceEnum() == EnumRace.Orc) {
-					if(baby.isBoy) {
+				if (father.attributes.getRaceEnum() == EnumRace.Orc ||
+						mother.attributes.getRaceEnum() == EnumRace.Orc) {
+					if (baby.isBoy) {
 						child.attributes.setProfession(EnumProfession.Unassigned);
 						child.attributes.setRace(EnumRace.Orc);
 					} else {
@@ -378,7 +386,8 @@ public class ItemBaby extends Item {
 				} else {
 					child = new EntityVillagerMCA(world);
 					child.attributes.setProfession(EnumProfession.Child);
-					if(father.attributes.getRaceEnum() == EnumRace.Elf || mother.attributes.getRaceEnum() == EnumRace.Elf) {
+					if (father.attributes.getRaceEnum() == EnumRace.Elf ||
+							mother.attributes.getRaceEnum() == EnumRace.Elf) {
 						child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 						child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 					}
@@ -386,10 +395,10 @@ public class ItemBaby extends Item {
 			}
 			child.attributes.setIsChild(true);
 			child.attributes.setGender(baby.isBoy ? EnumGender.MALE : EnumGender.FEMALE);
-//			child.attributes.setName(babyStack.getTagCompound().getString("name"));
+			//			child.attributes.setName(babyStack.getTagCompound().getString("name"));
 			child.attributes.assignRandomName();
 			child.attributes.assignRandomSkin();
-//			child.attributes.assignRandomScale();
+			//			child.attributes.assignRandomScale();
 			child.attributes.setMotherGender(motherGender);
 			child.attributes.setMotherName(motherName);
 			child.attributes.setMotherUUID(motherId);
@@ -451,10 +460,10 @@ public class ItemBaby extends Item {
 
 			tooltip.add(textColor + "Name: " + Format.RESET + stack.getTagCompound().getString("name"));
 			tooltip.add(textColor +
-			            "Age: " +
-			            Format.RESET +
-			            ageInMinutes +
-			            (ageInMinutes == 1 ? " minute" : " minutes"));
+					"Age: " +
+					Format.RESET +
+					ageInMinutes +
+					(ageInMinutes == 1 ? " minute" : " minutes"));
 			tooltip.add(textColor + "Parent: " + Format.RESET + ownerName);
 
 			if (stack.getTagCompound().getBoolean("isInfected")) {
@@ -469,8 +478,8 @@ public class ItemBaby extends Item {
 
 	private void updateBabyGrowth(ItemStack itemStack) {
 		if (itemStack != null &&
-		    itemStack.hasTagCompound() &&
-		    FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter() % Time.MINUTE == 0) {
+				itemStack.hasTagCompound() &&
+				FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter() % Time.MINUTE == 0) {
 			int age = itemStack.getTagCompound().getInteger("age");
 			age++;
 			itemStack.getTagCompound().setInteger("age", age);

@@ -17,18 +17,19 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderTombstone extends TileEntitySpecialRenderer<TileTombstone>
-{
+public class RenderTombstone extends TileEntitySpecialRenderer<TileTombstone> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation("mca:textures/blocks/Tombstone.png");
 	private final ModelTombstone tombstoneModel;
 
-	public RenderTombstone()
-	{
+	public RenderTombstone() {
 		tombstoneModel = new ModelTombstone();
 	}
 
-	public void renderTombstoneAt(TileTombstone tombstoneEntity, double posX, double posY, double posZ, float partialTickTime)
-	{
+	public void renderTombstoneAt(TileTombstone tombstoneEntity,
+			double posX,
+			double posY,
+			double posZ,
+			float partialTickTime) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		final FontRenderer fontRenderer = getFontRenderer();
 
@@ -57,16 +58,17 @@ public class RenderTombstone extends TileEntitySpecialRenderer<TileTombstone>
 		GL11.glNormal3f(0.0F, 0.0F, -1F * 0.017F);
 		GL11.glDepthMask(false);
 
-		for (int line = 0; line < tombstoneEntity.signText.length; line++)
-		{
+		for (int line = 0; line < tombstoneEntity.signText.length; line++) {
 			String lineText = tombstoneEntity.signText[line].getUnformattedText();
 
-			if (line == tombstoneEntity.lineBeingEdited)
-			{
+			if (line == tombstoneEntity.lineBeingEdited) {
 				lineText = stringBuilder.append("> ").append(lineText).append(" <").toString();
 			}
 
-			fontRenderer.drawString(lineText, -fontRenderer.getStringWidth(lineText) / 2, line * 10 - tombstoneEntity.signText.length * 5, 0x000000);
+			fontRenderer.drawString(lineText,
+					-fontRenderer.getStringWidth(lineText) / 2,
+					line * 10 - tombstoneEntity.signText.length * 5,
+					0x000000);
 		}
 
 		GL11.glDepthMask(true);
@@ -74,30 +76,31 @@ public class RenderTombstone extends TileEntitySpecialRenderer<TileTombstone>
 	}
 
 	@Override
-	public void render(TileTombstone te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
-	{
+	public void render(TileTombstone te,
+			double x,
+			double y,
+			double z,
+			float partialTicks,
+			int destroyStage,
+			float alpha) {
 		renderTombstoneAt(te, x, y, z, partialTicks);
 	}
 
 	/**
 	 * Binds the provided resource location to the texture manager.
-	 * 
+	 *
 	 * @param resourceLocation The tombstone's texture location.
 	 */
-	protected void bindResource(ResourceLocation resourceLocation)
-	{
+	protected void bindResource(ResourceLocation resourceLocation) {
 		final TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
-		if (textureManager != null)
-		{
+		if (textureManager != null) {
 			textureManager.bindTexture(resourceLocation);
 		}
 	}
 
-	private float setRotationByMeta(int meta)
-	{
-		switch (meta)
-		{
+	private float setRotationByMeta(int meta) {
+		switch (meta) {
 			case 0:
 				return 0F;
 			case 1:
