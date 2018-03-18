@@ -62,7 +62,7 @@ public class TransitiveVillagerData implements Serializable {
 		this.headTexture = attributes.getHeadTexture();
 		this.clothesTexture = attributes.getClothesTexture();
 		this.profession = attributes.getProfessionEnum().getId();
-		this.race = attributes.getRaceEnum().getId();
+		this.race = attributes.getRace().getId();
 		this.personality = attributes.getPersonality().getId();
 		this.gender = attributes.getGender().getId();
 		this.spouseUUID = attributes.getSpouseUUID();

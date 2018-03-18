@@ -3,91 +3,324 @@
  */
 package mca.entity;
 
-import net.minecraft.entity.IJumpingMount;
-import net.minecraft.entity.passive.AbstractHorse;
+import java.util.UUID;
+
+import mca.core.Constants;
+import mca.core.MCA;
+import mca.data.NBTPlayerData;
+import mca.enums.EnumGender;
+import mca.enums.EnumRace;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import radixcore.modules.RadixLogic;
 
 /**
  * @author Michael M. Adkins
  *
  */
-public class EntityWolfMCA extends EntityWolf implements IJumpingMount {
-
-	private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte>createKey(AbstractHorse.class,
-			DataSerializers.BYTE);
-	private float jumpPower;
+public class EntityWolfMCA extends EntityWolf implements EntityPet {
+	// private static final DataParameter<Boolean> BABY =
+	// EntityDataManager.<Boolean>createKey(EntityAgeable.class,
+	// DataSerializers.BOOLEAN);
+	// private EnumGender ownerGender = EnumGender.UNASSIGNED;
+	// private EnumRace ownerRace = EnumRace.Villager;
+	boolean ownedByPlayer = true;
+	public PetAttributes attributes;
+	Entity rider;
 	/**
 	 * @param worldIn
 	 */
 	public EntityWolfMCA(World worldIn) {
 		super(worldIn);
+		attributes = new PetAttributes(this);
+		attributes.initialize();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.minecraft.entity.IJumpingMount#setJumpPower(int)
+	/**
+	 * @param worldIn
+	 * @param owner
 	 */
-	@Override
-	public void setJumpPower(int jumpPowerIn) {
-			if (jumpPowerIn < 0) {
-				jumpPowerIn = 0;
-			}
-
-			if (jumpPowerIn >= 90) {
-				this.jumpPower = 1.0F;
-			}
-			else {
-				this.jumpPower = 0.4F + 0.4F * jumpPowerIn / 90.0F;
-			}
-
-	}
-
-	/* (non-Javadoc)
-	 * @see net.minecraft.entity.IJumpingMount#canJump()
-	 */
-	@Override
-	public boolean canJump() {
-		return true;
-	}
-
-	protected boolean getHorseWatchableBoolean(int p_110233_1_) {
-		return (this.dataManager.get(STATUS).byteValue() & p_110233_1_) != 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.minecraft.entity.IJumpingMount#handleStartJump(int)
-	 */
-	@Override
-	public void handleStartJump(int p_184775_1_) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see net.minecraft.entity.IJumpingMount#handleStopJump()
-	 */
-	@Override
-	public void handleStopJump() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public boolean setEntityOnShoulder(EntityPlayer p_191994_1_) {
-		NBTTagCompound nbttagcompound = new NBTTagCompound();
-		nbttagcompound.setString("id", this.getEntityString());
-		this.writeToNBT(nbttagcompound);
-
-		if (p_191994_1_.addShoulderEntity(nbttagcompound)) {
-			this.world.removeEntity(this);
-			return true;
+	public EntityWolfMCA(World worldIn, EntityPlayer owner) {
+		super(worldIn);
+		this.setOwnerId(owner.getUniqueID());
+		attributes = new PetAttributes(this);
+		attributes.initialize();
+		NBTPlayerData playerData = MCA.getPlayerData(owner);
+		ownedByPlayer = true;
+		EnumGender ownerGender = playerData.getGender();
+		EnumRace ownerRace = playerData.getRace();
+		attributes.setGender(ownerGender);
+		attributes.setName(getName());
+		if (ownerGender == EnumGender.FEMALE) {
+			setTamed(false);
+			super.setCollarColor(EnumDyeColor.PINK);
+		}
+		else if (ownerRace == EnumRace.Orc) {
+			setTamed(false);
+			super.setCollarColor(EnumDyeColor.BROWN);
+		}
+		else if (ownerRace == EnumRace.Elf) {
+			setTamed(false);
+			super.setCollarColor(EnumDyeColor.GREEN);
 		}
 		else {
-			return false;
+			setTamed(true);
+			super.setCollarColor(EnumDyeColor.BLUE);
 		}
 	}
+
+	/**
+	 * @param worldIn
+	 * @param owner
+	 */
+	public EntityWolfMCA(World worldIn, EntityVillagerMCA owner) {
+		super(worldIn);
+		this.setOwnerId(owner.getUniqueID());
+		attributes = new PetAttributes(this);
+		attributes.initialize();
+		ownedByPlayer = false;
+		if (owner.attributes.getGender() == EnumGender.FEMALE) {
+			super.setCollarColor(EnumDyeColor.PINK);
+		}
+		else if (owner.attributes.getRace() == EnumRace.Orc) {
+			super.setCollarColor(EnumDyeColor.BROWN);
+		}
+		else if (owner.attributes.getRace() == EnumRace.Elf) {
+			super.setCollarColor(EnumDyeColor.GREEN);
+		}
+		else {
+			super.setCollarColor(EnumDyeColor.BLUE);
+		}
+	}
+
+	public boolean isOwnedByPlayer() {
+		return ownedByPlayer;
+	}
+
+	/**
+	 * @return the ownerGender
+	 */
+	public EnumGender getOwnerGender() {
+		EnumGender ownerGender = EnumGender.UNASSIGNED;
+		if (ownedByPlayer) {
+			NBTPlayerData playerData = MCA.getPlayerData((EntityPlayer) getOwner());
+			ownerGender = playerData.getGender();
+		}
+		else {
+			EntityVillagerMCA owner = getVillagerOwnerInstance();
+			ownerGender = owner.attributes.getGender();
+		}
+		return ownerGender;
+	}
+
+	// /**
+	// * @return the ownerRace
+	// */
+	// public EnumRace getOwnerRace() {
+	// EnumRace ownerRace = EnumRace.Villager;
+	// if (ownedByPlayer) {
+	// NBTPlayerData playerData = null;
+	// try {
+	// playerData = MCA.getPlayerData((EntityPlayer) getOwner());
+	// }
+	// catch (NullPointerException e) {
+	// // e.printStackTrace();
+	// ownerRace = EnumRace.Elf;
+	// }
+	// if (playerData != null) {
+	// ownerRace = playerData.getRace();
+	// }
+	// }
+	// else {
+	// EntityVillagerMCA owner = null;
+	// try {
+	// owner = getVillagerOwnerInstance();
+	// }
+	// catch (NullPointerException e) {
+	// // ownerRace = EnumRace.Villager;
+	// }
+	// if (owner != null) {
+	// ownerRace = owner.attributes.getRace();
+	// }
+	// }
+	// return ownerRace;
+	// }
+
+	public EntityVillagerMCA getVillagerOwnerInstance() {
+		if (this.getOwnerId() != null && this.getOwnerId() != Constants.EMPTY_UUID) {
+			for (Object obj : world.loadedEntityList) {
+				if (obj instanceof EntityVillagerMCA) {
+					EntityVillagerMCA villager = (EntityVillagerMCA) obj;
+
+					if (villager.getUniqueID().equals(getOwnerId())) {
+						return villager;
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public EntityPlayer getOwnerPlayer() {
+		try {
+			UUID uuid = this.getOwnerId();
+			return uuid == null || uuid == Constants.EMPTY_UUID ? null : this.world.getPlayerEntityByUUID(uuid);
+		}
+		catch (IllegalArgumentException var2) {
+			return null;
+		}
+	}
+
+	@Override
+	public EntityLivingBase getOwner() {
+		if (ownedByPlayer) {
+			return getOwnerPlayer();
+		}
+		return getVillagerOwnerInstance();
+	}
+
+	/**
+	 * @param owner
+	 */
+	public void setOwner(EntityLivingBase owner) {
+		this.setOwnerId(owner.getUniqueID());
+		if (owner instanceof EntityPlayerMP) {
+			ownedByPlayer = true;
+		}
+		else {
+			ownedByPlayer = false;
+		}
+		// if (getOwnerGender() == EnumGender.FEMALE) {
+		// super.setCollarColor(EnumDyeColor.PINK);
+		// }
+		// else if (getOwnerRace() == EnumRace.Orc) {
+		// super.setCollarColor(EnumDyeColor.BROWN);
+		// }
+		// else if (getOwnerRace() == EnumRace.Elf) {
+		// super.setCollarColor(EnumDyeColor.GREEN);
+		// }
+		// else {
+		// super.setCollarColor(EnumDyeColor.BLUE);
+		// }
+	}
+
+	@Override
+	public void onLivingUpdate() {
+		if (getOwner() == null || getOwner().isDead) {
+
+			EntityChicken chicken = RadixLogic.getClosestEntityExclusive(this, 15, EntityChicken.class);
+			if (chicken != null) {
+				setAttackTarget(chicken);
+			}
+			else {
+				EntityMob monster = RadixLogic.getClosestEntityExclusive(this, 5, EntityMob.class);
+				if (monster != null) {
+					setAttackTarget(monster);
+				}
+			}
+		}
+		super.onLivingUpdate();
+	}
+
+	@Override
+	public boolean isChild() {
+		if (ownedByPlayer) {
+			return super.isChild();
+		}
+		else {
+			EntityVillagerMCA owner = getVillagerOwnerInstance();
+			if (owner != null) {
+				return owner.attributes.getIsChild();
+			}
+		}
+		return super.isChild();
+	}
+
+	@Override
+	public int getGrowingAge() {
+		if (ownedByPlayer) {
+			return super.getGrowingAge();
+		}
+		else {
+			EntityVillagerMCA owner = getVillagerOwnerInstance();
+			if (owner != null) {
+				return owner.attributes.getIsChild() ? -100 : super.growingAge;
+			}
+		}
+		return super.growingAge;
+	}
+
+	// /**
+	// * @see net.minecraft.entity.passive.EntityWolf#onUpdate()
+	// */
+	// @Override
+	// public void onUpdate() {
+	// super.onUpdate();
+	//
+	// EntityVillagerMCA owner = getVillagerOwnerInstance();
+	// if (owner != null) {
+	// if (this.getNavigator().noPath()) {
+	// this.getNavigator().tryMoveToEntityLiving(owner, Constants.SPEED_WALK);
+	// }
+	// this.setGrowingAge(owner.getGrowingAge());
+	// }
+	// }
+
+	@Override
+	public void onDeath(DamageSource damageSource) {
+		try {
+			super.onDeath(damageSource);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (!ownedByPlayer) {
+			EntityVillagerMCA owner = getVillagerOwnerInstance();
+			if (owner != null) {
+				owner.setPet(null);
+			}
+		}
+	}
+
+	@Override
+	public void setOwnerId(UUID uniqueId) {
+		super.setOwnerId(uniqueId);
+
+	}
+
+	@Override
+	protected void addPassenger(Entity passenger) {
+		if (passenger.getRidingEntity() != this) {
+			if (passenger instanceof EntityVillagerMCA) {
+				((EntityVillagerMCA) passenger).setRidingEntity(this);
+			}
+		}
+		super.addPassenger(passenger);
+	}
+
+	/**
+	 * 
+	 */
+	public void removeRider() {
+		super.removePassenger(rider);
+	}
+
+	/**
+	 * @param rider
+	 *            of the wolf's back
+	 */
+	public void setRider(Entity rider) {
+		this.rider = rider;
+		addPassenger(rider);
+	}
+
 }

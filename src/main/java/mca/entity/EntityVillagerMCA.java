@@ -50,12 +50,14 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
 import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAIRestrictOpenDoor;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
@@ -66,6 +68,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -133,6 +136,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	protected int deathCountDown = 3 * Time.SECOND;
 	protected DamageSource damageSource; // for when they die. I'm going to have a death clock countdown.
 	protected EntityTameable pet;
+	private Entity ridingEntity;
 
 	public EntityVillagerMCA(World world) {
 		super(world);
@@ -145,7 +149,8 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.attributes.setIsBeingChased(false);
 		if (this.attributes.getGender() == EnumGender.FEMALE) {
 			pitch = RadixMath.getNumberInRange(1.0f, 1.3f);
-		} else {
+		}
+		else {
 			pitch = RadixMath.getNumberInRange(0.7f, 1.0f);
 		}
 		// pitch = (new Random().nextInt((13 - 7) + 1) + 7) / 10;
@@ -166,18 +171,18 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
 
 		int maxHealth = isProfessionSkinFighter(attributes.getProfessionSkinGroup())
-				|| attributes.getRaceEnum() == EnumRace.Orc ? MCA.getConfig().guardMaxHealth
+				|| attributes.getRace() == EnumRace.Orc ? MCA.getConfig().guardMaxHealth
 						: MCA.getConfig().villagerMaxHealth;
 		getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(maxHealth);
 		if (this.getHealth() > maxHealth || isProfessionSkinFighter(attributes.getProfessionSkinGroup())) {
 			this.setHealth(maxHealth);
 		}
-		if (!isProfessionSkinFighter(attributes.getProfessionSkinGroup()) || attributes.getRaceEnum() == EnumRace.Elf
-				|| attributes.getRaceEnum() == EnumRace.Orc) {
+		if (!isProfessionSkinFighter(attributes.getProfessionSkinGroup()) || attributes.getRace() == EnumRace.Elf
+				|| attributes.getRace() == EnumRace.Orc) {
 			this.tasks.addTask(2, new EntityAIMoveIndoors(this));
 		}
 		behaviors.getAction(ActionMate.class)
-				.setIsActive(MCA.getConfig().getSeasonalBreeders().contains(attributes.getRaceEnum()));
+				.setIsActive(MCA.getConfig().getSeasonalBreeders().contains(attributes.getRace()));
 		// behaviors.getAction(ActionRetreat.class).setIsActive(false);
 	}
 
@@ -194,6 +199,12 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			swingProgressTicks = 0;
 		}
 		swingProgress = (float) swingProgressTicks / (float) maxSwingProgressTicks;
+	}
+
+	@Override
+	public void onStruckByLightning(EntityLightningBolt entity) {
+		this.setDead();
+		MCA.naturallySpawnWitches(attributes.getGender(), new Point3D(this.posX, this.posY, this.posZ), world);
 	}
 
 	@Override
@@ -246,6 +257,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			if (pet.getNavigator().noPath()) {
 				pet.getNavigator().tryMoveToEntityLiving(this, Constants.SPEED_WALK);
 			}
+			pet.setGrowingAge(this.getGrowingAge());
 		}
 		if (this.dead) {
 			if (deathCountDown >= 0) {
@@ -291,47 +303,54 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			}
 			else {
 				int guiId = item instanceof ItemVillagerEditor ? Constants.GUI_ID_EDITOR : Constants.GUI_ID_INTERACT;
-				MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenGUIOnEntity(this.getEntityId(), guiId),
-						player);
+				MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenGUIOnEntity(this.getEntityId(), guiId), player);
 			}
 		}
 
 		return true;
 	}
 
-	public void playHurtSound() {
-		if (this.attributes.getRaceEnum() == EnumRace.Elf) {
-			if (this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(
-						new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2,
-						1.0f, this.getPitch());
-			}
-			else {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2,
-						1.0f, this.getPitch());
-			}
-		}
-		else if (this.attributes.getRaceEnum() == EnumRace.Orc) {
-			if (this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2,
-						1.0f, this.getPitch());
-			}
-			else {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2,
-						1.0f, this.getPitch());
-			}
+	@Override
+	protected SoundEvent getHurtSound(DamageSource source) {
+		// return attributes.getIsInfected() ? SoundEvents.ENTITY_ZOMBIE_HURT : null;
+		return getHurtSound();
+	}
+
+	protected SoundEvent getHurtSound() {
+		if (attributes.getIsInfected()) {
+			return SoundEvents.ENTITY_ZOMBIE_HURT;
 		}
 		else {
-			if (this.attributes.getGender() == EnumGender.FEMALE) {
-				this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1
-						: SoundsMCA.villager_female_hurt_2, 1.0f, this.getPitch());
+			if (this.attributes.getRace() == EnumRace.Elf) {
+				if (this.attributes.getGender() == EnumGender.FEMALE) {
+					return new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2;
+				}
+				else {
+					return new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2;
+				}
+			}
+			else if (this.attributes.getRace() == EnumRace.Orc) {
+				if (this.attributes.getGender() == EnumGender.FEMALE) {
+					return new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2;
+				}
+				else {
+					return new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2;
+				}
 			}
 			else {
-				this.playSound(
-						new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2,
-						1.0f, this.getPitch());
+				if (this.attributes.getGender() == EnumGender.FEMALE) {
+					return new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1
+							: SoundsMCA.villager_female_hurt_2;
+				}
+				else {
+					return new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2;
+				}
 			}
 		}
+	}
+
+	public void playHurtSound() {
+		this.playSound(getHurtSound(), 1.0f, pitch);
 	}
 
 	public void lieDown() {
@@ -353,11 +372,9 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	public void mate(EntityVillagerMCA mate) {
 		if (mate.attributes.getSpouseUUID() != this.getUniqueID()) {
 
-			this.facePosition(
-					new Point3D(mate.getPos().getX(), mate.getPos().getY(), mate.getPos().getZ()));
+			this.facePosition(new Point3D(mate.getPos().getX(), mate.getPos().getY(), mate.getPos().getZ()));
 			// this.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mate));
-			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.HEART, this.getWorld(),
-					this.getPositionVector().x,
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.HEART, this.getWorld(), this.getPositionVector().x,
 					this.getPositionVector().y, this.getPositionVector().z, 3);
 			this.startMarriage(Either.<EntityVillagerMCA, EntityPlayer>withL(mate));
 			mate.flee();
@@ -369,14 +386,13 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 			mate.facePosition(new Point3D(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
 			mate.playSound(
-					mate.attributes.getRaceEnum() == EnumRace.Orc
+					mate.attributes.getRace() == EnumRace.Orc
 							? (new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6)
 							: (new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4),
 					1.0f, mate.getPitch());
 			mate.rotationYawHead += 40;
 			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.VILLAGER_HAPPY, mate.getWorld(),
-					mate.getPositionVector().x,
-					mate.getPositionVector().y, mate.getPositionVector().z, 10);
+					mate.getPositionVector().x, mate.getPositionVector().y, mate.getPositionVector().z, 10);
 			this.rotationYawHead += 40;
 			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.VILLAGER_HAPPY, world, posX, posY, posZ, 10);
 			this.rotationPitch += 40;
@@ -385,7 +401,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			mate.getBehaviors().getAction(ActionStoryProgression.class)
 					.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
 
-			if (mate.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (mate.attributes.getRace() == EnumRace.Orc) {
 				mate.playSound((new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6), 1.0f,
 						mate.getPitch());
 			}
@@ -422,10 +438,43 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			else {
 				mate.riseOutOfBed();
 			}
-			if (mate.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (mate.attributes.getRace() == EnumRace.Orc) {
 				mate.riseOutOfBed();
 			}
 			this.riseOutOfBed();
+		}
+	}
+
+	public void playDeathSound() {
+		this.playSound(getDeathSound(), 1.0f, pitch);
+	}
+
+	@Override
+	protected SoundEvent getDeathSound() {
+		if (attributes.getIsInfected()) {
+			return SoundEvents.ENTITY_ZOMBIE_DEATH;
+		}
+		if (attributes.getRace() == EnumRace.Elf) {
+			if (attributes.getGender() == EnumGender.FEMALE) {
+				return new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1 : SoundsMCA.heroic_female_death_2;
+			}
+			else {
+				return new Random().nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2;
+			}
+		}
+		if (attributes.getRace() == EnumRace.Orc) {
+			if (attributes.getGender() == EnumGender.FEMALE) {
+				return new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2;
+			}
+			else {
+				return new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2;
+			}
+		}
+		if (attributes.getGender() == EnumGender.FEMALE) {
+			return new Random().nextBoolean() ? SoundsMCA.villager_female_death_1 : SoundsMCA.villager_female_death_2;
+		}
+		else {
+			return new Random().nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2;
 		}
 	}
 
@@ -446,39 +495,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			ItemStack tombStack = new ItemStack(tombstone);
 			tombstone.addInformation(tombStack, world, stats, ITooltipFlag.TooltipFlags.NORMAL);
 			getVillagerInventory().addItem(tombStack);
-			if (attributes.getRaceEnum() == EnumRace.Elf) {
-				if (attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1
-							: SoundsMCA.heroic_female_death_2, 1.0f, pitch);
-				}
-				else {
-					this.playSound(
-							new Random().nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2,
-							1.0f, pitch);
-				}
-			}
-			else if (attributes.getRaceEnum() == EnumRace.Orc) {
-				if (attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(
-							new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2,
-							1.0f, pitch);
-				}
-				else {
-					this.playSound(
-							new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2,
-							1.0f, pitch);
-				}
-			}
-			else {
-				if (attributes.getGender() == EnumGender.FEMALE) {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_female_death_1
-							: SoundsMCA.villager_female_death_2, 1.0f, pitch);
-				}
-				else {
-					this.playSound(new Random().nextBoolean() ? SoundsMCA.villager_male_death_1
-							: SoundsMCA.villager_male_death_2, 1.0f, pitch);
-				}
-			}
+			playDeathSound();
 			// Switch to the sleeping skin and disable all chores/toggle AIs so they won't
 			// move
 			behaviors.disableAllToggleActions();
@@ -502,7 +519,6 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			// If married to a player, this player takes priority in receiving the memorial
 			// item for revival.
 			boolean memorialDropped = false;
-
 
 			if (attributes.isMarriedToAPlayer()) {
 				NBTPlayerData playerData = MCA.getPlayerData(world, attributes.getSpouseUUID());
@@ -558,14 +574,16 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			if (pet != null) {
 				pet.setTamed(false);
 				pet.setOwnerId(Constants.EMPTY_UUID);
-				if (attributes.getRaceEnum() == EnumRace.Orc) {
+				if (attributes.getRace() == EnumRace.Orc) {
 					pet.isDead = true;
 					pet.onKillCommand();
+				}
+				if (pet instanceof EntityWolfMCA) {
+					((EntityWolfMCA) pet).setCollarColor(EnumDyeColor.BLACK);
 				}
 			}
 			this.dead = true;
 		}
-
 
 		try {
 			super.onDeath(damageSource);
@@ -728,13 +746,12 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 	@Override
 	public void readSpawnData(ByteBuf buffer) {
-		System.out.println("ByteBuf: " + buffer.toString());
 		try {
 			attributes.readSpawnData(buffer);
 		}
 		catch (Exception e) {
-			System.out.println("Reader Index: " + buffer.readerIndex());
-			System.out.println("Writer Index: " + buffer.writerIndex());
+			// System.out.println("Reader Index: " + buffer.readerIndex());
+			// System.out.println("Writer Index: " + buffer.writerIndex());
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -748,16 +765,6 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	@Override
 	protected SoundEvent getAmbientSound() {
 		return null;
-	}
-
-	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return attributes.getIsInfected() ? SoundEvents.ENTITY_ZOMBIE_HURT : null;
-	}
-
-	@Override
-	protected SoundEvent getDeathSound() {
-		return attributes.getIsInfected() ? SoundEvents.ENTITY_ZOMBIE_DEATH : null;
 	}
 
 	@Override
@@ -847,10 +854,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			attributes.setSpouseUUID(spouse.getUniqueID());
 			attributes.setSpouseGender(spouse.attributes.getGender());
 
-			if (spouse.attributes.getRaceEnum() == EnumRace.Elf) {
+			if (spouse.attributes.getRace() == EnumRace.Elf) {
 				attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
 			}
-			else if (spouse.attributes.getRaceEnum() == EnumRace.Orc) {
+			else if (spouse.attributes.getRace() == EnumRace.Orc) {
 				attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
 			}
 			else {
@@ -860,10 +867,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			spouse.attributes.setSpouseName(this.attributes.getName());
 			spouse.attributes.setSpouseUUID(this.getUniqueID());
 			spouse.attributes.setSpouseGender(this.attributes.getGender());
-			if (attributes.getRaceEnum() == EnumRace.Elf) {
+			if (attributes.getRace() == EnumRace.Elf) {
 				spouse.attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
 			}
-			else if (attributes.getRaceEnum() == EnumRace.Orc) {
+			else if (attributes.getRace() == EnumRace.Orc) {
 				spouse.attributes.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
 			}
 			else {
@@ -887,10 +894,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			playerData.setSpouseName(this.getName());
 			playerData.setSpouseGender(attributes.getGender());
 			playerData.setSpouseUUID(this.getUniqueID());
-			if (attributes.getRaceEnum() == EnumRace.Elf) {
+			if (attributes.getRace() == EnumRace.Elf) {
 				playerData.setMarriageState(EnumMarriageState.MARRIED_TO_ELF);
 			}
-			else if (attributes.getRaceEnum() == EnumRace.Orc) {
+			else if (attributes.getRace() == EnumRace.Orc) {
 				playerData.setMarriageState(EnumMarriageState.MARRIED_TO_ORC);
 			}
 			else {
@@ -983,7 +990,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	public ItemStack getHeldItem(EnumHand hand) {
 		EnumBabyState babyState = attributes.getBabyState();
 		EnumProfession profession = attributes.getProfessionEnum();
-		EnumRace race = attributes.getRaceEnum();
+		EnumRace race = attributes.getRace();
 		ItemStack itemStack = ItemStack.EMPTY;
 		if (babyState != EnumBabyState.NONE) {
 			// VillagerInventory inventory = this.attributes.getInventory();
@@ -1321,8 +1328,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				List<EntityVillagerMCA> possibleTargets = RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class,
 						this, 10);
 				for (EntityVillagerMCA target : possibleTargets) {
-					if (target.attributes.getRaceEnum() == this.attributes.getRaceEnum()
-							&& target.isFighter()) {
+					if (target.attributes.getRace() == this.attributes.getRace() && target.isFighter()) {
 						navigator.tryMoveToEntityLiving(target, Constants.SPEED_RUN);
 						break;
 					}
@@ -1340,6 +1346,16 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		// this.behaviors.getAction(ActionRetreat.class).setIsActive(true);
 	}
 
+	// @Override
+	// public int getGrowingAge() {
+	// return attributes.getIsChild() ? -1 : attributes.getAge();
+	// }
+
+	@Override
+	public boolean isChild() {
+		return attributes.getIsChild();
+	}
+
 	public boolean isFighter() {
 		return this.attributes.getProfessionEnum() == EnumProfession.Archer
 				|| this.attributes.getProfessionEnum() == EnumProfession.Guard
@@ -1352,6 +1368,64 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 	public void setPet(EntityTameable pet) {
 		this.pet = pet;
+	}
+
+	/**
+	 * @return the ridingEntity
+	 */
+	@Override
+	public Entity getRidingEntity() {
+		return this.ridingEntity;
+	}
+
+	/**
+	 * @param ridingEntity
+	 *            the ridingEntity to set
+	 */
+	public void setRidingEntity(Entity ridingEntity) {
+		this.ridingEntity = ridingEntity;
+	}
+
+	@Override
+	public void updateRidden() {
+		Entity ride = this.getRidingEntity();
+
+		if (this.isRiding() && ride.isDead) {
+			this.dismountRidingEntity();
+		}
+		else {
+			this.motionX = 0.0D;
+			this.motionY = 0.0D;
+			this.motionZ = 0.0D;
+			if (!updateBlocked)
+				this.onUpdate();
+
+			if (this.isRiding()) {
+				ride.updatePassenger(this);
+			}
+		}
+	}
+
+	@Override
+	public void dismountRidingEntity() {
+		if (this.ridingEntity != null) {
+			Entity ride = this.ridingEntity;
+			if (!net.minecraftforge.event.ForgeEventFactory.canMountEntity(this, ride, false))
+				return;
+			this.ridingEntity = null;
+			super.dismountRidingEntity();
+		}
+	}
+
+	@Override
+	public boolean startRiding(Entity entityIn, boolean force) {
+		boolean flag = super.startRiding(entityIn, force);
+
+		if (flag && this.getLeashed()) {
+			this.clearLeashed(true, true);
+		}
+
+		return flag;
 	}
 
 	// public EnumRace getRace() {

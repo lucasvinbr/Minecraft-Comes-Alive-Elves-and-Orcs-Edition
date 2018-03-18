@@ -49,7 +49,7 @@ public class ActionProcreate extends AbstractAction {
 	public void onUpdateServer() {
 		if (getIsProcreating()) {
 			if(actor.attributes.getGender() == EnumGender.FEMALE) {
-				actor.playSound(actor.attributes.getRaceEnum() ==
+				actor.playSound(actor.attributes.getRace() ==
 						                EnumRace.Orc ?
 				                (new Random().nextBoolean() ?
 				                 SoundsMCA.femalehurt5 :

@@ -57,7 +57,7 @@ public class ActionMate extends AbstractToggleAction {
 		}
 		if (timeUntilTargetSearch <= 0) {
 			timeUntilTargetSearch = TARGET_SEARCH_INTERVAL;
-			setIsActive(MCA.isMyRacesMatingSeason(actor.attributes.getRaceEnum()));
+			setIsActive(MCA.isMyRacesMatingSeason(actor.attributes.getRace()));
 		}
 		else {
 			timeUntilTargetSearch--;
@@ -66,7 +66,7 @@ public class ActionMate extends AbstractToggleAction {
 		if (actor.getBehavior(ActionSleep.class).getIsSleeping()) {
 			return;
 		}
-		if (MCA.isMyRacesMatingSeason(actor.attributes.getRaceEnum())) {
+		if (MCA.isMyRacesMatingSeason(actor.attributes.getRace())) {
 			if (mate != null) {
 				double distanceToTarget = RadixMath.getDistanceToEntity(actor, mate);
 				if (distanceToTarget <= 2.0F) {
@@ -75,7 +75,7 @@ public class ActionMate extends AbstractToggleAction {
 					if (actor.onGround) {
 						actor.motionY += 0.45F;
 					}
-					if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
+					if (actor.attributes.getRace() == EnumRace.Orc) {
 						// Utilities.spawnParticlesAroundPointS(EnumParticleTypes.HEART,
 						// actor.getWorld(),
 						// actor.getPositionVector().x, actor.getPositionVector().y,

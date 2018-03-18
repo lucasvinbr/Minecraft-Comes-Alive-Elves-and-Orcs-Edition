@@ -1,6 +1,8 @@
 package mca.items;
 
+import mca.entity.EntityCatMCA;
 import mca.entity.EntityVillagerMCA;
+import mca.entity.EntityWolfMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +13,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import radixcore.modules.RadixLogic;
+import radixcore.modules.RadixMath;
 
 public class ItemSpawnEgg extends Item {
 	protected boolean isMale;
@@ -56,9 +60,25 @@ public class ItemSpawnEgg extends Item {
 		villager.attributes.setRace(EnumRace.Villager);
 		villager.setPosition(posX, posY, posZ);
 		world.spawnEntity(villager);
-		// if (RadixLogic.getBooleanWithProbability(2)) {
-		// MCA.naturallySpawnVillagers(new Point3D(posX, posY, posZ), world,
-		// villager.getProfession());
-		// }
+		if (RadixLogic.getBooleanWithProbability(50)) {
+			EntityWolfMCA dog = new EntityWolfMCA(world, villager);
+			dog.attributes.setTexture("mca:textures/doggy.png");
+			dog.attributes.setAngryTexture("mca:textures/doggy.png");
+			dog.setPosition(villager.posX, villager.posY, villager.posZ + 1);
+			dog.setTamed(false);
+			dog.setCustomNameTag(String.format("%s's dog", villager.getName()));
+			villager.setPet(dog);
+			world.spawnEntity(dog);
+		}
+		else {
+			EntityCatMCA cat = new EntityCatMCA(world);
+			cat.setPosition(villager.posX, villager.posY, villager.posZ);
+			cat.setTamed(true);
+			cat.setOwnerId(villager.getUniqueID());
+			cat.setTameSkin(RadixMath.getNumberInRange(0, 5));
+			cat.setCustomNameTag(String.format("%s's cat", villager.getName()));
+			villager.setPet(cat);
+			world.spawnEntity(cat);
+		}
 	}
 }

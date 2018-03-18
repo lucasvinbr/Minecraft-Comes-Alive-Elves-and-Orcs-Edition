@@ -74,7 +74,7 @@ public class ItemBaby extends Item {
 		fatherName = father.attributes.getName();
 		fatherId = father.getUniqueID();
 		fatherGender = father.attributes.getGender();
-		fatherRace = father.attributes.getRaceEnum();
+		fatherRace = father.attributes.getRace();
 	}
 
 	//
@@ -86,7 +86,7 @@ public class ItemBaby extends Item {
 		motherName = mother.attributes.getSpouseName();
 		motherId = mother.getUniqueID();
 		motherGender = mother.attributes.getSpouseGender();
-		motherRace = mother.attributes.getRaceEnum();
+		motherRace = mother.attributes.getRace();
 	}
 
 	@Override
@@ -288,16 +288,16 @@ public class ItemBaby extends Item {
 				fatherName = villager.attributes.getName();
 				fatherId = villager.getUniqueID();
 				fatherGender = villager.attributes.getGender();
-				fatherRace = villager.attributes.getRaceEnum();
+				fatherRace = villager.attributes.getRace();
 			} else {
 				motherName = villager.attributes.getName();
 				motherId = villager.getUniqueID();
 				motherGender = villager.attributes.getGender();
-				motherRace = villager.attributes.getRaceEnum();
+				motherRace = villager.attributes.getRace();
 			}
 
 			EntityVillagerMCA child = new EntityVillagerMCA(world);
-			if (villager.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (villager.attributes.getRace() == EnumRace.Orc) {
 				if (baby.isBoy) {
 					child.attributes.setProfession(EnumProfession.Guard);
 					child.attributes.setRace(EnumRace.Orc);
@@ -307,7 +307,7 @@ public class ItemBaby extends Item {
 				}
 			} else {
 				child.attributes.setProfession(EnumProfession.Child);
-				if (villager.attributes.getRaceEnum() == EnumRace.Elf) {
+				if (villager.attributes.getRace() == EnumRace.Elf) {
 					child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 					child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 				}
@@ -357,25 +357,25 @@ public class ItemBaby extends Item {
 			motherName = mother.attributes.getSpouseName();
 			motherId = mother.getUniqueID();
 			motherGender = mother.attributes.getSpouseGender();
-			motherRace = mother.attributes.getRaceEnum();
+			motherRace = mother.attributes.getRace();
 
 			fatherName = father.attributes.getName();
 			fatherId = father.getUniqueID();
 			fatherGender = father.attributes.getGender();
-			fatherRace = father.attributes.getRaceEnum();
+			fatherRace = father.attributes.getRace();
 
 			EntityVillagerMCA child = new EntityVillagerMCA(world);
-			if (father.attributes.getRaceEnum() == EnumRace.Orc && mother.attributes.getRaceEnum() == EnumRace.Orc) {
+			if (father.attributes.getRace() == EnumRace.Orc && mother.attributes.getRace() == EnumRace.Orc) {
 				child.attributes.setProfession(EnumProfession.Unassigned);
 				child.attributes.setRace(EnumRace.Orc);
-			} else if (father.attributes.getRaceEnum() == EnumRace.Elf &&
-					mother.attributes.getRaceEnum() == EnumRace.Elf) {
+			} else if (father.attributes.getRace() == EnumRace.Elf &&
+					mother.attributes.getRace() == EnumRace.Elf) {
 				child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 				child.attributes.setRace(EnumRace.Elf);
 			} else {
 
-				if (father.attributes.getRaceEnum() == EnumRace.Orc ||
-						mother.attributes.getRaceEnum() == EnumRace.Orc) {
+				if (father.attributes.getRace() == EnumRace.Orc ||
+						mother.attributes.getRace() == EnumRace.Orc) {
 					if (baby.isBoy) {
 						child.attributes.setProfession(EnumProfession.Unassigned);
 						child.attributes.setRace(EnumRace.Orc);
@@ -386,8 +386,8 @@ public class ItemBaby extends Item {
 				} else {
 					child = new EntityVillagerMCA(world);
 					child.attributes.setProfession(EnumProfession.Child);
-					if (father.attributes.getRaceEnum() == EnumRace.Elf ||
-							mother.attributes.getRaceEnum() == EnumRace.Elf) {
+					if (father.attributes.getRace() == EnumRace.Elf ||
+							mother.attributes.getRace() == EnumRace.Elf) {
 						child.attributes.setProfession(baby.isBoy ? EnumProfession.Guard : EnumProfession.Archer);
 						child.attributes.setRace(baby.isBoy ? EnumRace.Villager : EnumRace.Elf);
 					}

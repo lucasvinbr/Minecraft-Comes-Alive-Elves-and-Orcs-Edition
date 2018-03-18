@@ -106,7 +106,7 @@ public class GuiVillagerEditor extends GuiScreen {
 						.replace("mca:textures/skins/", "").replace("sleeping/", "").replace(".png", "");
 				professionButton.displayString = "Job: "
 						+ villager.attributes.getProfessionEnum().getUserFriendlyForm(villager);
-				raceButton.displayString = "Race: " + villager.attributes.getRaceEnum().getUserFriendlyForm(villager);
+				raceButton.displayString = "Race: " + villager.attributes.getRace().getUserFriendlyForm(villager);
 				personalityButton.displayString = "Personality: "
 						+ villager.attributes.getPersonality().getFriendlyName();
 			}
@@ -306,7 +306,7 @@ public class GuiVillagerEditor extends GuiScreen {
 		buttonList.add(shiftProfessionDownButton = new GuiButton(8, width / 2 - 210, height / 2 - 20, 20, 20, "<<"));
 
 		buttonList.add(raceButton = new GuiButton(6, width / 2 - 190, height / 2, 175, 20,
-				"Race: " + villager.attributes.getRaceEnum().getUserFriendlyForm(villager)));
+				"Race: " + villager.attributes.getRace().getUserFriendlyForm(villager)));
 		buttonList.add(shiftRaceUpButton = new GuiButton(7, width / 2 - 15, height / 2, 20, 20, ">>"));
 		buttonList.add(shiftRaceDownButton = new GuiButton(8, width / 2 - 210, height / 2, 20, 20, "<<"));
 

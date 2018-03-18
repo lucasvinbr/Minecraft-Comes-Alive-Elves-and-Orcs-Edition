@@ -212,7 +212,7 @@ public class VillagerAttributes {
 		if(skin == null || skin.isEmpty()) {
 //			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
 //					: skinGroup.getRandomFemaleSkin(getRaceEnum());
-			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRace());
 			setHeadTexture(skin);
 		}
 		
@@ -236,7 +236,7 @@ public class VillagerAttributes {
 //			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
 //					: skinGroup.getRandomFemaleSkin(getRaceEnum());
 			
-			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRaceEnum());
+			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRace());
 			setClothesTexture(skin);
 		}
 		return skin;
@@ -258,8 +258,8 @@ public class VillagerAttributes {
 		}
 		else {
 			EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
-			String skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
-					: skinGroup.getRandomFemaleSkin(getRaceEnum());
+			String skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRace())
+					: skinGroup.getRandomFemaleSkin(getRace());
 			setHeadTexture(skin);
 			setClothesTexture(skin);
 		}
@@ -305,7 +305,7 @@ public class VillagerAttributes {
 		villager.setProfession(profession.getId());
 	}
 
-	public EnumRace getRaceEnum() {
+	public EnumRace getRace() {
 		return EnumRace.getRaceById(dataManager.get(RACE));
 	}
 
@@ -333,10 +333,16 @@ public class VillagerAttributes {
 		dataManager.set(PERSONALITY, personality.getId());
 	}
 
+	/**
+	 * @return {@link EnumGender}
+	 */
 	public EnumGender getGender() {
 		return EnumGender.byId(dataManager.get(GENDER));
 	}
 
+	/**
+	 * @param gender
+	 */
 	public void setGender(EnumGender gender) {
 		dataManager.set(GENDER, gender.getId());
 	}
@@ -476,7 +482,12 @@ public class VillagerAttributes {
 	}
 
 	public void setFatherUUID(UUID uuid) {
-		dataManager.set(FATHER_UUID, Optional.of(uuid));
+		if (uuid == null) {
+			dataManager.set(FATHER_UUID, Constants.EMPTY_UUID_OPT);
+		}
+		else {
+			dataManager.set(FATHER_UUID, Optional.of(uuid));
+		}
 	}
 
 	public void setFatherGender(EnumGender gender) {
@@ -703,13 +714,13 @@ public class VillagerAttributes {
 	}
 
 	public void assignRandomProfession() {
-		if (getRaceEnum() == EnumRace.Villager) {
+		if (getRace() == EnumRace.Villager) {
 			setProfession(EnumProfession.getAtRandom());
 		}
-		else if (getRaceEnum() == EnumRace.Orc) {
+		else if (getRace() == EnumRace.Orc) {
 			setProfession(EnumProfession.Guard);
 		}
-		else if (getRaceEnum() == EnumRace.Elf) {
+		else if (getRace() == EnumRace.Elf) {
 			if (getGender() == EnumGender.MALE) {
 				setProfession(EnumProfession.Guard);
 			}

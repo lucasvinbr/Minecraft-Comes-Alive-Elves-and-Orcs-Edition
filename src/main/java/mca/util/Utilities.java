@@ -6,6 +6,7 @@ import mca.entity.EntityVillagerMCA;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.SPacketParticles;
@@ -46,12 +47,16 @@ public class Utilities {
 			SPacketParticles packet = new SPacketParticles(type, true, parX, parY, parZ, velX, velY, velZ, 0.0F, 0);
 
 			for (int j = 0; j < world.playerEntities.size(); ++j) {
-				EntityPlayerMP entityPlayerMP = (EntityPlayerMP) world.playerEntities.get(j);
-				BlockPos blockpos = entityPlayerMP.getPosition();
+				EntityPlayer entityPlayer = null;
+				entityPlayer = world.playerEntities.get(j);
+
+				BlockPos blockpos = entityPlayer.getPosition();
 				double distanceSq = blockpos.distanceSq(posX, posY, posZ);
 
 				if (distanceSq <= 256.0D) {
-					entityPlayerMP.connection.sendPacket(packet);
+					if (entityPlayer instanceof EntityPlayerMP) {
+						((EntityPlayerMP) entityPlayer).connection.sendPacket(packet);
+					}
 				}
 			}
 		}

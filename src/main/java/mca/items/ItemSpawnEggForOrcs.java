@@ -28,14 +28,13 @@ public class ItemSpawnEggForOrcs extends ItemSpawnEgg {
 		orc.setPosition(posX, posY, posZ);
 		world.spawnEntity(orc);
 
-		if (RadixLogic.getBooleanWithProbability(75)) {
-			EntityWolfMCA wolf = new EntityWolfMCA(world);
+		if (RadixLogic.getBooleanWithProbability(100)) {
+			EntityWolfMCA wolf = new EntityWolfMCA(world, orc);
 			wolf.setPosition(orc.posX, orc.posY, orc.posZ + 1);
 			wolf.setTamed(false);
 			wolf.setOwnerId(orc.getUniqueID());
-			// EntityAIBase aiFollowOwner = new EntityAIFollowOwner(wolf, 1.0D, 10.0F,
-			// 2.0F);
-			// wolf.tasks.addTask(1, aiFollowOwner);
+			wolf.attributes.setTexture("mca:textures/husky_untamed.png");
+			wolf.attributes.setAngryTexture("mca:textures/husky_angry.png");
 			wolf.setCustomNameTag(String.format("%s's wolf", orc.getName()));
 			orc.setPet(wolf);
 			world.spawnEntity(wolf);

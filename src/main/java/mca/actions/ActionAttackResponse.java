@@ -95,17 +95,17 @@ public class ActionAttackResponse extends AbstractAction {
 					} else if (distanceToTarget <= 1.8D) {
 
 						float attackDamage = 0.0f;
-						if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
+						if (actor.attributes.getRace() == EnumRace.Orc) {
 							attackDamage = MCA.getConfig().orcAttackDamage;
-						} else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
+						} else if (actor.attributes.getRace() == EnumRace.Elf) {
 							attackDamage = MCA.getConfig().elfAttackDamage;
 						} else {
 							attackDamage =
 									EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup()) ?
 									MCA.getConfig().guardAttackDamage :
 									MCA.getConfig().villagerAttackDamage;
-							if (actor.attributes.getRaceEnum() == EnumRace.Orc
-									|| actor.attributes.getRaceEnum() == EnumRace.Elf) {
+							if (actor.attributes.getRace() == EnumRace.Orc
+									|| actor.attributes.getRace() == EnumRace.Elf) {
 								actor.getBehavior(ActionCombat.class).setAttackTarget((EntityLivingBase) target);
 							}
 							if (!EntityVillagerMCA.isProfessionSkinFighter(actor.attributes.getProfessionSkinGroup())) {

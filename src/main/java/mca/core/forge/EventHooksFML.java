@@ -16,6 +16,7 @@ import mca.data.PlayerDataCollection;
 import mca.entity.EntityGrimReaper;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumBabyState;
+import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
 import mca.enums.EnumProfessionSkinGroup;
 import mca.packets.PacketPlayerDataLogin;
@@ -214,15 +215,15 @@ public class EventHooksFML {
 							continue;
 						}
 					}
-					else if (entity instanceof EntityWitch) {
-						EntityWitch witch = (EntityWitch) entity;
-						// Biome biome = witch.world.getBiome(witch.getPosition());
-						logger.info(String.format("Spawning witch in %s biome ", biome.getBiomeName()));
-						if (biome.getBiomeName().toLowerCase().contains("swamp")) {
-							doOverwriteWitchWithPrettyWitch(witch);
-							continue;
-						}
-					}
+					// else if (entity instanceof EntityWitch) {
+					// EntityWitch witch = (EntityWitch) entity;
+					// logger.info(String.format("Spawning witch in %s biome ",
+					// biome.getBiomeName()));
+					// if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+					// doOverwriteWitchWithPrettyWitch(witch);
+					// continue;
+					// }
+					// }
 				}
 			}
 		}
@@ -433,7 +434,9 @@ public class EventHooksFML {
 
 	public void doOverwriteWitchWithPrettyWitch(EntityWitch witch) {
 		witch.setDead();
-		MCA.naturallySpawnWitches(new Point3D(witch.posX, witch.posY, witch.posZ), witch.world);
+		
+		MCA.naturallySpawnWitches(RadixLogic.getBooleanWithProbability(25) ? EnumGender.MALE : EnumGender.FEMALE,
+				new Point3D(witch.posX, witch.posY, witch.posZ), witch.world);
 	}
 
 	public static void setReaperSummonPoint(World world, Point3D point) {

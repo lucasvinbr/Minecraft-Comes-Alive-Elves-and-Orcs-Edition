@@ -54,7 +54,7 @@ public class ActionDefend extends AbstractAction {
 		}
 		if ((actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard
 				|| actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Warrior
-				|| actor.attributes.getRaceEnum() == EnumRace.Orc || actor.attributes.getRaceEnum() == EnumRace.Elf)
+				|| actor.attributes.getRace() == EnumRace.Orc || actor.attributes.getRace() == EnumRace.Elf)
 				&& !actor.attributes.getIsInfected()) {
 			if (target == null) {
 				if (timeUntilTargetSearch <= 0) {
@@ -74,7 +74,7 @@ public class ActionDefend extends AbstractAction {
 				}
 
 				if (actor.attributes.getProfessionEnum() == EnumProfession.Archer
-						|| (actor.attributes.getRaceEnum() == EnumRace.Elf
+						|| (actor.attributes.getRace() == EnumRace.Elf
 								&& actor.attributes.getGender() == EnumGender.FEMALE)) {
 					actor.getLookHelper().setLookPosition(target.posX, target.posY + target.getEyeHeight(),
 							target.posZ, 10.0F, actor.getVerticalFaceSpeed());
@@ -144,13 +144,13 @@ public class ActionDefend extends AbstractAction {
 							if (actor.attributes.getProfessionSkinGroup() == EnumProfessionSkinGroup.Guard) {
 								attackDamage = MCA.getConfig().guardAttackDamage;
 							}
-							else if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
+							else if (actor.attributes.getRace() == EnumRace.Orc) {
 								attackDamage = MCA.getConfig().orcAttackDamage;
 							}
-							else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
+							else if (actor.attributes.getRace() == EnumRace.Elf) {
 								attackDamage = MCA.getConfig().elfAttackDamage;
 							}
-							if (actor.attributes.getRaceEnum() == EnumRace.Orc
+							if (actor.attributes.getRace() == EnumRace.Orc
 									&& actor.attributes.getGender() == EnumGender.MALE
 									&& target instanceof EntityVillagerMCA
 									&& ((EntityVillagerMCA) target).attributes.getGender() == EnumGender.FEMALE) {
@@ -196,33 +196,25 @@ public class ActionDefend extends AbstractAction {
 
 	private void tryAssignTarget() {
 		List<EntityLivingBase> possibleTargets = new ArrayList<EntityLivingBase>();
-		if (!actor.attributes.getIsChild()) {
-			List<EntityMob> nearbyMobs = RadixLogic.getEntitiesWithinDistance(EntityMob.class, actor, 15);
-			possibleTargets.addAll(nearbyMobs);
-		}
-		else {
-			if (actor.getPet() != null) {
-				EntityMob monster = RadixLogic.getClosestEntityExclusive(actor, 15, EntityMob.class);
-				actor.getPet().setAttackTarget(monster);
-			}
-		}
+
 		// List<EntityCreature> possibleTargets =
 		// RadixLogic.getEntitiesWithinDistance(EntityCreature.class, actor, 15);
 		double closestDistance = 100.0D;
-		if (actor.attributes.getRaceEnum() == EnumRace.Orc) {
+		if (actor.attributes.getRace() == EnumRace.Orc) {
 			closestDistance = 75.0d;
 			// PotionEffect strength = new PotionEffect(Potion.getPotionById(5), 200);
 			// logger.trace(String.format("Strength Effect: %s", strength.getEffectName()));
 			// actor.addPotionEffect(strength);
 
 			if (!actor.attributes.getIsChild()) {
-				List<EntityVillager> villagers = RadixLogic.getEntitiesWithinDistance(EntityVillager.class, actor, 15);
+				List<EntityVillager> villagers = RadixLogic.getEntitiesWithinDistance(EntityVillager.class, actor,
+						(int) closestDistance);
 				for (EntityVillager villager : villagers) {
 					if (villager instanceof EntityVillagerMCA) {
 						EntityVillagerMCA mcaVillager = (EntityVillagerMCA) villager;
-						if (mcaVillager.attributes.getRaceEnum() != EnumRace.Orc) {
+						if (mcaVillager.attributes.getRace() != EnumRace.Orc) {
 							if (!mcaVillager.attributes.isMarriedToAnOrc()) {
-								if (mcaVillager.attributes.getRaceEnum() != EnumRace.Elf || !EntityVillagerMCA
+								if (mcaVillager.attributes.getRace() != EnumRace.Elf || !EntityVillagerMCA
 										.isProfessionSkinFighter(mcaVillager.attributes.getProfessionSkinGroup())) {
 									if (mcaVillager.attributes.getGender() == EnumGender.FEMALE
 											|| (RadixLogic.getBooleanWithProbability(25))) {
@@ -231,7 +223,7 @@ public class ActionDefend extends AbstractAction {
 								}
 								if (mcaVillager.attributes.getIsInfected()
 										|| mcaVillager.attributes.getGender() != EnumGender.FEMALE
-										|| (mcaVillager.attributes.getRaceEnum() == EnumRace.Elf
+										|| (mcaVillager.attributes.getRace() == EnumRace.Elf
 												|| EntityVillagerMCA.isProfessionSkinFighter(
 														mcaVillager.attributes.getProfessionSkinGroup()))) {
 									possibleTargets.add(mcaVillager);
@@ -243,7 +235,8 @@ public class ActionDefend extends AbstractAction {
 				}
 			}
 			else {
-				List<EntityAnimal> animals = RadixLogic.getEntitiesWithinDistance(EntityAnimal.class, actor, 15);
+				List<EntityAnimal> animals = RadixLogic.getEntitiesWithinDistance(EntityAnimal.class, actor,
+						(int) closestDistance);
 				for (EntityAnimal animal : animals) {
 					if (!(animal instanceof AbstractHorse) && !(animal instanceof AbstractChestHorse)
 							&& !(animal instanceof EntityTameable)) {
@@ -255,28 +248,29 @@ public class ActionDefend extends AbstractAction {
 				// .get(RadixMath.getNumberInRange(0, possibleTargets.size() - 1));
 				// actor.getPet().setAttackTarget(animal);
 				// }
-				List<EntitySlime> slimes = RadixLogic.getEntitiesWithinDistance(EntitySlime.class, actor, 15);
+				List<EntitySlime> slimes = RadixLogic.getEntitiesWithinDistance(EntitySlime.class, actor,
+						(int) closestDistance);
 				possibleTargets.addAll(slimes);
 			}
 		}
-		else if (actor.attributes.getRaceEnum() == EnumRace.Elf) {
+		else if (actor.attributes.getRace() == EnumRace.Elf) {
 			closestDistance = 125.0;
 			// PotionEffect speed = new PotionEffect(Potion.getPotionById(1), 200);
 			// logger.trace(String.format("Speed Effect: %s", speed.getEffectName()));
 			// actor.addPotionEffect(speed);
 		}
-		if (actor.attributes.getRaceEnum() == EnumRace.Elf || (actor.attributes.getRaceEnum() == EnumRace.Villager
+		if (actor.attributes.getRace() == EnumRace.Elf || (actor.attributes.getRace() == EnumRace.Villager
 				&& (actor.attributes.getProfessionEnum() == EnumProfession.Archer
 						|| actor.attributes.getProfessionEnum() == EnumProfession.Guard
 						|| actor.attributes.getProfessionEnum() == EnumProfession.Warrior))) {
 			if (!actor.attributes.getIsChild()) {
 				List<EntityVillagerMCA> villagers = RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, actor,
-						50);
+						(int)closestDistance);
 				for (EntityVillagerMCA villager : villagers) {
-					if (villager.attributes.getRaceEnum() == EnumRace.Orc && !actor.attributes.isMarriedToAnOrc()) {
+					if (villager.attributes.getRace() == EnumRace.Orc && !actor.attributes.isMarriedToAnOrc()) {
 						// PotionEffect slowness = new PotionEffect(Potion.getPotionById(2), 200);
 						// villager.addPotionEffect(slowness);
-						if (actor.attributes.getRaceEnum() == EnumRace.Elf && villager.attributes.isMarriedToAnElf()) {
+						if (actor.attributes.getRace() == EnumRace.Elf && villager.attributes.isMarriedToAnElf()) {
 							continue;
 						}
 						possibleTargets.add(villager);
@@ -300,6 +294,18 @@ public class ActionDefend extends AbstractAction {
 			actor.getPet().setAttackTarget(petTarget);
 		}
 
+		if (!actor.attributes.getIsChild()) {
+			List<EntityMob> nearbyMobs = RadixLogic.getEntitiesWithinDistance(EntityMob.class, actor,
+					(int) closestDistance);
+			possibleTargets.addAll(nearbyMobs);
+		}
+		else {
+			if (actor.getPet() != null) {
+				EntityMob monster = RadixLogic.getClosestEntityExclusive(actor, 15, EntityMob.class);
+				actor.getPet().setAttackTarget(monster);
+			}
+		}
+
 		for (Entity entity : possibleTargets) {
 			// if (!(entity instanceof EntityCreeper) && actor.canEntityBeSeen(entity)) {
 			if (actor.canEntityBeSeen(entity)) {
@@ -310,7 +316,7 @@ public class ActionDefend extends AbstractAction {
 						target = (EntityLiving) entity;
 					}
 					else if ((actor.getProfession() == EnumProfession.Archer.getId()
-							|| actor.attributes.getRaceEnum() == EnumRace.Elf)) {
+							|| actor.attributes.getRace() == EnumRace.Elf)) {
 						target = (EntityLiving) entity;
 					}
 				}

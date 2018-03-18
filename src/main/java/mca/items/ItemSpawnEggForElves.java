@@ -37,7 +37,7 @@ public class ItemSpawnEggForElves extends ItemSpawnEgg {
 		// elf.setPosition(elf.posX, elf.posY + 1, elf.posZ);
 		// world.spawnEntity(horse);
 		// }
-		if (RadixLogic.getBooleanWithProbability(75)) {
+		if (RadixLogic.getBooleanWithProbability(100)) {
 			EntityParrot parrot = new EntityParrot(elf.world);
 			parrot.setOwnerId(elf.getUniqueID());
 			elf.setPet(parrot);

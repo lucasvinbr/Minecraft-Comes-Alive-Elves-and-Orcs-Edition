@@ -3,8 +3,8 @@
  */
 package mca.client.render;
 
+import mca.client.model.ModelWolfMCA;
 import mca.entity.EntityWolfMCA;
-import net.minecraft.client.model.ModelWolf;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -19,15 +19,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 @SideOnly(Side.CLIENT)
 public class RenderWolfMCA<T extends EntityWolfMCA> extends RenderLiving<EntityWolfMCA> {
-	private static final ResourceLocation WOLFMCA_TEXTURES = new ResourceLocation("mca:textures/husky_untamed.png");
-	private static final ResourceLocation TAMED_WOLFMCA_TEXTURES = new ResourceLocation(
-			"mca:textures/husky_tamed.png");
-	private static final ResourceLocation ANRGY_WOLFMCA_TEXTURES = new ResourceLocation(
-			"mca:textures/husky_angry.png");
+	public static final ResourceLocation WOLFMCA_TEXTURE = new ResourceLocation("mca:textures/wolf.png");
+	public static final ResourceLocation TAMED_WOLFMCA_TEXTURE = new ResourceLocation("mca:textures/wolf_tame.png");
+	public static final ResourceLocation ANRGY_WOLFMCA_TEXTURE = new ResourceLocation("mca:textures/wolf_angry.png");
+	public static final ResourceLocation DOG_TEXTURE = new ResourceLocation("mca:textures/doggy.png");
 
 	public RenderWolfMCA(RenderManager manager) {
-		super(manager, new ModelWolf(), 0.5F);
-
+		super(manager, new ModelWolfMCA(), 0.5F);
 	}
 
 	/**
@@ -55,12 +53,13 @@ public class RenderWolfMCA<T extends EntityWolfMCA> extends RenderLiving<EntityW
 	 * you call Render.bindEntityTexture.
 	 */
 	@Override
-	protected ResourceLocation getEntityTexture(EntityWolfMCA entity) {
-		if (entity.isTamed()) {
-			return TAMED_WOLFMCA_TEXTURES;
+	protected ResourceLocation getEntityTexture(EntityWolfMCA wolf) {
+		if (wolf.attributes.getTexture() != null) {
+			return wolf.isAngry() ? new ResourceLocation(wolf.attributes.getAngryTexture())
+					: new ResourceLocation(wolf.attributes.getTexture());
 		}
 		else {
-			return entity.isAngry() ? ANRGY_WOLFMCA_TEXTURES : WOLFMCA_TEXTURES;
+			return wolf.isAngry() ? ANRGY_WOLFMCA_TEXTURE : wolf.isTamed() ? TAMED_WOLFMCA_TEXTURE : WOLFMCA_TEXTURE;
 		}
 	}
 

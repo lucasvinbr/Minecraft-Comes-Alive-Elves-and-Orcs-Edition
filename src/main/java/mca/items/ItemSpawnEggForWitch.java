@@ -4,6 +4,7 @@ import java.util.Random;
 
 import mca.core.MCA;
 import mca.entity.EntityWitchMCA;
+import mca.enums.EnumGender;
 import mca.util.Utilities;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -45,31 +46,19 @@ public class ItemSpawnEggForWitch extends Item {
 	}
 
 	public void spawnCreature(World world, double posX, double posY, double posZ) {
-		EntityWitchMCA witch = new EntityWitchMCA(world);
-		witch.setAggressive(new Random().nextBoolean());
-		try {
+		EntityWitchMCA witch = null;
+		witch = new EntityWitchMCA(world);
+		if (witch != null) {
+			witch.setAggressive(new Random().nextBoolean());
 			witch.setPosition(posX, posY, posZ);
-		}
-		catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
 			world.spawnEntity(witch);
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
-				witch.getPosition().getY(), witch.getPosition().getZ(), 2);
-		if (RadixLogic.getBooleanWithProbability(2)) {
-			try {
-				MCA.naturallySpawnWitches(new Point3D(posX, posY, posZ), world);
-			}
-			catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
+					witch.getPosition().getY(), witch.getPosition().getZ(), 2);
+			MCA.naturallySpawnWitches(new Point3D(posX, posY, posZ), world);
+			for (int i = 0; i < 2; i++) {
+				MCA.naturallySpawnWitches(
+						RadixLogic.getBooleanWithProbability(50) ? EnumGender.MALE : EnumGender.FEMALE,
+						new Point3D(witch.posX, witch.posY, witch.posZ), witch.world);
 			}
 		}
 	}

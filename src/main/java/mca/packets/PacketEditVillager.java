@@ -90,7 +90,7 @@ public class PacketEditVillager extends AbstractPacket<PacketEditVillager> {
 			jobs.setIndex(villager.attributes.getProfessionEnum().getId());
 			
 			races = CyclicIntList.fromList(EnumRace.getListOfIds());
-			races.setIndex(villager.attributes.getRaceEnum().getId());
+			races.setIndex(villager.attributes.getRace().getId());
 
 			personalities = CyclicIntList.fromList(EnumPersonality.getListOfIds());
 			personalities.setIndex(0); // Catch all just in case
@@ -102,7 +102,7 @@ public class PacketEditVillager extends AbstractPacket<PacketEditVillager> {
 			}
 
 			textures = villager.attributes.getProfessionSkinGroup().getListOfSkinIDs(
-					villager.attributes.getGender() == EnumGender.MALE, villager.attributes.getRaceEnum());
+					villager.attributes.getGender() == EnumGender.MALE, villager.attributes.getRace());
 			LogManager.getLogger(PacketEditVillager.class)
 					.debug("Head Texture:  " + villager.attributes.getHeadTexture());
 			textures.setIndex(Integer.valueOf(villager.attributes.getHeadTexture().replaceAll("[^0-9]", "")) - 1);
