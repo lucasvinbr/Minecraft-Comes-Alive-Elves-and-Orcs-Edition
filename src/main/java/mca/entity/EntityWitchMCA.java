@@ -12,10 +12,10 @@ import java.util.Vector;
 import mca.core.Constants;
 import mca.core.minecraft.SoundsMCA;
 import mca.enums.EnumGender;
-import mca.util.Utilities;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -31,6 +31,8 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityFlying;
 import net.minecraft.entity.passive.EntityOcelot;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityDragonFireball;
 import net.minecraft.entity.projectile.EntityFireball;
@@ -49,13 +51,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import radixcore.modules.RadixLogic;
-import radixcore.modules.RadixMath;
 
 /**
  * @author Michael M. Adkins
@@ -97,6 +99,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		attributes.initialize();
 		attributes.setGender(EnumGender.FEMALE);
 		this.getRidingEntity();
+		attributes.assignRandomName();
 	}
 
 	/**
@@ -109,6 +112,8 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		attributes = new WitchAttributes(this);
 		attributes.initialize();
 		attributes.setGender(gender);
+		attributes.assignRandomName();
+		super.setCustomNameTag(this.getName());
 		if (gender == EnumGender.MALE) {
 			setHealth(30.0f);
 		}
@@ -145,6 +150,30 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	}
 
 	@Override
+	public ITextComponent getDisplayName() {
+		return new TextComponentString(getName());
+	}
+
+	@Override
+	public String getName() {
+		return this.attributes.getName();
+	}
+
+	@Override
+	public void setCustomNameTag(String name) {
+		this.attributes.setName(name);
+		super.setCustomNameTag(name);
+	}
+
+	/**
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.setCustomNameTag(name);
+		this.attributes.setName(name);
+	}
+
+	@Override
 	protected SoundEvent getAmbientSound() {
 		return SoundsMCA.villager_female_heh;
 	}
@@ -175,18 +204,38 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 
 	@Override
 	public void onDeath(DamageSource cause) {
-		if (RadixLogic.getBooleanWithProbability(58)) {
-			Vec3d looking = this.getLookVec();
-			if (looking != null) {
-				EntityLightningBolt lightning = new EntityLightningBolt(world, looking.x, looking.y, looking.z, false);
-				lightning.setPosition(looking.x, looking.y, looking.z);
-				world.spawnEntity(lightning);
+		Entity target = null;
+		Vec3d looking = null;
+		target = cause.getTrueSource();
+		if (target == null || !(target instanceof EntityLivingBase)) {
+			if (getAttackingEntity() != null) {
+				looking = getAttackingEntity().getPositionVector();
+			}
+			else if (getAttackTarget() != null) {
+				looking = getAttackTarget().getPositionVector();
+			}
+			else {
+				looking = this.getLookVec();
 			}
 		}
-		else if (RadixLogic.getBooleanWithProbability(24)) {
+		else {
+			looking = target.getPositionVector();
+		}
+		for (EntityLiving minion : minions) {
+			if (!minion.isDead && minion instanceof EntityOcelot) {
+				// minions.remove(minion);
+				EntityOcelot cat = (EntityOcelot) minion;
+				cat.setTamed(false);
+				cat.setOwnerId(null);
+			}
+			if (target instanceof EntityLivingBase) {
+				minion.setAttackTarget((EntityLivingBase) target);
+			}
+		}
+
+		if (RadixLogic.getBooleanWithProbability(24)) {
 			EntityFireball fireball = new EntitySmallFireball(world);
 			fireball.setPosition(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
-			Vec3d looking = this.getLookVec();
 			if (looking != null) {
 				fireball.motionX = looking.x;
 				fireball.motionY = looking.y;
@@ -200,7 +249,6 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		else if (RadixLogic.getBooleanWithProbability(12)) {
 			EntityFireball fireball = new EntityLargeFireball(world);
 			fireball.setPosition(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
-			Vec3d looking = this.getLookVec();
 			if (looking != null) {
 				fireball.motionX = looking.x;
 				fireball.motionY = looking.y;
@@ -214,7 +262,6 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		else if (RadixLogic.getBooleanWithProbability(6)) {
 			EntityFireball fireball = new EntityDragonFireball(world);
 			fireball.setPosition(this.getPosition().getX(), this.getPosition().getY(), this.getPosition().getZ());
-			Vec3d looking = this.getLookVec();
 			if (looking != null) {
 				fireball.motionX = looking.x;
 				fireball.motionY = looking.y;
@@ -224,6 +271,13 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 				fireball.accelerationZ = fireball.motionZ * 0.1D;
 			}
 			world.spawnEntity(fireball);
+		}
+		else {
+			if (looking != null) {
+				EntityLightningBolt lightning = new EntityLightningBolt(world, looking.x, looking.y, looking.z, false);
+				lightning.setPosition(looking.x, looking.y, looking.z);
+				world.spawnEntity(lightning);
+			}
 		}
 		// EntityFireball fireball = new EntityDragonFireball(world);
 		// fireball.setPosition(this.getPosition().getX(), this.getPosition().getY(),
@@ -238,15 +292,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		// fireball.accelerationZ = fireball.motionZ * 0.1D;
 		// }
 		// world.spawnEntity(fireball);
-		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.CLOUD, world, posX, posY, posZ, 10);
-		for (EntityLiving minion : minions) {
-			if (!minion.isDead && minion instanceof EntityOcelot) {
-				// minions.remove(minion);
-				EntityOcelot cat = (EntityOcelot) minion;
-				cat.setTamed(false);
-				cat.setOwnerId(null);
-			}
-		}
+
 		super.onDeath(cause);
 	}
 
@@ -295,28 +341,105 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 						}
 					}
 					this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
-
+					if (attributes.getGender() == EnumGender.MALE) {
+						Vec3d looking = null;
+						if (getAttackingEntity() != null) {
+							looking = getAttackingEntity().getPositionVector();
+						}
+						else if (getAttackTarget() != null) {
+							looking = getAttackTarget().getPositionVector();
+						}
+						else {
+							looking = this.getLookVec();
+						}
+						if (RadixLogic.getBooleanWithProbability(58)) {
+							if (looking != null) {
+								EntityLightningBolt lightning = new EntityLightningBolt(world, looking.x, looking.y,
+										looking.z, false);
+								lightning.setPosition(looking.x, looking.y + 1, looking.z);
+								world.spawnEntity(lightning);
+							}
+						}
+						else if (RadixLogic.getBooleanWithProbability(24)) {
+							EntityFireball fireball = new EntitySmallFireball(world);
+							fireball.setPosition(this.getPosition().getX(), this.getPosition().getY() + 1,
+									this.getPosition().getZ());
+							if (looking != null) {
+								fireball.motionX = looking.x;
+								fireball.motionY = looking.y;
+								fireball.motionZ = looking.z;
+								fireball.accelerationX = fireball.motionX * 0.1D;
+								fireball.accelerationY = fireball.motionY * 0.1D;
+								fireball.accelerationZ = fireball.motionZ * 0.1D;
+							}
+							world.spawnEntity(fireball);
+						}
+						else if (RadixLogic.getBooleanWithProbability(12)) {
+							EntityFireball fireball = new EntityLargeFireball(world);
+							fireball.setPosition(this.getPosition().getX(), this.getPosition().getY() + 1,
+									this.getPosition().getZ());
+							if (looking != null) {
+								fireball.motionX = looking.x;
+								fireball.motionY = looking.y;
+								fireball.motionZ = looking.z;
+								fireball.accelerationX = fireball.motionX * 0.1D;
+								fireball.accelerationY = fireball.motionY * 0.1D;
+								fireball.accelerationZ = fireball.motionZ * 0.1D;
+							}
+							world.spawnEntity(fireball);
+						}
+						else if (RadixLogic.getBooleanWithProbability(6)) {
+							EntityFireball fireball = new EntityDragonFireball(world);
+							fireball.setPosition(this.getPosition().getX(), this.getPosition().getY() + 1,
+									this.getPosition().getZ());
+							if (looking != null) {
+								fireball.motionX = looking.x;
+								fireball.motionY = looking.y;
+								fireball.motionZ = looking.z;
+								fireball.accelerationX = fireball.motionX * 0.1D;
+								fireball.accelerationY = fireball.motionY * 0.1D;
+								fireball.accelerationZ = fireball.motionZ * 0.1D;
+							}
+							world.spawnEntity(fireball);
+						}
+					}
 				}
 				else {
 					for (int i = 0; i < minions.size(); i++) {
 						EntityLiving minion = minions.get(i);
 						if (!minion.isDead) {
 							if (minion.getNavigator().noPath()) {
-								minion.getNavigator().tryMoveToEntityLiving(this, Constants.SPEED_WALK);
-							}
-							else {
-								List<EntityVillagerMCA> villagers = RadixLogic
-										.getEntitiesWithinDistance(EntityVillagerMCA.class, this, 10);
-								if (villagers != null && villagers.size() > 0) {
-									EntityVillagerMCA villager = villagers
-											.get(RadixMath.getNumberInRange(0, villagers.size() - 1));
-									minion.setAttackTarget(villager);
+								if (minion instanceof EntityTameable) {
+									((EntityTameable) minion).setSitting(false);
+								}
+								if (getAttackingEntity() != null) {
+									minion.setSneaking(false);
+									minion.getJumpHelper().doJump();
+									minion.setSprinting(true);
+									minion.setAttackTarget(getAttackingEntity());
+								}
+								else if (getAttackTarget() != null) {
+									minion.getNavigator().tryMoveToEntityLiving(getAttackTarget(),
+											Constants.SPEED_WALK);
+									minion.setSneaking(true);
+								}
+								else {
+									// List<EntityVillagerMCA> villagers = RadixLogic
+									// .getEntitiesWithinDistance(EntityVillagerMCA.class, this, 10);
+									// if (villagers != null && villagers.size() > 0) {
+									// EntityVillagerMCA villager = villagers
+									// .get(RadixMath.getNumberInRange(0, villagers.size() - 1));
+									// minion.setAttackTarget(villager);
+									// }
+									// else {
+										minion.getNavigator().tryMoveToEntityLiving(this, Constants.SPEED_WALK);
+									// }
 								}
 							}
 						}
 						else {
 							minions.remove(i);
-							EntityOcelot cat = new EntityOcelot(world);
+							EntityCatMCA cat = new EntityCatMCA(world);
 							cat.setPosition(this.posX, this.posY, this.posZ);
 							cat.setTamed(false);
 							cat.setOwnerId(this.getUniqueID());
@@ -377,6 +500,29 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 //	public void setAngry(boolean angry) {
 //		this.getDataManager().set(IS_ANGRY, Boolean.valueOf(angry));
 //	}
+
+
+	@Override
+	public EntityLivingBase getAttackTarget() {
+		if ((super.getAttackTarget() != null && super.getAttackTarget().getUniqueID() == getUniqueID()) || (minions.contains(super.getAttackTarget()))) {
+			EntityVillager villager = RadixLogic.getClosestEntityExclusive(this, 15, EntityVillager.class);
+			if (villager != null) {
+				return villager;
+			}
+		}
+		return super.getAttackTarget();
+	}
+
+	@Override
+	public EntityLivingBase getAttackingEntity() {
+		if (minions.contains(super.getAttackingEntity())) {
+			EntityVillager villager = RadixLogic.getClosestEntityExclusive(this, 20, EntityVillager.class);
+			if (villager != null) {
+				return villager;
+			}
+		}
+		return super.getAttackingEntity();
+	}
 
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbttagcompound) {
@@ -466,6 +612,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	 */
 	public synchronized void addMinion(EntityLiving minion) {
 		minion.setHealth(getHealth());
+		minion.setCanPickUpLoot(true);
 		minions.add(minion);
 	}
 

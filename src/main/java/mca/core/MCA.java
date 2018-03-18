@@ -753,13 +753,15 @@ public class MCA {
 	}
 
 	public static void naturallySpawnWitches(Point3D pointOfSpawn, World world) {
-		naturallySpawnWitches(EnumGender.FEMALE, pointOfSpawn, world);
+		naturallySpawnWitches(RadixLogic.getBooleanWithProbability(75) ? EnumGender.FEMALE : EnumGender.MALE,
+				pointOfSpawn, world);
 	}
 
 	public static void naturallySpawnWitches(EnumGender gender, Point3D pointOfSpawn, World world) {
 		EntityWitchMCA witch = new EntityWitchMCA(world, gender);
+		witch.setName(witch.attributes.getName());
 		witch.setAggressive(new Random().nextBoolean());
-		witch.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY() + 1, pointOfSpawn.dZ() + 1);
+		witch.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY() + 2, pointOfSpawn.dZ() + 1);
 		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
 				witch.getPosition().getY(), witch.getPosition().getZ(), 2);
 		if (RadixLogic.getBooleanWithProbability(100)) {
@@ -773,28 +775,32 @@ public class MCA {
 		for (int i = 0; i < 10; i++) {
 			if (RadixLogic.getBooleanWithProbability(25)) {
 				EntityBat bat = new EntityBat(world);
-				bat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY() - 1, pointOfSpawn.dZ());
-				PotionEffect glowing = new PotionEffect(Potion.getPotionById(24), 1000);
-				bat.addPotionEffect(glowing);
+				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
+				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				bat.setPosition(xCoord, witch.posY + 1, zCoord);
 				world.spawnEntity(bat);
 				witch.addMinion(bat);
 			}
-			else if (RadixLogic.getBooleanWithProbability(25)) {
+			else if (RadixLogic.getBooleanWithProbability(5)) {
 				EntityZombie zombie = new EntityZombie(world);
-				zombie.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
+				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
+				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				zombie.setPosition(xCoord, witch.posY, zCoord);
 				world.spawnEntity(zombie);
 				witch.addMinion(zombie);
 			}
-			else if (RadixLogic.getBooleanWithProbability(25)) {
+			else if (RadixLogic.getBooleanWithProbability(5)) {
 				EntitySkeleton skeleton = new EntitySkeleton(world);
-				skeleton.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + -1);
+				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
+				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				skeleton.setPosition(xCoord, witch.posY, zCoord);
 				world.spawnEntity(skeleton);
 				witch.addMinion(skeleton);
 			}
-			else if (RadixLogic.getBooleanWithProbability(25)) {
+			else {
 				if (RadixLogic.getBooleanWithProbability(1)) {
 					EntityGrimReaper reaper = new EntityGrimReaper(world);
-					reaper.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY() + 2, pointOfSpawn.dZ() + 1);
+					reaper.setPosition(pointOfSpawn.dX(), witch.posY, pointOfSpawn.dZ());
 					world.spawnEntity(reaper);
 					witch.addMinion(reaper);
 				}
@@ -812,6 +818,8 @@ public class MCA {
 				}
 			}
 		}
+		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, witch.world, witch.getPosition().getX(),
+				witch.getPosition().getY(), witch.getPosition().getZ(), 32);
 		world.spawnEntity(witch);
 	}
 
@@ -823,10 +831,15 @@ public class MCA {
 
 		final EntityVillagerMCA villager = new EntityVillagerMCA(world);
 		villager.attributes.setGender(adult1IsMale ? EnumGender.MALE : EnumGender.FEMALE);
-		villager.attributes
-				.setProfession(originalProfession != -1
-						? EnumProfession.getNewProfessionFromVanilla(Math.abs(originalProfession % 5))
-						: EnumProfession.getAtRandom());
+		if (originalProfession % 6 == 5) {
+			villager.attributes.setProfession(
+					villager.attributes.getGender() == EnumGender.MALE ? EnumProfession.Guard : EnumProfession.Archer);
+		}
+		else {
+			villager.attributes.setProfession(originalProfession != -1
+					? EnumProfession.getNewProfessionFromVanilla(Math.abs(originalProfession % 5))
+					: EnumProfession.getAtRandom());
+		}
 		villager.attributes.assignRandomName();
 		villager.attributes.assignRandomSkin();
 		villager.attributes.assignRandomPersonality();
@@ -877,7 +890,7 @@ public class MCA {
 			int motherCaste;
 			if (spouse.attributes.getGender() == EnumGender.MALE) {
 				int caste = 0;
-				caste = RadixMath.getNumberInRange(Math.abs(villager.getProfession() % 5), 5) % 5;
+				caste = RadixMath.getNumberInRange(originalProfession % 6, 5);
 				if(caste < originalProfession) {
 					logger.warn("");
 				}
@@ -888,7 +901,7 @@ public class MCA {
 			} else {
 				int caste = 0;
 				// I'm not letting the wife's caste exceed the husband's.
-				caste = RadixMath.getNumberInRange(0, Math.abs(villager.getProfession())) % 5;
+				caste = RadixMath.getNumberInRange(0, Math.abs(villager.getProfession()));
 				if(caste > originalProfession) {
 					logger.warn("");
 				}

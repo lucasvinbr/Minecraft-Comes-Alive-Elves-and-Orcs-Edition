@@ -594,51 +594,58 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	}
 
 	private void createTombstone(ItemStack tombStack) {
+		Point3D nearestWater = RadixLogic.getNearestBlock(this, 3, Blocks.WATER);
 		Point3D nearestAir = RadixLogic.getNearestBlock(this, 3, Blocks.AIR);
-
-		if (nearestAir == null) {
-			logger.warn("No available location to spawn villager death chest for " + this.getName());
+		Point3D blockPoint = null;
+		if (nearestAir == null && nearestWater == null) {
+			logger.warn("No available location to spawn villager tombstone for " + this.getName());
 		}
 		else {
-			int y = nearestAir.iY();
-			Block block = Blocks.AIR;
-
-			while (block == Blocks.AIR) {
-				y--;
-				block = world.getBlockState(new BlockPos(nearestAir.iX(), y, nearestAir.iZ())).getBlock();
+			if (nearestWater != null) {
+				blockPoint = nearestWater;
 			}
+			else {
+				blockPoint = nearestAir;
+				int y = blockPoint.iY();
+				Block block = Blocks.AIR;
 
-			y += 1;
-			world.setBlockState(new BlockPos(nearestAir.iX(), y, nearestAir.iZ()),
-					BlocksMCA.tombstone.getDefaultState());
-
-			try {
-				TileTombstone tomb = (TileTombstone) world.getTileEntity(nearestAir.toBlockPos());
-				if (tomb != null) {
-					tomb.signText[1] = new TextComponentString(
-							RadixLogic.getBooleanWithProbability(50) ? MCA.getLocalizer().getString("name.male")
-									: MCA.getLocalizer().getString("name.female"));
-					tomb.signText[2] = new TextComponentString("RIP");
-					RadixBlocks.setBlock(world,
-							new Point3D(tomb.getPos().getX(), tomb.getPos().getY(), tomb.getPos().getZ()),
-							BlocksMCA.tombstone);
+				while (block == Blocks.AIR) {
+					y--;
+					block = world.getBlockState(new BlockPos(blockPoint.iX(), y, blockPoint.iZ())).getBlock();
 				}
-				TransitiveVillagerData data = new TransitiveVillagerData(attributes);
 
-				NBTTagCompound stackNBT = new NBTTagCompound();
+				y += 1;
+				world.setBlockState(new BlockPos(blockPoint.iX(), y, blockPoint.iZ()),
+						BlocksMCA.tombstone.getDefaultState());
 
-				stackNBT.setString("ownerName", data.getName());
-				stackNBT.setUniqueId("ownerUUID", data.getUUID());
-				data.writeToNBT(stackNBT);
-				tombStack.setTagCompound(stackNBT);
-				getVillagerInventory().addItem(tombStack);
-				LogManager.getLogger(EntityVillagerMCA.class).info(
-						"Spawned villager death chest at: " + nearestAir.iX() + ", " + y + ", " + nearestAir.iZ());
-			}
-			catch (Exception e) {
-				LogManager.getLogger(EntityVillagerMCA.class)
-						.error("Error spawning villager death chest: " + e.getMessage());
-				return;
+				try {
+					TileTombstone tomb = (TileTombstone) world.getTileEntity(blockPoint.toBlockPos());
+					if (tomb != null) {
+						tomb.signText[1] = new TextComponentString(
+								RadixLogic.getBooleanWithProbability(50) ? MCA.getLocalizer().getString("name.male")
+										: MCA.getLocalizer().getString("name.female"));
+						tomb.signText[2] = new TextComponentString("RIP");
+						RadixBlocks.setBlock(world,
+								new Point3D(tomb.getPos().getX(), tomb.getPos().getY(), tomb.getPos().getZ()),
+								BlocksMCA.tombstone);
+					}
+					TransitiveVillagerData data = new TransitiveVillagerData(attributes);
+
+					NBTTagCompound stackNBT = new NBTTagCompound();
+
+					stackNBT.setString("ownerName", data.getName());
+					stackNBT.setUniqueId("ownerUUID", data.getUUID());
+					data.writeToNBT(stackNBT);
+					tombStack.setTagCompound(stackNBT);
+					getVillagerInventory().addItem(tombStack);
+					LogManager.getLogger(EntityVillagerMCA.class).info(
+							"Spawned villager death chest at: " + blockPoint.iX() + ", " + y + ", " + blockPoint.iZ());
+				}
+				catch (Exception e) {
+					LogManager.getLogger(EntityVillagerMCA.class)
+							.error("Error spawning villager death chest: " + e.getMessage());
+					return;
+				}
 			}
 		}
 	}

@@ -42,6 +42,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		super(worldIn);
 		attributes = new PetAttributes(this);
 		attributes.initialize();
+		setSitting(false);
 	}
 
 	/**
@@ -75,6 +76,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 			setTamed(true);
 			super.setCollarColor(EnumDyeColor.BLUE);
 		}
+		setSitting(false);
 	}
 
 	/**
@@ -121,39 +123,8 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		return ownerGender;
 	}
 
-	// /**
-	// * @return the ownerRace
-	// */
-	// public EnumRace getOwnerRace() {
-	// EnumRace ownerRace = EnumRace.Villager;
-	// if (ownedByPlayer) {
-	// NBTPlayerData playerData = null;
-	// try {
-	// playerData = MCA.getPlayerData((EntityPlayer) getOwner());
-	// }
-	// catch (NullPointerException e) {
-	// // e.printStackTrace();
-	// ownerRace = EnumRace.Elf;
-	// }
-	// if (playerData != null) {
-	// ownerRace = playerData.getRace();
-	// }
-	// }
-	// else {
-	// EntityVillagerMCA owner = null;
-	// try {
-	// owner = getVillagerOwnerInstance();
-	// }
-	// catch (NullPointerException e) {
-	// // ownerRace = EnumRace.Villager;
-	// }
-	// if (owner != null) {
-	// ownerRace = owner.attributes.getRace();
-	// }
-	// }
-	// return ownerRace;
-	// }
 
+	@Override
 	public EntityVillagerMCA getVillagerOwnerInstance() {
 		if (this.getOwnerId() != null && this.getOwnerId() != Constants.EMPTY_UUID) {
 			for (Object obj : world.loadedEntityList) {
@@ -170,6 +141,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		return null;
 	}
 
+	@Override
 	public EntityPlayer getOwnerPlayer() {
 		try {
 			UUID uuid = this.getOwnerId();
@@ -191,6 +163,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 	/**
 	 * @param owner
 	 */
+	@Override
 	public void setOwner(EntityLivingBase owner) {
 		this.setOwnerId(owner.getUniqueID());
 		if (owner instanceof EntityPlayerMP) {
@@ -216,7 +189,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 	@Override
 	public void onLivingUpdate() {
 		if (getOwner() == null || getOwner().isDead) {
-
+			setSitting(false);
 			EntityChicken chicken = RadixLogic.getClosestEntityExclusive(this, 15, EntityChicken.class);
 			if (chicken != null) {
 				setAttackTarget(chicken);
