@@ -49,8 +49,10 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFollowOwner;
+import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityCow;
@@ -62,11 +64,10 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFishFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -111,6 +112,7 @@ public class MCA {
 	private static PacketHandlerMCA packetHandler;
 	private static CrashWatcher crashWatcher;
 	private static long orcMatingSeasonStart;
+	private static Random randy = new Random();
 
 	private static Logger logger = LogManager.getLogger(MCA.class);
 
@@ -132,7 +134,8 @@ public class MCA {
 		java.util.logging.LogManager.getLogManager().reset();
 		java.util.logging.Logger.getLogger("global").setLevel(java.util.logging.Level.FINEST);
 		java.util.logging.Logger.getLogger(this.getClass().getName()).setLevel(java.util.logging.Level.FINEST);
-		LogManager.getRootLogger().debug(MessageFormat.format("Pre-Initialization... FMLPreInitializationEvent: {0}", event));
+		LogManager.getRootLogger()
+				.debug(MessageFormat.format("Pre-Initialization... FMLPreInitializationEvent: {0}", event));
 		metadata = event.getModMetadata();
 		// logger = event.getModLog();
 		config = new Config(event);
@@ -548,7 +551,8 @@ public class MCA {
 	public static NBTPlayerData getPlayerData(EntityPlayer player) {
 		if (!player.world.isRemote) {
 			return PlayerDataCollection.get().getPlayerData(player.getUniqueID());
-		} else {
+		}
+		else {
 			return myPlayerData;
 		}
 	}
@@ -557,7 +561,7 @@ public class MCA {
 		return PlayerDataCollection.get().getPlayerData(uuid);
 	}
 
-	public static void naturallySpawnOrcs(Point3D pointOfSpawn, World world, int originalProfession) {
+	public static EntityOrcMCA naturallySpawnOrcs(Point3D pointOfSpawn, World world, int originalProfession) {
 		MCA.getLog().debug(String.format("Original Profession newly spawned orc: %d", originalProfession));
 		boolean hasFamily = RadixLogic.getBooleanWithProbability(75);
 
@@ -600,6 +604,7 @@ public class MCA {
 				// cat.tasks.addTask(1, aiFollowOwner);
 				cat.setCustomNameTag(String.format("%s's cat", wench.getName()));
 				wench.setPet(cat);
+				cat.setSitting(false);
 				world.spawnEntity(cat);
 			}
 
@@ -644,9 +649,10 @@ public class MCA {
 			}
 		}
 		world.spawnEntity(orc);
+		return orc;
 	}
 
-	public static void naturallySpawnElves(Point3D pointOfSpawn, World world, int originalProfession) {
+	public static EntityElfMCA naturallySpawnElves(Point3D pointOfSpawn, World world, int originalProfession) {
 		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
 
 		final EntityElfMCA elf = new EntityElfMCA(world);
@@ -674,6 +680,7 @@ public class MCA {
 			// cat.tasks.addTask(1, aiFollowOwner);
 			cat.setCustomNameTag(String.format("%s's cat", elf.getName()));
 			elf.setPet(cat);
+			cat.setSitting(false);
 			world.spawnEntity(cat);
 		}
 		if (hasFamily) {
@@ -701,6 +708,7 @@ public class MCA {
 				// cat.tasks.addTask(1, aiFollowOwner);
 				cat.setCustomNameTag(String.format("%s's cat", husband.getName()));
 				elf.setPet(cat);
+				cat.setSitting(false);
 				world.spawnEntity(cat);
 			}
 			world.spawnEntity(husband);
@@ -743,87 +751,167 @@ public class MCA {
 					// cat.tasks.addTask(1, aiFollowOwner);
 					cat.setCustomNameTag(String.format("%s's cat", child.getName()));
 					elf.setPet(cat);
+					cat.setSitting(false);
 					world.spawnEntity(cat);
 				}
 				world.spawnEntity(child);
 			}
 		}
-
 		world.spawnEntity(elf);
+		return elf;
 	}
 
-	public static void naturallySpawnWitches(Point3D pointOfSpawn, World world) {
-		naturallySpawnWitches(RadixLogic.getBooleanWithProbability(75) ? EnumGender.FEMALE : EnumGender.MALE,
-				pointOfSpawn, world);
-	}
-
-	public static void naturallySpawnWitches(EnumGender gender, Point3D pointOfSpawn, World world) {
-		EntityWitchMCA witch = new EntityWitchMCA(world, gender);
-		witch.setName(witch.attributes.getName());
-		witch.setAggressive(new Random().nextBoolean());
-		witch.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY() + 2, pointOfSpawn.dZ() + 1);
-		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
-				witch.getPosition().getY(), witch.getPosition().getZ(), 2);
-		if (RadixLogic.getBooleanWithProbability(100)) {
+	/**
+	 * @param pointOfSpawn
+	 * @param world
+	 */
+	public static void unnaturallySpawnWitches(Point3D pointOfSpawn, World world) {
+		EntityWitchMCA witch = naturallySpawnWitches(pointOfSpawn, world);
+		if (RadixLogic.getBooleanWithProbability(25)) {
 			EntityBat bat = new EntityBat(world);
 			bat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
 			witch.setRidingEntity(bat);
-			PotionEffect glowing = new PotionEffect(Potion.getPotionById(24), 1000);
-			bat.addPotionEffect(glowing);
 			world.spawnEntity(bat);
+			witch.setPosition(bat.getPosition().getX(), bat.getPosition().getY(), bat.getPosition().getZ());
 		}
-		for (int i = 0; i < 10; i++) {
-			if (RadixLogic.getBooleanWithProbability(25)) {
+		for (int i = 0; i < 5; i++) {
+			if (RadixLogic.getBooleanWithProbability(13)) {
 				EntityBat bat = new EntityBat(world);
-				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
-				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+				int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
 				bat.setPosition(xCoord, witch.posY + 1, zCoord);
 				world.spawnEntity(bat);
 				witch.addMinion(bat);
 			}
-			else if (RadixLogic.getBooleanWithProbability(5)) {
+			else if (RadixLogic.getBooleanWithProbability(7)) {
 				EntityZombie zombie = new EntityZombie(world);
-				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
-				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+				int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
 				zombie.setPosition(xCoord, witch.posY, zCoord);
+				zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+				zombie.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+				if (randy.nextBoolean()) {
+					zombie.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.IRON_BOOTS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+				}
+				else {
+					zombie.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+				}
 				world.spawnEntity(zombie);
 				witch.addMinion(zombie);
 			}
-			else if (RadixLogic.getBooleanWithProbability(5)) {
+			else if (RadixLogic.getBooleanWithProbability(7)) {
 				EntitySkeleton skeleton = new EntitySkeleton(world);
-				int xCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dX() - 5, (int) pointOfSpawn.dX() + 5);
-				int zCoord = RadixMath.getNumberInRange((int) pointOfSpawn.dZ() - 5, (int) pointOfSpawn.dZ() + 5);
+				int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+				int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
 				skeleton.setPosition(xCoord, witch.posY, zCoord);
+				skeleton.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.LEATHER_BOOTS));
+				skeleton.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS));
+				skeleton.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.LEATHER_CHESTPLATE));
+				skeleton.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+				if(randy.nextBoolean()) {
+					skeleton.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.BOW));
+				}
+				else {
+					skeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+				}
 				world.spawnEntity(skeleton);
 				witch.addMinion(skeleton);
 			}
-			else {
-				if (RadixLogic.getBooleanWithProbability(1)) {
-					EntityGrimReaper reaper = new EntityGrimReaper(world);
-					reaper.setPosition(pointOfSpawn.dX(), witch.posY, pointOfSpawn.dZ());
-					world.spawnEntity(reaper);
-					witch.addMinion(reaper);
+			else if (RadixLogic.getBooleanWithProbability(12)) {
+				EntityZombieVillager zombie = new EntityZombieVillager(world);
+				int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+				int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
+				zombie.setPosition(xCoord, witch.posY, zCoord);
+				zombie.setProfession(randy.nextInt(5));
+				switch (zombie.getProfession()) {
+				case 0:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_HOE));
+					break;
+				case 1:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WRITTEN_BOOK));
+					break;
+				case 2:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.ENCHANTED_BOOK));
+					break;
+				case 3:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+					break;
+				case 4:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.CAKE));
+					break;
+				case 5:
+				default:
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SHOVEL));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.FEET,
+							randy.nextBoolean() ? new ItemStack(Items.LEATHER_BOOTS)
+									: new ItemStack(Items.CHAINMAIL_BOOTS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.LEGS,
+							randy.nextBoolean() ? new ItemStack(Items.LEATHER_LEGGINGS)
+									: new ItemStack(Items.CHAINMAIL_LEGGINGS));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.CHEST,
+							randy.nextBoolean() ? new ItemStack(Items.LEATHER_CHESTPLATE)
+									: new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.HEAD,
+							randy.nextBoolean() ? new ItemStack(Items.LEATHER_HELMET)
+									: new ItemStack(Items.CHAINMAIL_HELMET));
+					zombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 				}
-				else {
-					EntityCatMCA cat = new EntityCatMCA(world);
-					cat.setPosition(witch.posX, witch.posY, witch.posZ);
-					cat.setTamed(false);
-					cat.setOwnerId(witch.getUniqueID());
-					cat.setTameSkin(1);
-					EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
-					cat.tasks.addTask(1, aiFollowOwner);
-					cat.setCustomNameTag(String.format("%s's cat", witch.getName()));
-					world.spawnEntity(cat);
-					witch.addMinion(cat);
+				zombie.setCanPickUpLoot(true);
+				world.spawnEntity(zombie);
+				witch.addMinion(zombie);
+			}
+			else if (RadixLogic.getBooleanWithProbability(24)) {
+				EntityCatMCA cat = new EntityCatMCA(world, witch);
+				int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+				int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
+				cat.setPosition(xCoord, witch.posY, zCoord);
+				cat.setTamed(false);
+				// cat.setOwnerId(witch.getUniqueID());
+				cat.setTameSkin(1);
+				EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
+				cat.tasks.addTask(1, aiFollowOwner);
+				cat.setCustomNameTag(String.format("%s's cat", witch.getName()));
+				world.spawnEntity(cat);
+				cat.setSitting(false);
+				witch.addMinion(cat);
+			}
+			else {
+				if (randy.nextBoolean()) {
+					int xCoord = RadixMath.getNumberInRange(pointOfSpawn.iX() - 5, pointOfSpawn.iX() + 5);
+					int zCoord = RadixMath.getNumberInRange(pointOfSpawn.iZ() - 5, pointOfSpawn.iZ() + 5);
+					EntityFireworkRocket rocket = new EntityFireworkRocket(world);
+					rocket.setPosition(xCoord, pointOfSpawn.iY() + 1, zCoord);
+					rocket.setFire(10);
+					world.spawnEntity(rocket);
 				}
 			}
 		}
-		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, witch.world, witch.getPosition().getX(),
-				witch.getPosition().getY(), witch.getPosition().getZ(), 32);
-		world.spawnEntity(witch);
 	}
 
-	public static void naturallySpawnVillagers(Point3D pointOfSpawn, World world, int originalProfession) {
+	public static EntityWitchMCA naturallySpawnWitches(Point3D pointOfSpawn, World world) {
+		return naturallySpawnWitches(RadixLogic.getBooleanWithProbability(75) ? EnumGender.FEMALE : EnumGender.MALE,
+				pointOfSpawn, world);
+	}
+
+	public static EntityWitchMCA naturallySpawnWitches(EnumGender gender, Point3D pointOfSpawn, World world) {
+		EntityWitchMCA witch = new EntityWitchMCA(world, gender);
+		witch.setName(witch.attributes.getName());
+		witch.setAggressive(randy.nextBoolean());
+		witch.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ() + 1);
+		Utilities.spawnParticlesAroundPointS(EnumParticleTypes.SPELL_WITCH, world, witch.getPosition().getX(),
+				witch.getPosition().getY(), witch.getPosition().getZ(), 2);
+		world.spawnEntity(witch);
+		return witch;
+	}
+
+	public static EntityVillagerMCA naturallySpawnVillagers(Point3D pointOfSpawn, World world, int originalProfession) {
 		// MCA.getLog().debug(String.format("Original Profession newly spawned villager:
 		// %d", originalProfession));
 		boolean hasFamily = RadixLogic.getBooleanWithProbability(20);
@@ -891,18 +979,19 @@ public class MCA {
 			if (spouse.attributes.getGender() == EnumGender.MALE) {
 				int caste = 0;
 				caste = RadixMath.getNumberInRange(originalProfession % 6, 5);
-				if(caste < originalProfession) {
+				if (caste < originalProfession) {
 					logger.warn("");
 				}
 				fatherCaste = caste;
 				motherCaste = originalProfession;
 				spouse.setProfession(caste);
 				spouse.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(caste));
-			} else {
+			}
+			else {
 				int caste = 0;
 				// I'm not letting the wife's caste exceed the husband's.
 				caste = RadixMath.getNumberInRange(0, Math.abs(villager.getProfession()));
-				if(caste > originalProfession) {
+				if (caste > originalProfession) {
 					logger.warn("");
 				}
 				fatherCaste = originalProfession;
@@ -929,13 +1018,13 @@ public class MCA {
 
 				final EntityVillagerMCA child = new EntityVillagerMCA(world);
 				child.attributes.assignRandomGender();
-				child.attributes.assignRandomName(); 
+				child.attributes.assignRandomName();
 				// child.attributes.assignRandomProfession();
 				int childCaste;
-				childCaste = new Random().nextInt(Math.abs(fatherCaste - motherCaste) + 1) + motherCaste;
+				childCaste = randy.nextInt(Math.abs(fatherCaste - motherCaste) + 1) + motherCaste;
 				child.setProfession(childCaste);
 				child.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(childCaste));
-//				child.sayRaw(String.format("Profession ID: %d ", childCaste), closestPlayer);
+				// child.sayRaw(String.format("Profession ID: %d ", childCaste), closestPlayer);
 				child.attributes.assignRandomSkin();
 				child.attributes.assignRandomPersonality();
 				child.attributes.setMother(Either.<EntityVillagerMCA, EntityPlayer>withL(mother));
@@ -958,6 +1047,25 @@ public class MCA {
 			}
 		}
 		world.spawnEntity(villager);
+		return villager;
+	}
+
+	public static EntityCatMCA naturallySpawnCats(Point3D pointOfSpawn, World world, boolean isChild) {
+		EntityCatMCA cat = new EntityCatMCA(world);
+		cat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+		cat.setTameSkin(RadixMath.getNumberInRange(0, 5));
+		cat.setSitting(false);
+		if (isChild) {
+			cat.setGrowingAge(-100);
+		}
+		else if (RadixLogic.getBooleanWithProbability(25)) {
+			EntityCatMCA kitten = new EntityCatMCA(world);
+			kitten.setGrowingAge(-100);
+			kitten.setTameSkin(cat.getTameSkin());
+			cat.createChild(kitten);
+		}
+		world.spawnEntity(cat);
+		return cat;
 	}
 
 	public static CrashWatcher getCrashWatcher() {
@@ -975,6 +1083,7 @@ public class MCA {
 	}
 
 	private static boolean matingSeasonStarted = true;
+
 	public static void startOrcMatingSeason() {
 		matingSeasonStarted = true;
 		orcMatingSeasonStart = System.currentTimeMillis();

@@ -2,7 +2,6 @@ package mca.util;
 
 import java.util.Random;
 
-import mca.entity.EntityVillagerMCA;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.entity.Entity;
@@ -124,16 +123,16 @@ public class Utilities {
 		}
 	}
 
-	public static Point3D movePointToGround(EntityVillagerMCA actor, Point3D point) {
+	public static Point3D movePointToGround(Entity entity, Point3D point) {
 		Point3D returnPoint = new Point3D(point.iX(), point.iY(), point.iZ());
-		Block block = RadixBlocks.getBlock(actor.world, returnPoint.iX(), returnPoint.iY(), returnPoint.iZ());
+		Block block = RadixBlocks.getBlock(entity.world, returnPoint.iX(), returnPoint.iY(), returnPoint.iZ());
 		// boolean lastBlockWasAir = false;
 
 		while (returnPoint.iY() > 0) {
 			if (block == Blocks.AIR || block == Blocks.GRASS) {
 				// lastBlockWasAir = true;
 				returnPoint.set(returnPoint.iX(), returnPoint.iY() - 1, returnPoint.iZ());
-				block = RadixBlocks.getBlock(actor.world, returnPoint.iX(), returnPoint.iY(), returnPoint.iZ());
+				block = RadixBlocks.getBlock(entity.world, returnPoint.iX(), returnPoint.iY(), returnPoint.iZ());
 			}
 			else if (block != Blocks.AIR) {
 				return new Point3D(returnPoint.iX(), returnPoint.iY(), returnPoint.iZ());

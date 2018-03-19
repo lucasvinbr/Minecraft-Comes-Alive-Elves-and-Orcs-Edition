@@ -12,15 +12,12 @@ import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import radixcore.modules.RadixLogic;
 
 /**
  * @author Michael M. Adkins
@@ -186,23 +183,25 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		// }
 	}
 
-	@Override
-	public void onLivingUpdate() {
-		if (getOwner() == null || getOwner().isDead) {
-			setSitting(false);
-			EntityChicken chicken = RadixLogic.getClosestEntityExclusive(this, 15, EntityChicken.class);
-			if (chicken != null) {
-				setAttackTarget(chicken);
-			}
-			else {
-				EntityMob monster = RadixLogic.getClosestEntityExclusive(this, 5, EntityMob.class);
-				if (monster != null) {
-					setAttackTarget(monster);
-				}
-			}
-		}
-		super.onLivingUpdate();
-	}
+	// @Override
+	// public void onLivingUpdate() {
+	// if (getOwner() == null || getOwner().isDead) {
+	// setSitting(false);
+	// EntityChicken chicken = RadixLogic.getClosestEntityExclusive(this, 15,
+	// EntityChicken.class);
+	// if (chicken != null) {
+	// setAttackTarget(chicken);
+	// }
+	// else {
+	// EntityMob monster = RadixLogic.getClosestEntityExclusive(this, 5,
+	// EntityMob.class);
+	// if (monster != null) {
+	// setAttackTarget(monster);
+	// }
+	// }
+	// }
+	// super.onLivingUpdate();
+	// }
 
 	@Override
 	public boolean isChild() {
@@ -295,5 +294,4 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		this.rider = rider;
 		addPassenger(rider);
 	}
-
 }

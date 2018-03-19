@@ -255,6 +255,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		}
 		if (this.pet != null && !this.pet.isDead) {
 			if (pet.getNavigator().noPath()) {
+				pet.setSitting(false);
 				pet.getNavigator().tryMoveToEntityLiving(this, Constants.SPEED_WALK);
 			}
 			pet.setGrowingAge(this.getGrowingAge());

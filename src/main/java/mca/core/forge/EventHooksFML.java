@@ -15,6 +15,7 @@ import mca.data.NBTPlayerData;
 import mca.data.PlayerDataCollection;
 import mca.entity.EntityGrimReaper;
 import mca.entity.EntityVillagerMCA;
+import mca.entity.EntityWitchMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
@@ -28,6 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityWitch;
+import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -179,7 +181,7 @@ public class EventHooksFML {
 				for (int i = 0; i < world.loadedEntityList.size(); i++) {
 					Entity entity = world.loadedEntityList.get(i);
 					Biome biome = entity.world.getBiome(entity.getPosition());
-					if (entity instanceof EntityVillager) {
+					if (entity instanceof EntityVillager && !(entity instanceof EntityVillagerMCA)) {
 						EntityVillager villager = (EntityVillager) entity;
 						logger.trace(MessageFormat.format("Villager Data: {0}", villager));
 						logger.debug(String.format("Profession Number: %d, Profession Name: %s",
@@ -215,13 +217,19 @@ public class EventHooksFML {
 							continue;
 						}
 					}
-					// else if (entity instanceof EntityWitch) {
-					// EntityWitch witch = (EntityWitch) entity;
-					// logger.info(String.format("Spawning witch in %s biome ",
-					// biome.getBiomeName()));
-					// if (biome.getBiomeName().toLowerCase().contains("swamp")) {
-					// doOverwriteWitchWithPrettyWitch(witch);
-					// continue;
+					else if (entity instanceof EntityWitch && !(entity instanceof EntityWitchMCA)) {
+						EntityWitch witch = (EntityWitch) entity;
+						if (RadixLogic.getBooleanWithProbability(1)) {
+							logger.info(String.format("Spawning witch in %s biome ", biome.getBiomeName()));
+							doOverwriteWitchWithPrettyWitch(witch);
+							continue;
+						}
+					}
+					// else if (entity instanceof EntityOcelot && !(entity instanceof EntityCatMCA))
+					// {
+					// if (RadixLogic.getClosestEntityExclusive(entity, 10, EntityVillager.class) !=
+					// null) {
+					// doOverwriteCat((EntityOcelot) entity);
 					// }
 					// }
 				}
@@ -400,6 +408,14 @@ public class EventHooksFML {
 			}
 			break; //Why does he have this here?
 		}
+	}
+
+	public void doOverwriteCat(EntityOcelot cat) {
+		// Biome biome = cat.world.getBiome(cat.getPosition());
+		// logger.info(String.format("Spawning cat in %s biome ",
+		// biome.getBiomeName()));
+		MCA.naturallySpawnCats(new Point3D(cat.posX, cat.posY, cat.posZ), cat.world, cat.isChild());
+		cat.setDead();
 	}
 
 	public void doOverwriteVillager(EntityVillager villager) {
