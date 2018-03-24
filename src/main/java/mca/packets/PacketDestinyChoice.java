@@ -91,14 +91,15 @@ public class PacketDestinyChoice extends AbstractPacket<PacketDestinyChoice>
 			// Add a check for the dedicated server and prevent anything from happening.
 			if (FMLCommonHandler.instance().getMinecraftServerInstance().isDedicatedServer() && !MCA.getConfig().serverEnableStructureSpawning)
 			{
-				return;
 			}
 			
 			else if (packet.choice == EnumDestinyChoice.FAMILY)
 			{
 				RadixSchematics.spawnStructureRelativeToPlayer("/assets/mca/schematic/family.schematic", player);
 
-				boolean isSpouseMale = data.getGenderPreference() == EnumGender.MALE ? true : data.getGenderPreference() == EnumGender.FEMALE ? false : world.rand.nextBoolean();
+				boolean isSpouseMale =
+						data.getGenderPreference() == EnumGender.MALE ||
+								data.getGenderPreference() != EnumGender.FEMALE && world.rand.nextBoolean();
 
 				EntityVillagerMCA spouse = new EntityVillagerMCA(world);
 				spouse.attributes.setGender(isSpouseMale ? EnumGender.MALE : EnumGender.FEMALE);

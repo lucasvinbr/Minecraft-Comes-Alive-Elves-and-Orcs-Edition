@@ -123,7 +123,7 @@ public class ActionFollow extends AbstractAction
 	{
 		IBlockState iblockstate = actor.world.getBlockState(pos);
 		Block block = iblockstate.getBlock();
-		return block == Blocks.AIR ? true : !iblockstate.isFullCube();
+		return block == Blocks.AIR || !iblockstate.isFullCube();
 	}
 	
 	@Override

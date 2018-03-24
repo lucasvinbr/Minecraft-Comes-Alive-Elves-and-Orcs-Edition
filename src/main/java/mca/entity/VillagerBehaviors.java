@@ -79,7 +79,7 @@ public class VillagerBehaviors {
 		for (final AbstractAction action : actions) {
 			boolean
 					doRun =
-					action instanceof AbstractToggleAction ? ((AbstractToggleAction) action).getIsActive() : true;
+					!(action instanceof AbstractToggleAction) || ((AbstractToggleAction) action).getIsActive();
 
 			if (doRun) {
 				action.onUpdateCommon();

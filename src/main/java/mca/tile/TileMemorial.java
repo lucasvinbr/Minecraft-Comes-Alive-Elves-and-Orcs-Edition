@@ -70,7 +70,6 @@ public class TileMemorial extends TileEntity implements ITickable
 
 				if (this.ownerRelation == EnumRelation.NONE)
 				{
-					return;
 				}
 				
 				else if (this.getType() == EnumMemorialType.BROKEN_RING)

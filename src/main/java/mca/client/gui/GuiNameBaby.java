@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -44,20 +45,16 @@ public class GuiNameBaby extends GuiScreen
 		{
 			babyNameTextField.updateCursorCounter();
 
-			if (babyNameTextField.getText().isEmpty())
-			{
-				doneButton.enabled = false;
-			}
-
-			else
-			{
-				doneButton.enabled = true;
-			}
+			doneButton.enabled = !babyNameTextField.getText().isEmpty();
 		}
 
 		catch (final NullPointerException e)
 		{
-
+			String msg = String.format("Null Pointer Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.severe(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 	}
 
@@ -89,9 +86,8 @@ public class GuiNameBaby extends GuiScreen
 	@Override
 	protected void actionPerformed(GuiButton guibutton)
 	{
-		if (guibutton.enabled == false)
+		if (!guibutton.enabled)
 		{
-			return;
 		}
 
 		else if (guibutton == doneButton)
@@ -102,7 +98,7 @@ public class GuiNameBaby extends GuiScreen
 			{
 				ItemStack stack = player.inventory.mainInventory.get(i);
 				
-				if (stack != null && stack.getItem() instanceof ItemBaby && stack.getTagCompound().getString("name").equals("Unnamed"))
+				if (stack.getItem() instanceof ItemBaby && stack.getTagCompound() != null && stack.getTagCompound().getString("name").equals("Unnamed"))
 				{
 					ItemBaby item = (ItemBaby) stack.getItem();
 					

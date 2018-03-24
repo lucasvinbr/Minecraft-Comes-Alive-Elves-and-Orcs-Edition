@@ -191,13 +191,8 @@ public class ActionCombat extends AbstractAction {
 				|| getTargetBehavior() == EnumCombatBehaviors.TARGET_PASSIVE_OR_HOSTILE_MOBS)) {
 			return true;
 		}
-		else if (entity instanceof EntityAnimal && (getTargetBehavior() == EnumCombatBehaviors.TARGET_PASSIVE_MOBS
-				|| getTargetBehavior() == EnumCombatBehaviors.TARGET_PASSIVE_OR_HOSTILE_MOBS)) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		else return entity instanceof EntityAnimal && (getTargetBehavior() == EnumCombatBehaviors.TARGET_PASSIVE_MOBS
+				|| getTargetBehavior() == EnumCombatBehaviors.TARGET_PASSIVE_OR_HOSTILE_MOBS);
 	}
 
 	public void setAttackTarget(EntityLivingBase entity) {

@@ -94,9 +94,7 @@ public class RenderTombstone extends TileEntitySpecialRenderer<TileTombstone> {
 	protected void bindResource(ResourceLocation resourceLocation) {
 		final TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
-		if (textureManager != null) {
-			textureManager.bindTexture(resourceLocation);
-		}
+		textureManager.bindTexture(resourceLocation);
 	}
 
 	private float setRotationByMeta(int meta) {

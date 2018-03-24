@@ -357,19 +357,19 @@ public final class RegistryMCA
 
 	public static ItemStack getGiftStackFromRelationship(int heartsLevel)
 	{
-		List<WeddingGift> giftList = null;
+		List<WeddingGift> giftList;
 
 		if (heartsLevel < 0)
 		{
 			giftList = villagerGiftsBad;
 		}
 
-		else if (heartsLevel >= 0 && heartsLevel <= 25)
+		else if (heartsLevel <= 25)
 		{
 			giftList = villagerGiftsGood;
 		}
 
-		else if (heartsLevel > 25 && heartsLevel <= 50)
+		else if (heartsLevel <= 50)
 		{
 			giftList = villagerGiftsBetter;
 		}

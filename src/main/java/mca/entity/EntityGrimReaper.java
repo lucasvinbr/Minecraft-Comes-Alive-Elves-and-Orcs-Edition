@@ -129,7 +129,6 @@ public class EntityGrimReaper extends EntityMob
 	@Override
     public void onStruckByLightning(EntityLightningBolt entity)
     {
-    	return;
     }
     
 	@Override

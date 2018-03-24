@@ -61,6 +61,7 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -88,6 +89,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
@@ -137,6 +139,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	protected DamageSource damageSource; // for when they die. I'm going to have a death clock countdown.
 	protected EntityTameable pet;
 	private Entity ridingEntity;
+	protected Random random = new Random();
 
 	public EntityVillagerMCA(World world) {
 		super(world);
@@ -153,7 +156,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		else {
 			pitch = RadixMath.getNumberInRange(0.7f, 1.0f);
 		}
-		// pitch = (new Random().nextInt((13 - 7) + 1) + 7) / 10;
+		// pitch = (random.nextInt((13 - 7) + 1) + 7) / 10;
 		addAI();
 	}
 
@@ -270,7 +273,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 					super.onDeath(damageSource);
 				}
 				catch (Exception e) {
-					e.printStackTrace();
+					String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+					FMLLog.severe(msg, e);
+					java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+					org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+					java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 				}
 			}
 		}
@@ -324,27 +331,27 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		else {
 			if (this.attributes.getRace() == EnumRace.Elf) {
 				if (this.attributes.getGender() == EnumGender.FEMALE) {
-					return new Random().nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2;
+					return random.nextBoolean() ? SoundsMCA.heroic_female_hurt_1 : SoundsMCA.heroic_female_hurt_2;
 				}
 				else {
-					return new Random().nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2;
+					return random.nextBoolean() ? SoundsMCA.heroic_male_hurt_1 : SoundsMCA.heroic_male_hurt_2;
 				}
 			}
 			else if (this.attributes.getRace() == EnumRace.Orc) {
 				if (this.attributes.getGender() == EnumGender.FEMALE) {
-					return new Random().nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2;
+					return random.nextBoolean() ? SoundsMCA.evil_female_hurt_1 : SoundsMCA.evil_female_hurt_2;
 				}
 				else {
-					return new Random().nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2;
+					return random.nextBoolean() ? SoundsMCA.evil_male_hurt_1 : SoundsMCA.evil_male_hurt_2;
 				}
 			}
 			else {
 				if (this.attributes.getGender() == EnumGender.FEMALE) {
-					return new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1
+					return random.nextBoolean() ? SoundsMCA.villager_female_hurt_1
 							: SoundsMCA.villager_female_hurt_2;
 				}
 				else {
-					return new Random().nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2;
+					return random.nextBoolean() ? SoundsMCA.villager_male_hurt_1 : SoundsMCA.villager_male_hurt_2;
 				}
 			}
 		}
@@ -388,8 +395,8 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			mate.facePosition(new Point3D(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()));
 			mate.playSound(
 					mate.attributes.getRace() == EnumRace.Orc
-							? (new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6)
-							: (new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4),
+							? (random.nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6)
+							: (random.nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4),
 					1.0f, mate.getPitch());
 			mate.rotationYawHead += 40;
 			Utilities.spawnParticlesAroundPointS(EnumParticleTypes.VILLAGER_HAPPY, mate.getWorld(),
@@ -403,17 +410,17 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 					.setProgressionStep(EnumProgressionStep.TRY_FOR_BABY);
 
 			if (mate.attributes.getRace() == EnumRace.Orc) {
-				mate.playSound((new Random().nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6), 1.0f,
+				mate.playSound((random.nextBoolean() ? SoundsMCA.femalehurt5 : SoundsMCA.femalehurt6), 1.0f,
 						mate.getPitch());
 			}
 			else {
-				mate.playSound(new Random().nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4, 1.0f,
+				mate.playSound(random.nextBoolean() ? SoundsMCA.femalehurt2 : SoundsMCA.femalehurt4, 1.0f,
 						mate.getPitch());
 			}
 
 			for (int i = 0; i < 2; i++) {
 				if (RadixLogic.getBooleanWithProbability(50)) {
-					boolean isMale = new Random().nextBoolean();
+					boolean isMale = random.nextBoolean();
 					ItemStack babyStack = new ItemStack(isMale ? ItemsMCA.BABY_BOY_ORC : ItemsMCA.BABY_GIRL_ORC);
 					ItemBaby baby = (ItemBaby) babyStack.getItem();
 					baby.setFather(this);
@@ -457,25 +464,25 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		}
 		if (attributes.getRace() == EnumRace.Elf) {
 			if (attributes.getGender() == EnumGender.FEMALE) {
-				return new Random().nextBoolean() ? SoundsMCA.heroic_female_death_1 : SoundsMCA.heroic_female_death_2;
+				return random.nextBoolean() ? SoundsMCA.heroic_female_death_1 : SoundsMCA.heroic_female_death_2;
 			}
 			else {
-				return new Random().nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2;
+				return random.nextBoolean() ? SoundsMCA.heroic_male_death_1 : SoundsMCA.heroic_male_death_2;
 			}
 		}
 		if (attributes.getRace() == EnumRace.Orc) {
 			if (attributes.getGender() == EnumGender.FEMALE) {
-				return new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2;
+				return random.nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2;
 			}
 			else {
-				return new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2;
+				return random.nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2;
 			}
 		}
 		if (attributes.getGender() == EnumGender.FEMALE) {
-			return new Random().nextBoolean() ? SoundsMCA.villager_female_death_1 : SoundsMCA.villager_female_death_2;
+			return random.nextBoolean() ? SoundsMCA.villager_female_death_1 : SoundsMCA.villager_female_death_2;
 		}
 		else {
-			return new Random().nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2;
+			return random.nextBoolean() ? SoundsMCA.villager_male_death_1 : SoundsMCA.villager_male_death_2;
 		}
 	}
 
@@ -487,10 +494,12 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			ItemTombstone tombstone = new ItemTombstone();
 			EntityDataManager data = getDataManager();
 			List<String> stats = new ArrayList<String>();
-			for (int i = 0; i < data.getAll().size() - 1; i++) {
-				if (data.getAll().get(i) != null) {
-					String value = data.getAll().get(i).toString();
-					stats.add(value);
+			if(data.getAll() != null) {
+				for (int i = 0; i < data.getAll().size() - 1; i++) {
+					if (data.getAll().get(i) != null) {
+						String value = data.getAll().get(i).toString();
+						stats.add(value);
+					}
 				}
 			}
 			ItemStack tombStack = new ItemStack(tombstone);
@@ -574,13 +583,13 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			}
 			if (pet != null) {
 				pet.setTamed(false);
+				pet.setSitting(false);
 				pet.setOwnerId(Constants.EMPTY_UUID);
-				if (attributes.getRace() == EnumRace.Orc) {
-					pet.isDead = true;
-					pet.onKillCommand();
-				}
-				if (pet instanceof EntityWolfMCA) {
-					((EntityWolfMCA) pet).setCollarColor(EnumDyeColor.BLACK);
+				// if (attributes.getRace() == EnumRace.Orc) {
+				// pet.isDead = true;
+				// }
+				if (pet instanceof EntityWolf) {
+					((EntityWolf) pet).setCollarColor(EnumDyeColor.BLACK);
 				}
 			}
 			this.dead = true;
@@ -590,7 +599,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			super.onDeath(damageSource);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.severe(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 	}
 
@@ -645,7 +658,6 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				catch (Exception e) {
 					LogManager.getLogger(EntityVillagerMCA.class)
 							.error("Error spawning villager death chest: " + e.getMessage());
-					return;
 				}
 			}
 		}
@@ -690,7 +702,6 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			catch (Exception e) {
 				LogManager.getLogger(EntityVillagerMCA.class)
 						.error("Error spawning villager death chest: " + e.getMessage());
-				return;
 			}
 		}
 	}
@@ -761,7 +772,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			// System.out.println("Reader Index: " + buffer.readerIndex());
 			// System.out.println("Writer Index: " + buffer.writerIndex());
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.warning(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).warning(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).warn(msg);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).warning(msg);
 		}
 	}
 
@@ -1054,15 +1069,15 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		else if (race == EnumRace.Orc) {
 			itemStack = new ItemStack(Items.STONE_SWORD);
 			Enchantment knockback = Enchantment.getEnchantmentByID(19);
-			itemStack.addEnchantment(knockback, knockback.getMaxLevel());
+			itemStack.addEnchantment(knockback, knockback != null ? knockback.getMaxLevel() : 0);
 		}
 		else if (race == EnumRace.Elf) {
 			if (attributes.getGender() == EnumGender.FEMALE) {
 				itemStack = new ItemStack(Items.BOW);
 				Enchantment power = Enchantment.getEnchantmentByID(48); // enchantment.arrowDamage
 				Enchantment punch = Enchantment.getEnchantmentByID(49); // enchantment.arrowKnockback
-				itemStack.addEnchantment(power, power.getMaxLevel());
-				itemStack.addEnchantment(punch, punch.getMaxLevel());
+				itemStack.addEnchantment(power, power != null ? power.getMaxLevel() : 0);
+				itemStack.addEnchantment(punch, punch != null ? punch.getMaxLevel() : 0);
 			}
 			else {
 				itemStack = new ItemStack(Items.WOODEN_SWORD);
@@ -1076,10 +1091,10 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 				// sharpness.getName()));
 				Enchantment bane = Enchantment.getEnchantmentByID(18);
 				// logger.trace(String.format("Bane Enchantment: %s", bane.getName()));
-				itemStack.addEnchantment(unbreaking, unbreaking.getMaxLevel());
-				itemStack.addEnchantment(sharpness, sharpness.getMaxLevel());
-				itemStack.addEnchantment(smite, smite.getMaxLevel());
-				itemStack.addEnchantment(bane, bane.getMaxLevel());
+				itemStack.addEnchantment(unbreaking, unbreaking != null ? unbreaking.getMaxLevel() : 0);
+				itemStack.addEnchantment(sharpness, sharpness != null ? sharpness.getMaxLevel() : 0);
+				itemStack.addEnchantment(smite, smite != null ? smite.getMaxLevel() : 0);
+				itemStack.addEnchantment(bane, bane != null ? bane.getMaxLevel() : 0);
 			}
 		}
 
@@ -1121,7 +1136,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.severe(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 
 		return false;
@@ -1398,7 +1417,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 	public void updateRidden() {
 		Entity ride = this.getRidingEntity();
 
-		if (this.isRiding() && ride.isDead) {
+		if (this.isRiding() && (ride != null && ride.isDead)) {
 			this.dismountRidingEntity();
 		}
 		else {
@@ -1408,7 +1427,7 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 			if (!updateBlocked)
 				this.onUpdate();
 
-			if (this.isRiding()) {
+			if (ride !=null && this.isRiding()) {
 				ride.updatePassenger(this);
 			}
 		}

@@ -373,9 +373,7 @@ public final class Config implements Serializable {
 		for (String s : config.getCategoryNames()) {
 			if (!s.equals("server")) {
 				IConfigElement element = new ConfigElement(config.getCategory(s));
-				for (IConfigElement e : element.getChildElements()) {
-					elements.add(e);
-				}
+				elements.addAll(element.getChildElements());
 			}
 		}
 

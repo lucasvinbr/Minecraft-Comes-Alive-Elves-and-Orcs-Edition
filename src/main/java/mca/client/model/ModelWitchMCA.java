@@ -19,7 +19,7 @@ public class ModelWitchMCA extends ModelWitch {
 	public ModelRenderer bipedLeftArm;
 	public ModelBiped.ArmPose leftArmPose;
 	public ModelBiped.ArmPose rightArmPose;
-	public boolean holdingItem;
+	// public boolean holdingItem;
 	private final ModelRenderer mole = (new ModelRenderer(this)).setTextureSize(64, 128);
 	private final ModelRenderer witchHat;
 	boolean isFemale = true;
@@ -27,6 +27,8 @@ public class ModelWitchMCA extends ModelWitch {
 
 	public ModelWitchMCA(float scale) {
 		super(scale);
+		this.textureWidth = 64;
+		this.textureHeight = 128;
 		this.mole.setRotationPoint(0.0F, -2.0F, 0.0F);
 		this.mole.setTextureOffset(0, 0).addBox(0.0F, 3.0F, -6.75F, 1, 1, 1, -0.25F);
 		this.villagerNose.addChild(this.mole);
@@ -52,15 +54,21 @@ public class ModelWitchMCA extends ModelWitch {
 		modelrenderer2.rotateAngleX = -0.20943952F;
 		modelrenderer2.rotateAngleZ = 0.10471976F;
 		modelrenderer1.addChild(modelrenderer2);
-		this.bipedRightArm = new ModelRenderer(this, 40, 16);
+		
+		this.villagerArms = (new ModelRenderer(this)).setTextureSize(textureWidth, textureHeight);
+		this.villagerArms.setTextureOffset(44, 22).addBox(-8.0F, -2.0F, -2.0F, 4, 8, 4, scale);
+		this.villagerArms.setTextureOffset(44, 22).addBox(4.0F, -2.0F, -2.0F, 4, 8, 4, scale);
+		this.villagerArms.setTextureOffset(40, 38).addBox(-4.0F, 2.0F, -2.0F, 8, 4, 4, scale);
+
+		this.bipedRightArm = new ModelRenderer(this, 0, 26);
 		this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, scale);
-		this.bipedRightArm.setRotationPoint(-5.0F, 2.0F + scale, 0.0F);
-		this.bipedLeftArm = new ModelRenderer(this, 40, 16);
+		// this.bipedRightArm.setRotationPoint(-5.0F, 2.0F + scale, 0.0F);
+		this.bipedLeftArm = new ModelRenderer(this, 40, 26);
 		this.bipedLeftArm.mirror = true;
 		this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, scale);
-		this.bipedLeftArm.setRotationPoint(5.0F, 2.0F + scale, 0.0F);
+		// this.bipedLeftArm.setRotationPoint(5.0F, 2.0F + scale, 0.0F);
 
-		breasts = new ModelRenderer(this, 18, 21);
+		breasts = new ModelRenderer(this, 0, 26);
 		breasts.addBox(-3F, 0F, -1F, 6, 3, 3);
 		breasts.setRotationPoint(0F, 3.5F, -3F);
 		breasts.setTextureSize(64, 64);
@@ -97,9 +105,9 @@ public class ModelWitchMCA extends ModelWitch {
 			isFemale = false;
 			this.villagerNose.showModel = true;
 		}
-		// villagerArms.showModel = false;
-		bipedLeftArm.showModel = true;
-		bipedRightArm.showModel = true;
+		villagerArms.showModel = true;
+		bipedLeftArm.showModel = false;
+		bipedRightArm.showModel = false;
 	}
 
 	/**
@@ -122,142 +130,122 @@ public class ModelWitchMCA extends ModelWitch {
 			this.villagerNose.rotateAngleY = 0.0F;
 			this.villagerNose.rotateAngleZ = MathHelper.cos(entityIn.ticksExisted * f) * 2.5F * 0.017453292F;
 		}
-		//
-		// this.bipedRightArm.rotationPointZ = 0.0F;
-		// this.bipedRightArm.rotationPointX = -5.0F;
-		// this.bipedLeftArm.rotationPointZ = 0.0F;
-		// this.bipedLeftArm.rotationPointX = 5.0F;
-		// float f = 1.0F;
-		//
-		// this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F +
-		// (float) Math.PI) * 2.0F * limbSwingAmount
-		// * 0.5F / f;
-		// this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 2.0F *
-		// limbSwingAmount * 0.5F / f;
-		// this.bipedRightArm.rotateAngleZ = 0.0F;
-		// this.bipedLeftArm.rotateAngleZ = 0.0F;
-		//
-		// if (this.isRiding) {
-		// this.bipedRightArm.rotateAngleX += -((float) Math.PI / 5F);
-		// this.bipedLeftArm.rotateAngleX += -((float) Math.PI / 5F);
+
+		this.bipedRightArm.rotationPointZ = 0.0F;
+		this.bipedRightArm.rotationPointX = -5.0F;
+		this.bipedLeftArm.rotationPointZ = 0.0F;
+		this.bipedLeftArm.rotationPointX = 5.0F;
+		float f = 1.0F;
+
+		this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 2.0F * limbSwingAmount
+				* 0.5F / f;
+		this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F / f;
+		this.bipedRightArm.rotateAngleZ = 0.0F;
+		this.bipedLeftArm.rotateAngleZ = 0.0F;
+
+		if (this.isRiding) {
+			this.bipedRightArm.rotateAngleX += -((float) Math.PI / 5F);
+			this.bipedLeftArm.rotateAngleX += -((float) Math.PI / 5F);
+		}
+
+		this.bipedRightArm.rotateAngleY = 0.0F;
+		this.bipedRightArm.rotateAngleZ = 0.0F;
+
+		// switch (this.leftArmPose) {
+		// case EMPTY:
+		// this.bipedLeftArm.rotateAngleY = 0.0F;
+		// break;
+		// case BLOCK:
+		// this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F -
+		// 0.9424779F;
+		// this.bipedLeftArm.rotateAngleY = 0.5235988F;
+		// break;
+		// case ITEM:
+		// this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F -
+		// ((float) Math.PI / 10F);
+		// this.bipedLeftArm.rotateAngleY = 0.0F;
 		// }
-		//
+
+		// switch (this.rightArmPose) {
+		// case EMPTY:
 		// this.bipedRightArm.rotateAngleY = 0.0F;
-		// this.bipedRightArm.rotateAngleZ = 0.0F;
-		//
-		// // switch (this.leftArmPose) {
-		// // case EMPTY:
-		// // this.bipedLeftArm.rotateAngleY = 0.0F;
-		// // break;
-		// // case BLOCK:
-		// // this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F -
-		// // 0.9424779F;
-		// // this.bipedLeftArm.rotateAngleY = 0.5235988F;
-		// // break;
-		// // case ITEM:
-		// // this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F -
-		// // ((float) Math.PI / 10F);
-		// // this.bipedLeftArm.rotateAngleY = 0.0F;
-		// // }
-		//
-		// // switch (this.rightArmPose) {
-		// // case EMPTY:
-		// // this.bipedRightArm.rotateAngleY = 0.0F;
-		// // break;
-		// // case BLOCK:
-		// // this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F -
-		// // 0.9424779F;
-		// // this.bipedRightArm.rotateAngleY = -0.5235988F;
-		// // break;
-		// // case ITEM:
-		// // this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F -
-		// // ((float) Math.PI / 10F);
-		// // this.bipedRightArm.rotateAngleY = 0.0F;
-		// // }
-		//
-		// if (this.swingProgress > 0.0F) {
-		// EnumHandSide enumhandside = this.getMainHand(entityIn);
-		// ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
-		// float f1 = this.swingProgress;
-		// this.villagerBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) *
-		// ((float) Math.PI * 2F)) * 0.2F;
-		//
-		// if (enumhandside == EnumHandSide.LEFT) {
-		// this.villagerBody.rotateAngleY *= -1.0F;
+		// break;
+		// case BLOCK:
+		// this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F -
+		// 0.9424779F;
+		// this.bipedRightArm.rotateAngleY = -0.5235988F;
+		// break;
+		// case ITEM:
+		// this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F -
+		// ((float) Math.PI / 10F);
+		// this.bipedRightArm.rotateAngleY = 0.0F;
 		// }
-		//
-		// this.bipedRightArm.rotationPointZ =
-		// MathHelper.sin(this.villagerHead.rotateAngleY) * 5.0F;
-		// this.bipedRightArm.rotationPointX =
-		// -MathHelper.cos(this.villagerBody.rotateAngleY) * 5.0F;
-		// this.bipedLeftArm.rotationPointZ =
-		// -MathHelper.sin(this.villagerBody.rotateAngleY) * 5.0F;
-		// this.bipedLeftArm.rotationPointX =
-		// MathHelper.cos(this.villagerBody.rotateAngleY) * 5.0F;
-		// this.bipedRightArm.rotateAngleY += this.villagerBody.rotateAngleY;
-		// this.bipedLeftArm.rotateAngleY += this.villagerBody.rotateAngleY;
-		// this.bipedLeftArm.rotateAngleX += this.villagerBody.rotateAngleY;
-		// f1 = 1.0F - this.swingProgress;
-		// f1 = f1 * f1;
-		// f1 = f1 * f1;
-		// f1 = 1.0F - f1;
-		// float f2 = MathHelper.sin(f1 * (float) Math.PI);
-		// float f3 = MathHelper.sin(this.swingProgress * (float) Math.PI) *
-		// -(this.villagerHead.rotateAngleX - 0.7F)
-		// * 0.75F;
-		// modelrenderer.rotateAngleX = (float) (modelrenderer.rotateAngleX - (f2 * 1.2D
-		// + f3));
-		// modelrenderer.rotateAngleY += this.villagerBody.rotateAngleY * 2.0F;
-		// modelrenderer.rotateAngleZ += MathHelper.sin(this.swingProgress * (float)
-		// Math.PI) * -0.4F;
-		// }
-		//
-		// if (this.isSneak) {
-		// this.villagerBody.rotateAngleX = 0.5F;
-		// this.bipedRightArm.rotateAngleX += 0.4F;
-		// this.bipedLeftArm.rotateAngleX += 0.4F;
-		// this.rightVillagerLeg.rotationPointZ = 4.0F;
-		// this.leftVillagerLeg.rotationPointZ = 4.0F;
-		// this.rightVillagerLeg.rotationPointY = 9.0F;
-		// this.leftVillagerLeg.rotationPointY = 9.0F;
-		// this.villagerHead.rotationPointY = 1.0F;
-		// }
-		// else {
-		// this.villagerBody.rotateAngleX = 0.0F;
-		// this.rightVillagerLeg.rotationPointZ = 0.1F;
-		// this.leftVillagerLeg.rotationPointZ = 0.1F;
-		// this.rightVillagerLeg.rotationPointY = 12.0F;
-		// this.leftVillagerLeg.rotationPointY = 12.0F;
-		// this.villagerHead.rotationPointY = 0.0F;
-		// }
-		//
-		// this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F
-		// + 0.05F;
-		// this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F
-		// + 0.05F;
-		// this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) *
-		// 0.05F;
-		// this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) *
-		// 0.05F;
-		//
-		// if (this.rightArmPose == ModelBiped.ArmPose.BOW_AND_ARROW) {
-		// this.bipedRightArm.rotateAngleY = -0.1F + this.villagerHead.rotateAngleY;
-		// this.bipedLeftArm.rotateAngleY = 0.1F + this.villagerHead.rotateAngleY +
-		// 0.4F;
-		// this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) +
-		// this.villagerHead.rotateAngleX;
-		// this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) +
-		// this.villagerHead.rotateAngleX;
-		// }
-		// else if (this.leftArmPose == ModelBiped.ArmPose.BOW_AND_ARROW) {
-		// this.bipedRightArm.rotateAngleY = -0.1F + this.villagerHead.rotateAngleY -
-		// 0.4F;
-		// this.bipedLeftArm.rotateAngleY = 0.1F + this.villagerHead.rotateAngleY;
-		// this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) +
-		// this.villagerHead.rotateAngleX;
-		// this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) +
-		// this.villagerHead.rotateAngleX;
-		// }
+
+		if (this.swingProgress > 0.0F) {
+			EnumHandSide enumhandside = this.getMainHand(entityIn);
+			ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
+			float f1 = this.swingProgress;
+			this.villagerBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float) Math.PI * 2F)) * 0.2F;
+
+			if (enumhandside == EnumHandSide.LEFT) {
+				this.villagerBody.rotateAngleY *= -1.0F;
+			}
+
+			this.bipedRightArm.rotationPointZ = MathHelper.sin(this.villagerHead.rotateAngleY) * 5.0F;
+			this.bipedRightArm.rotationPointX = -MathHelper.cos(this.villagerBody.rotateAngleY) * 5.0F;
+			this.bipedLeftArm.rotationPointZ = -MathHelper.sin(this.villagerBody.rotateAngleY) * 5.0F;
+			this.bipedLeftArm.rotationPointX = MathHelper.cos(this.villagerBody.rotateAngleY) * 5.0F;
+			this.bipedRightArm.rotateAngleY += this.villagerBody.rotateAngleY;
+			this.bipedLeftArm.rotateAngleY += this.villagerBody.rotateAngleY;
+			this.bipedLeftArm.rotateAngleX += this.villagerBody.rotateAngleX;
+			f1 = 1.0F - this.swingProgress;
+			f1 = f1 * f1;
+			f1 = f1 * f1;
+			f1 = 1.0F - f1;
+			float f2 = MathHelper.sin(f1 * (float) Math.PI);
+			float f3 = MathHelper.sin(this.swingProgress * (float) Math.PI) * -(this.villagerHead.rotateAngleX - 0.7F)
+					* 0.75F;
+			modelrenderer.rotateAngleX = (float) (modelrenderer.rotateAngleX - (f2 * 1.2D + f3));
+			modelrenderer.rotateAngleY += this.villagerBody.rotateAngleY * 2.0F;
+			modelrenderer.rotateAngleZ += MathHelper.sin(this.swingProgress * (float) Math.PI) * -0.4F;
+		}
+
+		if (this.isSneak) {
+			this.villagerBody.rotateAngleX = 0.5F;
+			this.bipedRightArm.rotateAngleX += 0.4F;
+			this.bipedLeftArm.rotateAngleX += 0.4F;
+			this.rightVillagerLeg.rotationPointZ = 4.0F;
+			this.leftVillagerLeg.rotationPointZ = 4.0F;
+			this.rightVillagerLeg.rotationPointY = 9.0F;
+			this.leftVillagerLeg.rotationPointY = 9.0F;
+			this.villagerHead.rotationPointY = 1.0F;
+		}
+		else {
+			this.villagerBody.rotateAngleX = 0.0F;
+			this.rightVillagerLeg.rotationPointZ = 0.1F;
+			this.leftVillagerLeg.rotationPointZ = 0.1F;
+			this.rightVillagerLeg.rotationPointY = 12.0F;
+			this.leftVillagerLeg.rotationPointY = 12.0F;
+			this.villagerHead.rotationPointY = 0.0F;
+		}
+
+		this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+		this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+		this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+		this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+
+		if (this.rightArmPose == ModelBiped.ArmPose.BOW_AND_ARROW) {
+			this.bipedRightArm.rotateAngleY = -0.1F + this.villagerHead.rotateAngleY;
+			this.bipedLeftArm.rotateAngleY = 0.1F + this.villagerHead.rotateAngleY + 0.4F;
+			this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) + this.villagerHead.rotateAngleX;
+			this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + this.villagerHead.rotateAngleX;
+		}
+		else if (this.leftArmPose == ModelBiped.ArmPose.BOW_AND_ARROW) {
+			this.bipedRightArm.rotateAngleY = -0.1F + this.villagerHead.rotateAngleY - 0.4F;
+			this.bipedLeftArm.rotateAngleY = 0.1F + this.villagerHead.rotateAngleY;
+			this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) + this.villagerHead.rotateAngleX;
+			this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + this.villagerHead.rotateAngleX;
+		}
 
 		if (this.holdingItem) {
 			// this.villagerNose.rotateAngleX = -0.9F;
@@ -299,7 +287,7 @@ public class ModelWitchMCA extends ModelWitch {
 		this.bipedLeftArm.showModel = visible;
 		this.leftVillagerLeg.showModel = visible;
 		this.rightVillagerLeg.showModel = visible;
-		// this.breasts.showModel = true;
+		this.breasts.showModel = true;
 		// this.villagerNose.showModel = true;
 	}
 }

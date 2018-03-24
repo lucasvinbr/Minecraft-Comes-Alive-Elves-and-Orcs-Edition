@@ -87,13 +87,7 @@ public class GuiPlayerMenu extends GuiScreen {
 		int x = Mouse.getEventX() * width / mc.displayWidth;
 		int y = height - Mouse.getEventY() * height / mc.displayHeight - 1;
 
-		if (x <= 38 && x >= 16 && y <= 86 && y >= 69) {
-			displayMarriageInfo = true;
-		}
-
-		else {
-			displayMarriageInfo = false;
-		}
+		displayMarriageInfo = x <= 38 && x >= 16 && y <= 86 && y >= 69;
 	}
 
 	@Override

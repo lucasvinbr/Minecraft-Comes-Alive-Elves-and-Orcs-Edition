@@ -131,7 +131,6 @@ public class ActionFarm extends AbstractToggleAction
 								if (nearestHarvest == null)
 								{
 									harvestTargetPoint = Point3D.ZERO;
-									continue;
 								}
 
 								else
@@ -165,7 +164,6 @@ public class ActionFarm extends AbstractToggleAction
 									else
 									{
 										harvestTargetPoint = Point3D.ZERO;
-										continue;
 									}
 								}
 							}
@@ -202,7 +200,6 @@ public class ActionFarm extends AbstractToggleAction
 								if (harvestTargetPoint == null || harvestTargetPoint == Point3D.ZERO)
 								{
 									harvestTargetPoint = Point3D.ZERO;
-									continue;
 								}
 
 								else

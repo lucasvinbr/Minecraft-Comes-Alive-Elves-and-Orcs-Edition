@@ -1,7 +1,5 @@
 package mca.entity;
 
-import java.util.Random;
-
 import mca.actions.ActionMate;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
@@ -21,10 +19,10 @@ public class EntityOrcMCA extends EntityVillagerMCA {
 		this.attributes.setProfession(EnumProfession.Warrior);
 		this.attributes.setRace(EnumRace.Orc);
 		if (this.attributes.getGender() == EnumGender.FEMALE) {
-			pitch = (new Random().nextFloat() * (1.3f - 1.0f)) + 1.0f;
+			pitch = (random.nextFloat() * (1.3f - 1.0f)) + 1.0f;
 		}
 		else {
-			pitch = (new Random().nextFloat() * (1.0f - 0.5f)) + 0.5f;
+			pitch = (random.nextFloat() * (1.0f - 0.5f)) + 0.5f;
 		}
 	}
 

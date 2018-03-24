@@ -162,43 +162,6 @@ public class EntityCatMCA extends EntityOcelot implements EntityPet {
 			}
 		}
 	}
-	//
-	// @Override
-	// public void setAttackTarget(EntityLivingBase entitylivingbaseIn) {
-	// // TODO Auto-generated method stub
-	// super.setAttackTarget(entitylivingbaseIn);
-	// }
-
-	// @Override
-	// public void onLivingUpdate() {
-	// super.onLivingUpdate();
-	// if (getAttackTarget() != null && getAttackTarget().getUniqueID() ==
-	// getOwnerId()) {
-	// setAttackTarget(null);
-	// }
-	// if (getOwner() == null || getOwner().isDead) {
-	// setSitting(false);
-	// EntityChicken chicken = RadixLogic.getClosestEntityExclusive(this, 15,
-	// EntityChicken.class);
-	// if (chicken != null) {
-	// setAttackTarget(chicken);
-	// }
-	// else {
-	// EntityMob monster = RadixLogic.getClosestEntityExclusive(this, 5,
-	// EntityMob.class);
-	// if (monster != null) {
-	// setAttackTarget(monster);
-	// }
-	// }
-	// }
-	// // if (getAttackTarget() != null) {
-	// // if (this.canEntityBeSeen(getAttackTarget()) && getNavigator().noPath()) {
-	// // // setSneaking(true);
-	// // getNavigator().tryMoveToEntityLiving(getAttackTarget(),
-	// Constants.SPEED_RUN);
-	// // }
-	// // }
-	// }
 
 	@Override
 	public EntityPlayer getOwnerPlayer() {
@@ -242,12 +205,7 @@ public class EntityCatMCA extends EntityOcelot implements EntityPet {
 	@Override
 	public void setOwner(EntityLivingBase owner) {
 		this.setOwnerId(owner.getUniqueID());
-		if (owner instanceof EntityPlayerMP) {
-			ownedByPlayer = true;
-		}
-		else {
-			ownedByPlayer = false;
-		}
+		ownedByPlayer = owner instanceof EntityPlayerMP;
 	}
 
 	@Override

@@ -55,19 +55,17 @@ public final class SkinLoader {
 
 	private static File findModAsArchive() throws ZipException, IOException {
 		final File modsFolder = new File(RadixCore.getRunningDirectory() + "/mods");
-		if(modsFolder != null) {
-			for (final File fileInMods : modsFolder.listFiles()) {
-				if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar")) {
-					if (fileContainsModData(fileInMods)) {
-						return fileInMods;
-					}
+		for (final File fileInMods : modsFolder.listFiles()) {
+			if (fileInMods.isFile() && fileInMods.getName().contains(".zip") || fileInMods.getName().contains(".jar")) {
+				if (fileContainsModData(fileInMods)) {
+					return fileInMods;
 				}
-				else if (fileInMods.isDirectory()) {
-					final File modData = getModFileFromNestedFolder(fileInMods);
+			}
+			else if (fileInMods.isDirectory()) {
+				final File modData = getModFileFromNestedFolder(fileInMods);
 
-					if (modData != null) {
-						return modData;
-					}
+				if (modData != null) {
+					return modData;
 				}
 			}
 		}

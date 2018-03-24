@@ -26,7 +26,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -101,7 +100,7 @@ public class PacketInteract extends AbstractPacket<PacketInteract>
 	@Override
 	public void processOnGameThread(PacketInteract message, MessageContext context) 
 	{
-		PacketInteract packet = (PacketInteract)message;
+		PacketInteract packet = message;
 		EntityVillagerMCA villager = null;
 		EntityPlayer player = null;
 
@@ -297,7 +296,7 @@ public class PacketInteract extends AbstractPacket<PacketInteract>
 
 				else
 				{
-					EntityHorse horse = (EntityHorse)RadixLogic.getClosestEntityExclusive(villager, 5, EntityHorse.class);
+					EntityHorse horse = RadixLogic.getClosestEntityExclusive(villager, 5, EntityHorse.class);
 
 					if (horse != null)
 					{
@@ -473,14 +472,14 @@ public class PacketInteract extends AbstractPacket<PacketInteract>
 			else if (interaction == EnumInteraction.TAXES)
 			{
 				List<EntityVillagerMCA> villagerList = RadixLogic.getEntitiesWithinDistance(EntityVillagerMCA.class, villager, 50);
-				int percentAverage = getVillageHappinessPercentage(villager, player, villagerList);
+				float percentAverage = getVillageHappinessPercentage(villager, player, villagerList);
 				
-				if (percentAverage != -1)
+				if (percentAverage != -1f)
 				{
 					PlayerMemory thisMemory = villager.attributes.getPlayerMemory(player);
 					Item dropItem = RadixLogic.getBooleanWithProbability(3) ? Items.DIAMOND : 
 						RadixLogic.getBooleanWithProbability(50) ? Items.GOLD_NUGGET : Items.IRON_INGOT;
-					int	happinessLevel = MathHelper.clamp((int)Math.round(percentAverage / 25), 0, 4);
+					int happinessLevel = MathHelper.clamp(Math.round(percentAverage / 25f), 0, 4);
 					int	itemsDropped = RadixMath.getNumberInRange(Math.round((float)happinessLevel / 2), happinessLevel * 2);
 					
 					if (itemsDropped == 0) //On happiness level 0, make sure just one is dropped.
@@ -497,7 +496,7 @@ public class PacketInteract extends AbstractPacket<PacketInteract>
 					{
 						MCA.getPacketHandler().sendPacketToPlayer(new PacketSetTutorialMessage(
 							new TutorialMessage("Unhappy villagers do not like being taxed, and will contribute less.", 
-									"Increase their happiness by maintaining high hearts with them.")), (EntityPlayerMP) player);
+									"Increase their happiness by maintaining high hearts with them.")), player);
 					}
 						
 					//Randomly decrease hearts of all villagers around.

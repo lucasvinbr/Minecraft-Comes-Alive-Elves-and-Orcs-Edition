@@ -9,12 +9,10 @@ import mca.data.NBTPlayerData;
 import mca.entity.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
-import mca.enums.EnumRace;
 import mca.items.ItemBaby;
 import mca.packets.PacketOpenBabyNameGUI;
 import mca.util.Utilities;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +23,7 @@ import net.minecraft.util.EnumParticleTypes;
 import radixcore.constant.Time;
 
 public class ActionProcreate extends AbstractAction {
+	Random random = new Random();
 	private static final DataParameter<Boolean>
 			IS_PROCREATING =
 			EntityDataManager.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
@@ -51,10 +50,10 @@ public class ActionProcreate extends AbstractAction {
 			if(actor.attributes.getGender() == EnumGender.FEMALE) {
 				actor.playSound(actor.attributes.getRace() ==
 						                EnumRace.Orc ?
-				                (new Random().nextBoolean() ?
+						(random.nextBoolean() ?
 				                 SoundsMCA.femalehurt5 :
 				                 SoundsMCA.femalehurt6) :
-				                (new Random().nextBoolean() ?
+						(random.nextBoolean() ?
 				                 SoundsMCA.femalehurt2 :
 				                 SoundsMCA.femalehurt4), 2.0F, actor.getPitch());
 			}
@@ -71,7 +70,7 @@ public class ActionProcreate extends AbstractAction {
 						NBTPlayerData data = MCA.getPlayerData(playerSpouse);
 						data.setOwnsBaby(true);
 
-						boolean isMale = new Random().nextBoolean();
+						boolean isMale = random.nextBoolean();
 						ItemStack babyStack = new ItemStack(isMale ? ItemsMCA.BABY_BOY : ItemsMCA.BABY_GIRL);
 
 						boolean isPlayerInventoryFull = playerSpouse.inventory.getFirstEmptyStack() == -1;
@@ -92,7 +91,7 @@ public class ActionProcreate extends AbstractAction {
 					final EntityVillagerMCA spouse = actor.attributes.getVillagerSpouseInstance();
 
 					if (spouse != null) {
-						boolean isMale = new Random().nextBoolean();
+						boolean isMale = random.nextBoolean();
 						ItemStack babyStack = new ItemStack(isMale ? ItemsMCA.BABY_BOY : ItemsMCA.BABY_GIRL);
 						ItemBaby baby = (ItemBaby) babyStack.getItem();
 						if (spouse.attributes.getGender() == EnumGender.FEMALE) {
@@ -143,6 +142,7 @@ public class ActionProcreate extends AbstractAction {
 		hasHadTwins = value;
 	}
 
+	@Override
 	protected void registerDataParameters() {
 		actor.getDataManager().register(IS_PROCREATING, false);
 	}

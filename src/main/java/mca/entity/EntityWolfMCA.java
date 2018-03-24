@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLLog;
 
 /**
  * @author Michael M. Adkins
@@ -108,7 +109,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 	 * @return the ownerGender
 	 */
 	public EnumGender getOwnerGender() {
-		EnumGender ownerGender = EnumGender.UNASSIGNED;
+		EnumGender ownerGender;
 		if (ownedByPlayer) {
 			NBTPlayerData playerData = MCA.getPlayerData((EntityPlayer) getOwner());
 			ownerGender = playerData.getGender();
@@ -163,12 +164,7 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 	@Override
 	public void setOwner(EntityLivingBase owner) {
 		this.setOwnerId(owner.getUniqueID());
-		if (owner instanceof EntityPlayerMP) {
-			ownedByPlayer = true;
-		}
-		else {
-			ownedByPlayer = false;
-		}
+		ownedByPlayer = owner instanceof EntityPlayerMP;
 		// if (getOwnerGender() == EnumGender.FEMALE) {
 		// super.setCollarColor(EnumDyeColor.PINK);
 		// }
@@ -231,21 +227,24 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 		return super.growingAge;
 	}
 
-	// /**
-	// * @see net.minecraft.entity.passive.EntityWolf#onUpdate()
-	// */
-	// @Override
-	// public void onUpdate() {
-	// super.onUpdate();
-	//
-	// EntityVillagerMCA owner = getVillagerOwnerInstance();
-	// if (owner != null) {
-	// if (this.getNavigator().noPath()) {
-	// this.getNavigator().tryMoveToEntityLiving(owner, Constants.SPEED_WALK);
-	// }
-	// this.setGrowingAge(owner.getGrowingAge());
-	// }
-	// }
+	/**
+	 * @see net.minecraft.entity.passive.EntityWolf#onLivingUpdate()
+	 */
+	@Override
+	public void onLivingUpdate() {
+		super.onLivingUpdate();
+
+		EntityVillagerMCA owner = getVillagerOwnerInstance();
+		if (owner != null) {
+			if (this.getNavigator().noPath()) {
+				this.getNavigator().tryMoveToEntityLiving(owner, Constants.SPEED_WALK);
+			}
+			this.setGrowingAge(owner.getGrowingAge());
+		}
+		else {
+			setSitting(false);
+		}
+	}
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
@@ -253,7 +252,11 @@ public class EntityWolfMCA extends EntityWolf implements EntityPet {
 			super.onDeath(damageSource);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.severe(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 		if (!ownedByPlayer) {
 			EntityVillagerMCA owner = getVillagerOwnerInstance();

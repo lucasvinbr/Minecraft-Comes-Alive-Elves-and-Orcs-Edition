@@ -71,6 +71,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -354,16 +355,11 @@ public class MCA {
 					if (!itemName.startsWith("#")) {
 						Object item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
 						Object block = Block.REGISTRY.getObject(new ResourceLocation(itemName));
-						Object addObject = item != null ? item : block != null ? block : null;
+						Object addObject = item != null ? item : block;
 
-						if (addObject != null) {
-							RegistryMCA.addObjectAsGift(addObject, heartsValue);
-							logger.info("Successfully added " + itemName + " with hearts value of " + heartsValue
-									+ " to gift registry.");
-						}
-						else {
-							logger.error("Failed to find item by name provided. Gift entry not created: " + entry);
-						}
+						RegistryMCA.addObjectAsGift(addObject, heartsValue);
+						logger.info("Successfully added " + itemName + " with hearts value of " + heartsValue
+								+ " to gift registry.");
 					}
 				}
 				catch (Exception e) {
@@ -814,7 +810,7 @@ public class MCA {
 				skeleton.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.LEATHER_LEGGINGS));
 				skeleton.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.LEATHER_CHESTPLATE));
 				skeleton.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
-				if(randy.nextBoolean()) {
+				if (randy.nextBoolean()) {
 					skeleton.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.BOW));
 				}
 				else {
@@ -977,7 +973,7 @@ public class MCA {
 			int fatherCaste;
 			int motherCaste;
 			if (spouse.attributes.getGender() == EnumGender.MALE) {
-				int caste = 0;
+				int caste;
 				caste = RadixMath.getNumberInRange(originalProfession % 6, 5);
 				if (caste < originalProfession) {
 					logger.warn("");
@@ -988,7 +984,7 @@ public class MCA {
 				spouse.attributes.setProfession(EnumProfession.getNewProfessionFromVanilla(caste));
 			}
 			else {
-				int caste = 0;
+				int caste;
 				// I'm not letting the wife's caste exceed the husband's.
 				caste = RadixMath.getNumberInRange(0, Math.abs(villager.getProfession()));
 				if (caste > originalProfession) {
@@ -1050,6 +1046,50 @@ public class MCA {
 		return villager;
 	}
 
+	public static EntityWolfMCA naturallySpawnDogs(Point3D pointOfSpawn, World world, boolean isChild) {
+		EntityWolfMCA wolf = new EntityWolfMCA(world);
+		wolf.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+		Biome biome = wolf.world.getBiome(wolf.getPosition());
+		logger.info(String.format("Spawning dog in %s biome ", biome.getBiomeName()));
+		String texture;
+		String angryTexture;
+		if (biome.getBiomeName().toLowerCase().contains("plain")) {
+			texture = "mca:textures/doggy.png";
+			angryTexture = "mca:textures/doggy.png";
+		}
+		else if (biome.getBiomeName().toLowerCase().contains("ice")) {
+			texture = "mca:textures/husky_untamed.png";
+			angryTexture = "mca:textures/husky_angry.png";
+		}
+		else {
+			texture = "mca:textures/wolf.png";
+			angryTexture = "mca:textures/wolf_angry.png";
+		}
+		wolf.setSitting(false);
+		wolf.attributes.setTexture(texture);
+		wolf.attributes.setAngryTexture(angryTexture);
+		if (isChild) {
+			wolf.setGrowingAge(-100);
+		}
+		else {
+			for (int c = 0; c < 5; c++) {
+				if (RadixLogic.getBooleanWithProbability(50)) {
+					EntityWolfMCA pup = new EntityWolfMCA(world);
+					pup.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+					pup.setGrowingAge(-100);
+					wolf.createChild(pup);
+					world.spawnEntity(pup);
+					pup.attributes.setTexture(texture);
+					pup.attributes.setAngryTexture(angryTexture);
+					pup.setCustomNameTag("stray " + pup.hashCode());
+				}
+			}
+		}
+		wolf.setCustomNameTag("stray " + wolf.hashCode());
+		world.spawnEntity(wolf);
+		return wolf;
+	}
+
 	public static EntityCatMCA naturallySpawnCats(Point3D pointOfSpawn, World world, boolean isChild) {
 		EntityCatMCA cat = new EntityCatMCA(world);
 		cat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
@@ -1058,12 +1098,19 @@ public class MCA {
 		if (isChild) {
 			cat.setGrowingAge(-100);
 		}
-		else if (RadixLogic.getBooleanWithProbability(25)) {
-			EntityCatMCA kitten = new EntityCatMCA(world);
-			kitten.setGrowingAge(-100);
-			kitten.setTameSkin(cat.getTameSkin());
-			cat.createChild(kitten);
+		else {
+			for (int c = 0; c < 5; c++) {
+				if (RadixLogic.getBooleanWithProbability(50)) {
+					EntityCatMCA kitten = new EntityCatMCA(world);
+					kitten.setGrowingAge(-100);
+					kitten.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+					kitten.setTameSkin(cat.getTameSkin());
+					kitten.setCustomNameTag("feral cat " + kitten.hashCode());
+					cat.createChild(kitten);
+				}
+			}
 		}
+		cat.setCustomNameTag("feral cat " + cat.hashCode());
 		world.spawnEntity(cat);
 		return cat;
 	}

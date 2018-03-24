@@ -27,7 +27,7 @@ import radixcore.modules.RadixLogic;
 public class RenderWitchMCA<T extends EntityWitchMCA> extends RenderLiving<T> {
 	private static final ResourceLocation TEXTURE_A = new ResourceLocation("mca:textures/witch_a.png");
 	private static final ResourceLocation TEXTURE_B = new ResourceLocation("mca:textures/witch_b.png");
-	private static final ResourceLocation TEXTURE_C = new ResourceLocation("mca:textures/witch_C.png");
+	private static final ResourceLocation TEXTURE_C = new ResourceLocation("mca:textures/witch_c.png");
 	private static final ResourceLocation WIZARD = new ResourceLocation("mca:textures/wizard.png");
 
 	public RenderWitchMCA(RenderManager renderManagerIn) {

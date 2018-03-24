@@ -309,7 +309,6 @@ public class GuiInteraction extends GuiScreen
 				
 				catch (Exception e)
 				{
-					continue;
 				}
 			}
 		}
@@ -394,10 +393,7 @@ public class GuiInteraction extends GuiScreen
 		{
 			ItemStack heldItem = player.inventory.getCurrentItem();
 
-			if (heldItem != null)
-			{
-				MCA.getPacketHandler().sendPacketToServer(new PacketGift(villager, player.inventory.currentItem));
-			}
+			MCA.getPacketHandler().sendPacketToServer(new PacketGift(villager, player.inventory.currentItem));
 		}
 
 		else if (!inGiftMode && button == 0 && doDrawGiftIcon() && posX <= 38 && posX >= 16 && posY <= 147 && posY >= 120)
@@ -436,10 +432,7 @@ public class GuiInteraction extends GuiScreen
 			{
 				ItemStack heldItem = player.inventory.getCurrentItem();
 
-				if (heldItem != null)
-				{
-					MCA.getPacketHandler().sendPacketToServer(new PacketGift(villager, player.inventory.currentItem));
-				}
+				MCA.getPacketHandler().sendPacketToServer(new PacketGift(villager, player.inventory.currentItem));
 			}
 		}
 
@@ -545,7 +538,7 @@ public class GuiInteraction extends GuiScreen
 				{
 					ItemStack stack = player.inventory.getStackInSlot(i);
 
-					if (stack != null && stack.getItem() == Items.GOLD_INGOT)
+					if (stack.getItem() == Items.GOLD_INGOT)
 					{
 						if (stack.getCount() >= hireLengths.get())
 						{
@@ -884,7 +877,6 @@ public class GuiInteraction extends GuiScreen
 
 					if (button.id == -1 || button.id == EnumInteraction.BACK.getId() || button.id == EnumInteraction.STOP.getId())
 					{
-						continue;
 					}
 
 					else if (button.id != validChore.getId())
@@ -925,7 +917,9 @@ public class GuiInteraction extends GuiScreen
 		if (villager.attributes.getCanBeHired(player))
 		{
 			boolean isHired = memory.getIsHiredBy();
-			boolean reachedHeartLevel = MCA.getConfig().hiringHeartsRequirement == -1 ? true : memory.getHearts() >= MCA.getConfig().hiringHeartsRequirement;
+			boolean reachedHeartLevel =
+					MCA.getConfig().hiringHeartsRequirement == -1 ||
+							memory.getHearts() >= MCA.getConfig().hiringHeartsRequirement;
 			
 			String hireButtonText = isHired ? "gui.button.hired" : "gui.button.hire";
 

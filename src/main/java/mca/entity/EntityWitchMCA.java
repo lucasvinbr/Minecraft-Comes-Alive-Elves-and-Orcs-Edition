@@ -30,7 +30,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityFlying;
-import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityDragonFireball;
@@ -87,6 +86,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	public WitchAttributes attributes;
 	private Entity ridingEntity;
 	private List<EntityLiving> minions;
+	private Random random = new Random();
 
 	/**
 	 * @param worldIn
@@ -119,7 +119,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 			setHealth(30.0f);
 		}
 		else {
-			setHealth(10.0f);
+			setHealth(15.0f);
 		}
 	}
 
@@ -182,10 +182,10 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	@Override
 	protected SoundEvent getDeathSound() {
 		if (attributes.getGender() == EnumGender.FEMALE) {
-			return new Random().nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2;
+			return random.nextBoolean() ? SoundsMCA.evil_female_death_1 : SoundsMCA.evil_female_death_2;
 		}
 		else {
-			return new Random().nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2;
+			return random.nextBoolean() ? SoundsMCA.evil_male_death_1 : SoundsMCA.evil_male_death_2;
 		}
 	}
 
@@ -196,7 +196,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
 		if (attributes.getGender() == EnumGender.FEMALE) {
-			return new Random().nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2;
+			return random.nextBoolean() ? SoundsMCA.villager_female_hurt_1 : SoundsMCA.villager_female_hurt_2;
 		}
 		else {
 			return super.getHurtSound(source);
@@ -221,18 +221,15 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 		}
 		for (EntityLiving minion : minions) {
 			if (!minion.isDead) {
-				if (minion instanceof EntityOcelot) {
+				if (minion instanceof EntityTameable) {
 					// minions.remove(minion);
-					EntityOcelot cat = (EntityOcelot) minion;
-					cat.setTamed(false);
-					cat.setOwnerId(null);
+					EntityTameable pet = (EntityTameable) minion;
+					pet.setTamed(false);
+					pet.setOwnerId(Constants.EMPTY_UUID);
 				}
 				if (target instanceof EntityLivingBase) {
 					minion.setAttackTarget((EntityLivingBase) target);
 				}
-				// else {
-				// minion.setDead();
-				// }
 			}
 		}
 
@@ -282,24 +279,6 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 				world.spawnEntity(lightning);
 			}
 		}
-		// if (attributes.getGender() == EnumGender.MALE) {
-		// EntityGrimReaper reaper = new EntityGrimReaper(world);
-		// reaper.setPosition(this.posX, this.posY, this.posZ);
-		// world.spawnEntity(reaper);
-		// }
-		// EntityFireball fireball = new EntityDragonFireball(world);
-		// fireball.setPosition(this.getPosition().getX(), this.getPosition().getY(),
-		// this.getPosition().getZ());
-		// Vec3d looking = this.getLookVec();
-		// if (looking != null) {
-		// fireball.motionX = looking.x;
-		// fireball.motionY = looking.y;
-		// fireball.motionZ = looking.z;
-		// fireball.accelerationX = fireball.motionX * 0.1D;
-		// fireball.accelerationY = fireball.motionY * 0.1D;
-		// fireball.accelerationZ = fireball.motionZ * 0.1D;
-		// }
-		// world.spawnEntity(fireball);
 
 		super.onDeath(cause);
 	}
@@ -567,7 +546,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 	public void updateRidden() {
 		Entity ride = this.getRidingEntity();
 
-		if (this.isRiding() && ride.isDead) {
+		if (this.isRiding() && (ride != null && ride.isDead)) {
 			this.dismountRidingEntity();
 		}
 		else {
@@ -577,7 +556,7 @@ public class EntityWitchMCA extends EntityWitch implements EntityFlying {
 			if (!updateBlocked)
 				this.onUpdate();
 
-			if (this.isRiding()) {
+			if (ride != null &&this.isRiding()) {
 				ride.updatePassenger(this);
 			}
 		}

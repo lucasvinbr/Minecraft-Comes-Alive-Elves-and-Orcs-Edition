@@ -273,7 +273,7 @@ public final class NBTPlayerData implements Serializable {
 			this.setSpouseGender(targetPlayerData.getGender());
 			setMarriageState(EnumMarriageState.MARRIED_TO_PLAYER);
 
-			targetPlayerData.setSpouseName(thisPlayer.getName());
+			targetPlayerData.setSpouseName(thisPlayer != null ? thisPlayer.getName() : null);
 			targetPlayerData.setSpouseUUID(this.getUUID());
 			targetPlayerData.setSpouseGender(this.getGender());
 			targetPlayerData.setMarriageState(EnumMarriageState.MARRIED_TO_PLAYER);

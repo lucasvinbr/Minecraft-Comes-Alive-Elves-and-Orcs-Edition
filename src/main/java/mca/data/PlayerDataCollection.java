@@ -61,7 +61,6 @@ public class PlayerDataCollection extends WorldSavedData
 			catch (Exception e)
 			{
 				LogManager.getLogger(this.getClass()).error("Error writing player data to NBT for UUID " + uuid.toString() + ". Progress may be corrupted or lost.");
-				continue;
 			}
 		}
 		
@@ -87,7 +86,6 @@ public class PlayerDataCollection extends WorldSavedData
 			catch (Exception e)
 			{
 				LogManager.getLogger(this.getClass()).error("Error reading player data from NBT tag: " + (String)tagKey + ". Progress may be corrupted or lost.");
-				continue;
 			}
 		}
 

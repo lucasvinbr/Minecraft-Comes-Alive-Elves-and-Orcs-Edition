@@ -76,8 +76,6 @@ public class RenderMemorial extends TileEntitySpecialRenderer<TileMemorial> {
 	protected void bindResource(ResourceLocation resourceLocation) {
 		final TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
-		if (textureManager != null) {
-			textureManager.bindTexture(resourceLocation);
-		}
+		textureManager.bindTexture(resourceLocation);
 	}
 }

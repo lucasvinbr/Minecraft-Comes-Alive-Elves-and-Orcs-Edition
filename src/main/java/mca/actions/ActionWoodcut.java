@@ -91,7 +91,6 @@ public class ActionWoodcut extends AbstractToggleAction
 				{
 					notifyAssigningPlayer("There are no logs nearby.");
 					setIsActive(false);
-					return;
 				}
 			}
 

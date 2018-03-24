@@ -69,7 +69,8 @@ public class ItemGuideBook extends ItemWrittenBook {
 
 						try {
 							itextcomponent = ITextComponent.Serializer.fromJsonLenient(s);
-							itextcomponent = TextComponentUtils.processComponent(player, itextcomponent, player);
+							itextcomponent = TextComponentUtils.processComponent(player,
+									itextcomponent != null ? itextcomponent : null, player);
 						} catch (Exception var9) {
 							itextcomponent = new TextComponentString(s);
 						}
@@ -84,7 +85,8 @@ public class ItemGuideBook extends ItemWrittenBook {
 								slot =
 								player.openContainer.getSlotFromInventory(player.inventory,
 										player.inventory.currentItem);
-						((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
+						((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(0,
+								slot != null ? slot.slotNumber : 0, stack));
 					}
 				}
 			}

@@ -25,6 +25,7 @@ import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.FMLLog;
 import radixcore.modules.RadixMath;
 import radixcore.modules.client.RadixRender;
 
@@ -48,7 +49,7 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 
 	@Override
 	protected void preRenderCallback(EntityVillagerMCA entityLivingBase, float partialTickTime) {
-		final EntityVillagerMCA entity = (EntityVillagerMCA) entityLivingBase;
+		final EntityVillagerMCA entity = entityLivingBase;
 		final ActionSleep sleepAI = entity.getBehavior(ActionSleep.class);
 		float
 				scale =
@@ -137,7 +138,7 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 			posYCorrection -= 0.125D;
 		}
 
-		super.doRender((EntityVillagerMCA) entity, x, posYCorrection, z, entityYaw, partialTicks);
+		super.doRender(entity, x, posYCorrection, z, entityYaw, partialTicks);
 	}
 
 	/**
@@ -155,7 +156,6 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 
 		//Ignore special effects in the villager editor.
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiVillagerEditor) {
-			return;
 		}
 
 		//Render health first, if they're damaged.
@@ -194,8 +194,8 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 		final int redHeartU = 5;
 		final int darkHeartU = 21;
 		int heartsDrawn = 0;
-		maxHealth = Math.round((float) maxHealth / 2.0F);
-		currentHealth = Math.round((float) currentHealth / 2.0F);
+		maxHealth = Math.round(maxHealth / 2.0F);
+		currentHealth = Math.round(currentHealth / 2.0F);
 		int depletedHealth = maxHealth - currentHealth;
 		int mid = maxHealth == 10 ? 45 : 90;
 
@@ -355,7 +355,11 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 				GL11.glEnable(GL11.GL_LIGHTING);
 			}
 		} catch (Throwable e) {
-			e.printStackTrace();
+			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+			FMLLog.severe(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 	}
 
@@ -376,9 +380,8 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 		final double dotProduct = entityPlayer.getLook(1.0F).normalize().dotProduct(entityLookVector);
 		final boolean
 				isPlayerLookingAt =
-				dotProduct > 1.0D - 0.025D / entityLookVector.lengthVector() ?
-				entityPlayer.canEntityBeSeen(entityRendering) :
-				false;
+				dotProduct > 1.0D - 0.025D / entityLookVector.lengthVector() &&
+						entityPlayer.canEntityBeSeen(entityRendering);
 		final double distance = entityRendering.getDistanceToEntity(Minecraft.getMinecraft().player);
 
 		return !(Minecraft.getMinecraft().currentScreen instanceof GuiInteraction) &&
@@ -425,13 +428,13 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 
 	@Override
 	protected ResourceLocation getEntityTexture(EntityVillagerMCA entity) {
-		final EntityVillagerMCA human = (EntityVillagerMCA) entity;
+		final EntityVillagerMCA human = entity;
 		final String skinName = human.attributes.getHeadTexture();
 
 		if (skinName.isEmpty()) {
 			return new ResourceLocation("minecraft:textures/entity/steve.png");
 		} else {
-			return new ResourceLocation(((EntityVillagerMCA) entity).attributes.getHeadTexture());
+			return new ResourceLocation(entity.attributes.getHeadTexture());
 		}
 	}
 }

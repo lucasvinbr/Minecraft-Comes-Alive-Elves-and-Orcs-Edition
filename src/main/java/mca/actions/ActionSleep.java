@@ -190,12 +190,8 @@ public class ActionSleep extends AbstractAction {
 
 		final Point3D point = new Point3D(homePosX, homePosY, homePosZ);
 
-		if (Utilities.isPointClear(actor.world, point.iX(), point.iY(), point.iZ())
-				&& Utilities.isPointClear(actor.world, point.iX(), point.iY() + 1, point.iZ())) {
-			return true;
-		} else {
-			return false;
-		}
+		return Utilities.isPointClear(actor.world, point.iX(), point.iY(), point.iZ())
+				&& Utilities.isPointClear(actor.world, point.iX(), point.iY() + 1, point.iZ());
 	}
 
 	public boolean hasHomePoint() {

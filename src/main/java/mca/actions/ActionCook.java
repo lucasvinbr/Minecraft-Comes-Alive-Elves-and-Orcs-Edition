@@ -138,7 +138,6 @@ public class ActionCook extends AbstractToggleAction
 
 				catch (ClassCastException e) //Known problem with earlier versions of MCA, not sure why this happened.
 				{
-					continue;
 				}
 			}
 		}

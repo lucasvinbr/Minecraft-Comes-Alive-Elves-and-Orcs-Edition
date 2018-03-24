@@ -87,12 +87,7 @@ public class GuiVillagerEditor extends GuiScreen {
 			nameTextField.updateCursorCounter();
 			// playerSkinTextField.updateCursorCounter();
 
-			if (nameTextField.getText().isEmpty()) {
-				doneButton.enabled = false;
-			}
-			else {
-				doneButton.enabled = true;
-			}
+			doneButton.enabled = !nameTextField.getText().isEmpty();
 
 			// Update buttons to watch for server-side changes.
 			if (currentPage == 1) {
@@ -148,8 +143,7 @@ public class GuiVillagerEditor extends GuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if (guibutton.enabled == false) {
-			return;
+		if (!guibutton.enabled) {
 		}
 		else if (guibutton == doneButton) {
 			Minecraft.getMinecraft().displayGuiScreen(null);

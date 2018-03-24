@@ -375,7 +375,9 @@ public final class ItemsMCA {
 		ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 
 		for (Item item : ITEMS) {
-			mesher.register(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+			if(item != null) {
+				mesher.register(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+			}
 		}
 	}
 

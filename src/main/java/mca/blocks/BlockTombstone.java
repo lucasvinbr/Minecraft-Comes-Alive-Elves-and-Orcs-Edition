@@ -107,7 +107,7 @@ public class BlockTombstone extends BlockContainer
 		else
 		{
 			TileEntity tileentity = worldIn.getTileEntity(pos);
-			return tileentity instanceof TileTombstone ? ((TileTombstone)tileentity).executeCommand(playerIn) : false;
+			return tileentity instanceof TileTombstone && ((TileTombstone) tileentity).executeCommand(playerIn);
 		}
 	}
 

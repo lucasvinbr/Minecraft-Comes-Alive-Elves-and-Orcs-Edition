@@ -157,7 +157,6 @@ public class EventHooksForge
 		{
 			if (mob instanceof EntityEnderman)
 			{
-				return;
 			}
 
 			else if (mob instanceof EntityCreeper)
@@ -221,7 +220,6 @@ public class EventHooksForge
 
 					catch (Exception e)
 					{
-						continue;
 					}
 				}
 			}
@@ -342,7 +340,9 @@ public class EventHooksForge
 					{
 						if (stack != null && stack.getItem() instanceof ItemBaby)
 						{
-							stack.getTagCompound().setBoolean("isInfected", true);
+							if(stack.getTagCompound() != null) {
+								stack.getTagCompound().setBoolean("isInfected", true);
+							}
 							player.sendMessage(new TextComponentString(Color.RED + stack.getTagCompound().getString("name") + " has been " + Color.GREEN + Format.BOLD + "infected" + Color.RED + "!"));
 							player.world.playSound(null, new BlockPos(zombie.posX, zombie.posY, zombie.posZ), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 0.5F, 1.0F);
 							Utilities.spawnParticlesAroundEntityS(EnumParticleTypes.SPELL_WITCH, player, 32);
@@ -452,7 +452,6 @@ public class EventHooksForge
 						totemsFound++;
 					}
 
-					continue;
 				}
 			}
 

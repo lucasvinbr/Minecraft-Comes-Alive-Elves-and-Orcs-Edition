@@ -16,6 +16,7 @@ import mca.data.PlayerDataCollection;
 import mca.entity.EntityGrimReaper;
 import mca.entity.EntityVillagerMCA;
 import mca.entity.EntityWitchMCA;
+import mca.entity.EntityWolfMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
@@ -31,6 +32,7 @@ import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
@@ -81,7 +83,7 @@ public class EventHooksFML {
 		PlayerDataCollection dataCollection = PlayerDataCollection.get();
 		boolean setPermanentId = false;
 
-		NBTPlayerData nbtData = null;
+		NBTPlayerData nbtData;
 
 		if (dataCollection.getPlayerData(player.getUniqueID()) == null) {
 			// A permanent ID is generated if no ID exists after reading from NBT.
@@ -207,6 +209,11 @@ public class EventHooksFML {
 							} 
 							if (villager.getDataManager().get(Constants.OVERWRITE_KEY) == 3577) {
 								doOverwriteVillager(villager);
+								if (RadixLogic.getBooleanWithProbability(1)) {
+									MCA.naturallySpawnCats(new Point3D(villager.getHomePosition().getX(),
+											villager.getHomePosition().getY(), villager.getHomePosition().getZ()),
+											world, false);
+								}
 							} else {
 								// logger.warn("Villager's Data manager doesn't have overwrite key.");
 								doOverwriteVillager(villager);
@@ -214,7 +221,6 @@ public class EventHooksFML {
 						}
 						catch (Exception e) {
 //							logger.warn(e.getLocalizedMessage(), e);
-							continue;
 						}
 					}
 					else if (entity instanceof EntityWitch && !(entity instanceof EntityWitchMCA)) {
@@ -222,16 +228,13 @@ public class EventHooksFML {
 						if (RadixLogic.getBooleanWithProbability(1)) {
 							logger.info(String.format("Spawning witch in %s biome ", biome.getBiomeName()));
 							doOverwriteWitchWithPrettyWitch(witch);
-							continue;
 						}
 					}
-					// else if (entity instanceof EntityOcelot && !(entity instanceof EntityCatMCA))
-					// {
-					// if (RadixLogic.getClosestEntityExclusive(entity, 10, EntityVillager.class) !=
-					// null) {
-					// doOverwriteCat((EntityOcelot) entity);
-					// }
-					// }
+					else if (entity instanceof EntityWolf && !(entity instanceof EntityWolfMCA)) {
+						if (RadixLogic.getBooleanWithProbability(100)) {
+							doOverwriteWolf((EntityWolf) entity);
+						}
+					}
 				}
 			}
 		}
@@ -408,6 +411,11 @@ public class EventHooksFML {
 			}
 			break; //Why does he have this here?
 		}
+	}
+
+	public void doOverwriteWolf(EntityWolf wolf) {
+		MCA.naturallySpawnDogs(new Point3D(wolf.posX, wolf.posY, wolf.posZ), wolf.world, wolf.isChild());
+		wolf.setDead();
 	}
 
 	public void doOverwriteCat(EntityOcelot cat) {

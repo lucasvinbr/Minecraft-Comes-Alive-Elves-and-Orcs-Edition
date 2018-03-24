@@ -40,6 +40,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraftforge.fml.common.FMLLog;
 import radixcore.modules.RadixLogic;
 import radixcore.modules.RadixNettyIO;
 
@@ -838,12 +839,7 @@ public class VillagerAttributes {
 			if (isPlayerAParent(player)) {
 				return true;
 			}
-			else if (isChildOfAVillager()) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			else return isChildOfAVillager();
 		}
 
 		return true;
@@ -901,8 +897,21 @@ public class VillagerAttributes {
 		return playerMemories;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public boolean hasMemoryOfPlayer(EntityPlayer player) {
-		return playerMemories.containsKey(player.getName());
+		try {
+			return playerMemories.containsKey(player.getName());
+		}
+		catch (Exception e) {
+			String msg = String.format(
+					"VillagerAttributes.java:907 String is incompatible with expected argument type java.util.UUID in mca.entity.VillagerAttributes.hasMemoryOfPlayer(EntityPlayer) [Scariest(1), High confidence] %nMessage: %s%n",
+					e.getLocalizedMessage());
+			FMLLog.warning(msg, e);
+			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).warning(msg);
+			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).warn(msg);
+			java.util.logging.Logger.getLogger(this.getClass().getName()).warning(msg);
+		}
+		return false;
 	}
 
 	public String getTitle(EntityPlayer player) {
@@ -955,7 +964,11 @@ public class VillagerAttributes {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+				FMLLog.severe(msg, e);
+				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 
@@ -1007,7 +1020,11 @@ public class VillagerAttributes {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+				FMLLog.severe(msg, e);
+				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 

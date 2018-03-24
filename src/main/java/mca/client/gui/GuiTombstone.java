@@ -78,7 +78,6 @@ public class GuiTombstone extends GuiScreen
 				mc.displayGuiScreen(null);
 			}
 
-			return;
 		}
 	}
 

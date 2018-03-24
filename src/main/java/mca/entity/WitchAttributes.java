@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class WitchAttributes {
 	private final EntityWitchMCA witch;
@@ -80,7 +81,11 @@ public class WitchAttributes {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+				FMLLog.severe(msg, e);
+				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 

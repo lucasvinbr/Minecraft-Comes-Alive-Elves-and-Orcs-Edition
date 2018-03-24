@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import mca.core.radix.LanguageParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -184,7 +185,7 @@ public class Localizer
 
 					if (!line.startsWith("#") && !line.isEmpty())
 					{
-						String[] split = line.split("\\=");
+						String[] split = line.split("=");
 						String key = split[0];
 						String value = split.length == 2 ? split[1].replace("\\", "") : "";
 
@@ -204,10 +205,12 @@ public class Localizer
 
 				MCA.getLog().info("Loaded language " + languageId);
 			}
-
-			catch (Exception e)
-			{
-				e.printStackTrace();
+			catch (Exception e) {
+				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+				FMLLog.severe(msg, e);
+				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 	}
