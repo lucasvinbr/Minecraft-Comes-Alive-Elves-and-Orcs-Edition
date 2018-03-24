@@ -88,7 +88,7 @@ public enum EnumProfessionSkinGroup {
 			skinManager = villagerSkins;
 		}
 		List<String> skinList = isMale ? skinManager.maleSkinList : skinManager.femaleSkinList;
-		String skin = new String();
+		String skin = "";
 		try {
 			skin = skinList.get(RadixMath.getNumberInRange(0, skinList.size() - 1));
 		} catch (Exception e) {
