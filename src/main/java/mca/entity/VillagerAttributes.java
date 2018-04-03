@@ -21,6 +21,7 @@ import mca.core.MCA;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerMemory;
 import mca.data.TransitiveVillagerData;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumGender;
@@ -638,34 +639,34 @@ public class VillagerAttributes {
 		return EnumMarriageState.byId(dataManager.get(MARRIAGE_STATE));
 	}
 
-	/* package-private */ void setSpouseUUID(UUID uuid) {
+	public void setSpouseUUID(UUID uuid) {
 		dataManager.set(SPOUSE_UUID, Optional.of(uuid));
 	}
 
-	/* package-private */ void setSpouseName(String value) {
+	public void setSpouseName(String value) {
 		dataManager.set(SPOUSE_NAME, value);
 	}
 
-	/* package-private */ void setSpouseGender(EnumGender gender) {
+	public void setSpouseGender(EnumGender gender) {
 		dataManager.set(SPOUSE_GENDER, gender.getId());
 	}
 
-	/* package-private */ void setParentName(boolean mother, String value) {
+	public void setParentName(boolean mother, String value) {
 		DataParameter field = mother ? MOTHER_NAME : FATHER_NAME;
 		dataManager.set(field, value);
 	}
 
-	/* package-private */ void setParentUUID(boolean mother, UUID uuid) {
+	public void setParentUUID(boolean mother, UUID uuid) {
 		DataParameter field = mother ? MOTHER_UUID : FATHER_UUID;
 		dataManager.set(field, Optional.of(uuid));
 	}
 
-	/* package-private */ void setParentGender(boolean mother, EnumGender gender) {
+	public void setParentGender(boolean mother, EnumGender gender) {
 		DataParameter field = mother ? MOTHER_GENDER : FATHER_GENDER;
 		dataManager.set(field, gender.getId());
 	}
 
-	/* package-private */ void setMarriageState(EnumMarriageState state) {
+	public void setMarriageState(EnumMarriageState state) {
 		dataManager.set(MARRIAGE_STATE, state.getId());
 	}
 
@@ -907,9 +908,9 @@ public class VillagerAttributes {
 					"VillagerAttributes.java:907 String is incompatible with expected argument type java.util.UUID in mca.entity.VillagerAttributes.hasMemoryOfPlayer(EntityPlayer) [Scariest(1), High confidence] %nMessage: %s%n",
 					e.getLocalizedMessage());
 			FMLLog.warning(msg, e);
-			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).warning(msg);
+			// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).warning(msg);
 			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).warn(msg);
-			java.util.logging.Logger.getLogger(this.getClass().getName()).warning(msg);
+			// java.util.logging.Logger.getLogger(this.getClass().getName()).warning(msg);
 		}
 		return false;
 	}
@@ -966,9 +967,9 @@ public class VillagerAttributes {
 			catch (Exception e) {
 				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 				FMLLog.severe(msg, e);
-				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
 				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
-				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 
@@ -1022,9 +1023,9 @@ public class VillagerAttributes {
 			catch (Exception e) {
 				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 				FMLLog.severe(msg, e);
-				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
 				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
-				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 

@@ -3,7 +3,7 @@ package mca.packets;
 import org.apache.logging.log4j.LogManager;
 
 import io.netty.buffer.ByteBuf;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumEditAction;
 import mca.enums.EnumGender;
 import mca.enums.EnumPersonality;

@@ -1,5 +1,6 @@
 package mca.core.forge;
 
+import mca.client.render.RenderBatFactory;
 import mca.client.render.RenderCatFactory;
 import mca.client.render.RenderChoreFishHookFactory;
 import mca.client.render.RenderGrimReaperFactory;
@@ -10,12 +11,13 @@ import mca.client.render.RenderWitchFactory;
 import mca.client.render.RenderWolfFactory;
 import mca.core.minecraft.BlocksMCA;
 import mca.core.minecraft.ItemsMCA;
-import mca.entity.EntityCatMCA;
 import mca.entity.EntityChoreFishHook;
-import mca.entity.EntityGrimReaper;
-import mca.entity.EntityVillagerMCA;
-import mca.entity.EntityWitchMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.monster.EntityGrimReaper;
+import mca.entity.monster.EntityWitchMCA;
+import mca.entity.passive.EntityBatMCA;
+import mca.entity.passive.EntityCatMCA;
+import mca.entity.passive.EntityVillagerMCA;
+import mca.entity.passive.EntityWolfMCA;
 import mca.tile.TileMemorial;
 import mca.tile.TileTombstone;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,6 +33,7 @@ public class ClientProxy extends ServerProxy {
 				RenderChoreFishHookFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWolfMCA.class, RenderWolfFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityCatMCA.class, RenderCatFactory.INSTANCE);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBatMCA.class, RenderBatFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWitchMCA.class, RenderWitchFactory.INSTANCE);
 
 		/*

@@ -1,9 +1,9 @@
 package mca.items;
 
 import mca.core.MCA;
-import mca.entity.EntityOrcMCA;
-import mca.entity.EntityVillagerMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.passive.EntityOrcMCA;
+import mca.entity.passive.EntityVillagerMCA;
+import mca.entity.passive.EntityWolfMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import net.minecraft.world.World;

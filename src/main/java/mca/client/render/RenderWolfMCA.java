@@ -4,7 +4,7 @@
 package mca.client.render;
 
 import mca.client.model.ModelWolfMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.passive.EntityWolfMCA;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

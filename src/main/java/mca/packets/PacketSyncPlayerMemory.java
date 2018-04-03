@@ -2,7 +2,7 @@ package mca.packets;
 
 import io.netty.buffer.ByteBuf;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import radixcore.modules.RadixNettyIO;

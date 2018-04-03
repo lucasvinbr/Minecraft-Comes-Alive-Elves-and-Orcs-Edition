@@ -5,7 +5,7 @@ import mca.actions.ActionProcreate;
 import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.data.NBTPlayerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.items.ItemBaby;
 import mca.util.TutorialManager;
 import net.minecraft.entity.player.EntityPlayer;

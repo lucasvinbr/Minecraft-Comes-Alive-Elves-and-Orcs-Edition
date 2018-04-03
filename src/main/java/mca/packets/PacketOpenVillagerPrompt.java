@@ -2,7 +2,7 @@ package mca.packets;
 
 import io.netty.buffer.ByteBuf;
 import mca.client.gui.GuiVillagerPrompt;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumInteraction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

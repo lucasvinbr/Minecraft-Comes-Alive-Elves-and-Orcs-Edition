@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import mca.core.MCA;
 import mca.data.TransitiveVillagerData;
-import mca.entity.EntityVillagerMCA;
 import mca.entity.VillagerAttributes;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.packets.PacketCallVillager;
 import mca.packets.PacketRequestRelatedVillagers;
 import net.minecraft.client.Minecraft;

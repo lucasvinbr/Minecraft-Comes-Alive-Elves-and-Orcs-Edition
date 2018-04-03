@@ -3,6 +3,7 @@ package mca.entity;
 import java.util.List;
 
 import mca.actions.ActionFish;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;

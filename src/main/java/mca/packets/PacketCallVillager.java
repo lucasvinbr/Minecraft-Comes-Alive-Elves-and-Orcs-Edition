@@ -3,7 +3,7 @@ package mca.packets;
 import java.util.UUID;
 
 import io.netty.buffer.ByteBuf;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import radixcore.modules.net.AbstractPacket;

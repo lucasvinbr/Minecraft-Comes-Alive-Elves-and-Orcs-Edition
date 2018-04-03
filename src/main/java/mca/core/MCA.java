@@ -27,14 +27,16 @@ import mca.core.minecraft.ItemsMCA;
 import mca.core.radix.CrashWatcher;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerDataCollection;
-import mca.entity.EntityCatMCA;
 import mca.entity.EntityChoreFishHook;
-import mca.entity.EntityElfMCA;
-import mca.entity.EntityGrimReaper;
-import mca.entity.EntityOrcMCA;
-import mca.entity.EntityVillagerMCA;
-import mca.entity.EntityWitchMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.monster.EntityGrimReaper;
+import mca.entity.monster.EntityWitchMCA;
+import mca.entity.passive.EntityBatMCA;
+import mca.entity.passive.EntityCatMCA;
+import mca.entity.passive.EntityElfMCA;
+import mca.entity.passive.EntityOrcMCA;
+import mca.entity.passive.EntityParrotMCA;
+import mca.entity.passive.EntityVillagerMCA;
+import mca.entity.passive.EntityWolfMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
 import mca.enums.EnumRace;
@@ -194,6 +196,10 @@ public class MCA {
 				EntityWolfMCA.class.getSimpleName(), config.baseEntityId + 4, this, 50, 2, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ID, "CatMCA"), EntityCatMCA.class,
 				EntityCatMCA.class.getSimpleName(), config.baseEntityId + 5, this, 50, 2, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "BatMCA"), EntityBatMCA.class,
+				EntityBatMCA.class.getSimpleName(), config.baseEntityId + 6, this, 50, 2, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ID, "ParrotMCA"), EntityParrotMCA.class,
+				EntityParrotMCA.class.getSimpleName(), config.baseEntityId + 7, this, 50, 2, true);
 
 		// Tile registry
 		GameRegistry.registerTileEntity(TileTombstone.class, TileTombstone.class.getSimpleName());
@@ -391,6 +397,8 @@ public class MCA {
 		RegistryMCA.addEntityToHuntingAI(EntityChicken.class);
 		RegistryMCA.addEntityToHuntingAI(EntityOcelot.class, false);
 		RegistryMCA.addEntityToHuntingAI(EntityWolf.class, false);
+		RegistryMCA.addEntityToHuntingAI(EntityCatMCA.class, false);
+		RegistryMCA.addEntityToHuntingAI(EntityWolfMCA.class, false);
 
 		RegistryMCA.addFoodToCookingAI(new CookableFood(Items.PORKCHOP, Items.COOKED_PORKCHOP));
 		RegistryMCA.addFoodToCookingAI(new CookableFood(Items.BEEF, Items.COOKED_BEEF));
@@ -591,11 +599,11 @@ public class MCA {
 			wench.setPosition(orc.posX, orc.posY, orc.posZ - 1);
 			world.spawnEntity(wench);
 			if (RadixLogic.getBooleanWithProbability(75)) {
-				EntityOcelot cat = new EntityOcelot(world);
+				EntityCatMCA cat = new EntityCatMCA(world);
 				cat.setPosition(wench.posX, wench.posY, wench.posZ);
 				cat.setTamed(false);
 				cat.setOwnerId(wench.getUniqueID());
-				cat.setTameSkin(0);
+				cat.setTameSkin(RadixMath.getNumberInRange(0, 5));
 				// EntityAIBase aiFollowOwner = new EntityAIFollowOwner(cat, 1.0D, 10.0F, 2.0F);
 				// cat.tasks.addTask(1, aiFollowOwner);
 				cat.setCustomNameTag(String.format("%s's cat", wench.getName()));
@@ -658,15 +666,16 @@ public class MCA {
 		elf.attributes.assignRandomPersonality();
 
 		elf.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
-		if (RadixLogic.getBooleanWithProbability(25)) {
-			EntityParrot parrot = new EntityParrot(elf.world);
+		if (RadixLogic.getBooleanWithProbability(50)) {
+			EntityParrotMCA parrot = new EntityParrotMCA(elf.world);
 			parrot.setOwnerId(elf.getUniqueID());
 			elf.setPet(parrot);
 			parrot.setTamed(true);
+			parrot.setVariant(RadixMath.getNumberInRange(0, 4));
 			parrot.setPosition(elf.posX, elf.posY + 1, elf.posZ);
 			world.spawnEntity(parrot);
 		}
-		if (RadixLogic.getBooleanWithProbability(75)) {
+		if (RadixLogic.getBooleanWithProbability(50)) {
 			EntityCatMCA cat = new EntityCatMCA(world);
 			cat.setPosition(elf.posX, elf.posY, elf.posZ);
 			cat.setTamed(false);
@@ -761,14 +770,17 @@ public class MCA {
 	 * @param pointOfSpawn
 	 * @param world
 	 */
+	@SuppressWarnings("deprecation")
 	public static void unnaturallySpawnWitches(Point3D pointOfSpawn, World world) {
 		EntityWitchMCA witch = naturallySpawnWitches(pointOfSpawn, world);
-		if (RadixLogic.getBooleanWithProbability(25)) {
-			EntityBat bat = new EntityBat(world);
+		if (RadixLogic.getBooleanWithProbability(100)) {
+			EntityBatMCA bat = new EntityBatMCA(world);
 			bat.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
+			bat.setRider(witch);
 			witch.setRidingEntity(bat);
 			world.spawnEntity(bat);
-			witch.setPosition(bat.getPosition().getX(), bat.getPosition().getY(), bat.getPosition().getZ());
+			// bat.setGlowing(true);
+			witch.setPosition(bat.getPosition().getX(), bat.getPosition().getY() + 1, bat.getPosition().getZ());
 		}
 		for (int i = 0; i < 5; i++) {
 			if (RadixLogic.getBooleanWithProbability(13)) {

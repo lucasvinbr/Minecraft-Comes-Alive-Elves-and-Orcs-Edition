@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

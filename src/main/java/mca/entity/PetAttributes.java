@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import com.google.common.base.Optional;
 
 import mca.data.PlayerMemory;
+import mca.entity.passive.EntityCatMCA;
+import mca.entity.passive.EntityWolfMCA;
 import mca.enums.EnumGender;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,6 +32,7 @@ public class PetAttributes {
 			DataSerializers.STRING);
 	private static final DataParameter<String> ANGRY_TEXTURE = EntityDataManager
 			.<String>createKey(EntityWolfMCA.class, DataSerializers.STRING);
+	private int ticksAlive;
 
 	public PetAttributes(Entity pet) {
 
@@ -96,9 +99,9 @@ public class PetAttributes {
 			catch (Exception e) {
 				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 				FMLLog.severe(msg, e);
-				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
 				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
-				java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+				// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 			}
 		}
 
@@ -164,5 +167,59 @@ public class PetAttributes {
 	 */
 	public void setAngryTexture(String angryTexture) {
 		dataManager.set(ANGRY_TEXTURE, angryTexture);
+	}
+
+	public void writeToNBT(NBTTagCompound nbt) {
+		// Auto save data manager values to NBT by reflection
+		for (Field f : this.getClass().getDeclaredFields()) {
+			try {
+				if (f.getType() == DataParameter.class) {
+					Type genericType = f.getGenericType();
+					String typeName = genericType.getTypeName();
+					DataParameter param = (DataParameter) f.get(this);
+					String paramName = f.getName();
+
+					if (typeName.contains("Boolean")) {
+						DataParameter<Boolean> bParam = param;
+						nbt.setBoolean(paramName, dataManager.get(bParam).booleanValue());
+					}
+					else if (typeName.contains("Integer")) {
+						DataParameter<Integer> iParam = param;
+						nbt.setInteger(paramName, dataManager.get(iParam).intValue());
+					}
+					else if (typeName.contains("String")) {
+						DataParameter<String> sParam = param;
+						nbt.setString(paramName, dataManager.get(sParam));
+					}
+					else if (typeName.contains("Float")) {
+						DataParameter<Float> fParam = param;
+						nbt.setFloat(paramName, dataManager.get(fParam).floatValue());
+					}
+					else if (typeName.contains("Optional<java.util.UUID>")) {
+						DataParameter<Optional<UUID>> uuParam = param;
+						nbt.setUniqueId(paramName, dataManager.get(uuParam).get());
+					}
+					else {
+						throw new RuntimeException("Field type not handled while saving to NBT: " + f.getName());
+					}
+				}
+			}
+			catch (Exception e) {
+				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
+				FMLLog.severe(msg, e);
+				// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
+				// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+			}
+		}
+
+		nbt.setInteger("ticksAlive", ticksAlive);
+
+		int counter = 0;
+		for (Map.Entry<UUID, PlayerMemory> pair : playerMemories.entrySet()) {
+			nbt.setUniqueId("playerMemoryKey" + counter, pair.getKey());
+			pair.getValue().writePlayerMemoryToNBT(nbt);
+			counter++;
+		}
 	}
 }

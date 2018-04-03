@@ -4,7 +4,7 @@ import java.util.List;
 
 import mca.api.RegistryMCA;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;

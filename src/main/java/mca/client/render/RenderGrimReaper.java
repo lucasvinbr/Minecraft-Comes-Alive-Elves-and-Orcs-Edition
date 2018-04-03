@@ -3,7 +3,7 @@ package mca.client.render;
 import org.lwjgl.opengl.GL11;
 
 import mca.client.model.ModelGrimReaper;
-import mca.entity.EntityGrimReaper;
+import mca.entity.monster.EntityGrimReaper;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;

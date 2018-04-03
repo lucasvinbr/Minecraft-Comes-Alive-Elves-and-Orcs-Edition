@@ -8,7 +8,7 @@ import mca.api.RegistryMCA;
 import mca.core.Constants;
 import mca.core.MCA;
 import mca.entity.EntityChoreFishHook;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -173,7 +173,6 @@ public class ActionFish extends AbstractToggleAction {
 			} catch (final Throwable e) {
 				String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 				FMLLog.warning(msg, e);
-				java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).warning(msg);
 				org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).warn(msg);
 				java.util.logging.Logger.getLogger(this.getClass().getName()).warning(msg);
 			}

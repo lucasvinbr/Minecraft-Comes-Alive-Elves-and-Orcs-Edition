@@ -1,7 +1,7 @@
 package mca.actions;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumBabyState;
 import mca.enums.EnumGender;
 import mca.enums.EnumMarriageState;

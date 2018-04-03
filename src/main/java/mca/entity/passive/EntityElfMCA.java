@@ -1,4 +1,4 @@
-package mca.entity;
+package mca.entity.passive;
 
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;

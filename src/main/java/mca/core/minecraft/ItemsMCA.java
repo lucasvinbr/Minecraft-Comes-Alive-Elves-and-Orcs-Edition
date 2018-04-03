@@ -37,6 +37,8 @@ import radixcore.constant.Font.Format;
 public final class ItemsMCA {
 	private static final ArrayList<Item> ITEMS = new ArrayList<Item>();
 
+	// public static Item titanEgg;
+	// public static Item titan60Egg;
 	public static final Item WEDDING_RING = new ItemTooltipAppender()
 			.setTooltip("Gift to a villager with 5 gold hearts to marry them.").setMaxStackSize(1);
 	public static final Item WEDDING_RING_RG = new ItemTooltipAppender()
@@ -86,12 +88,11 @@ public final class ItemsMCA {
 
 	public static void register(RegistryEvent.Register<Item> event) {
 		final Item[] items = { WEDDING_RING, WEDDING_RING_RG, ENGAGEMENT_RING, ENGAGEMENT_RING_RG, MATCHMAKERS_RING,
-				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, BABY_BOY_ORC, BABY_GIRL_ORC, EGG_WITCH, EGG_MALE,
-				EGG_FEMALE, EGG_ORC,
-				EGG_ELF, EGG_GRIM_REAPER,
-				CRYSTAL_BALL, ROSE_GOLD_INGOT, ROSE_GOLD_DUST, GOLD_DUST, NEW_OUTFIT, NEEDLE_AND_STRING, CLOTH,
-				TOMBSTONE, WHISTLE, VILLAGER_EDITOR, BROKEN_RING, CHILDS_DOLL, TOY_TRAIN, STAFF_OF_LIFE, BOOK_DEATH,
-				BOOK_ROMANCE, BOOK_FAMILY, BOOK_ROSE_GOLD, BOOK_INFECTION };
+				DIVORCE_PAPERS, BABY_BOY, BABY_GIRL, BABY_BOY_ORC, BABY_GIRL_ORC, EGG_WITCH, EGG_MALE, EGG_FEMALE,
+				EGG_ORC, EGG_ELF, EGG_GRIM_REAPER, CRYSTAL_BALL, ROSE_GOLD_INGOT, ROSE_GOLD_DUST, GOLD_DUST, NEW_OUTFIT,
+				NEEDLE_AND_STRING, CLOTH, TOMBSTONE, WHISTLE, VILLAGER_EDITOR, BROKEN_RING, CHILDS_DOLL, TOY_TRAIN,
+				STAFF_OF_LIFE, BOOK_DEATH, BOOK_ROMANCE, BOOK_FAMILY, BOOK_ROSE_GOLD,
+				BOOK_INFECTION/* , titanEgg, titan60Egg */ };
 
 		setItemName(WEDDING_RING, "wedding_ring");
 		setItemName(WEDDING_RING_RG, "wedding_ring_rg");
@@ -375,7 +376,7 @@ public final class ItemsMCA {
 		ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 
 		for (Item item : ITEMS) {
-			if(item != null) {
+			if (item != null) {
 				mesher.register(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
 			}
 		}

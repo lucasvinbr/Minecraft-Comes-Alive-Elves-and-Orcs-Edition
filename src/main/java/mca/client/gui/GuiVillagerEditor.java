@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import mca.actions.ActionSleep;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumEditAction;
 import mca.enums.EnumSleepingState;
 import mca.packets.PacketEditVillager;

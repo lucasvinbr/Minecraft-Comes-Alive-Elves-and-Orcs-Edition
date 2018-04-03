@@ -3,7 +3,7 @@ package mca.actions;
 import java.util.List;
 
 import mca.core.Constants;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumCombatBehaviors;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;

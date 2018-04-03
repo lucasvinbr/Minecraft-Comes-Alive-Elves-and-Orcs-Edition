@@ -12,7 +12,7 @@ import mca.client.model.ModelHuman;
 import mca.core.Constants;
 import mca.core.MCA;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.util.UVPoint;
 import net.minecraft.client.Minecraft;
@@ -357,9 +357,9 @@ public class RenderVillagerMCA<T extends EntityVillagerMCA> extends RenderBiped<
 		} catch (Throwable e) {
 			String msg = String.format("Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 			FMLLog.severe(msg, e);
-			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
+			// java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
 			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
-			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+			// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 	}
 

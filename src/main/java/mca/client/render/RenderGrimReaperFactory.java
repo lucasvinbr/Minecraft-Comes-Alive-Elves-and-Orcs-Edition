@@ -1,6 +1,6 @@
 package mca.client.render;
 
-import mca.entity.EntityGrimReaper;
+import mca.entity.monster.EntityGrimReaper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.fml.client.registry.IRenderFactory;

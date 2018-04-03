@@ -2,7 +2,7 @@ package mca.client.model;
 
 import org.lwjgl.opengl.GL11;
 
-import mca.entity.EntityGrimReaper;
+import mca.entity.monster.EntityGrimReaper;
 import mca.enums.EnumReaperAttackState;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

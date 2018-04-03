@@ -2,7 +2,7 @@ package mca.actions;
 
 import mca.api.CookableFood;
 import mca.api.RegistryMCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;

@@ -6,7 +6,7 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import mca.core.MCA;
 import mca.data.TransitiveVillagerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

@@ -5,7 +5,7 @@ import java.util.UUID;
 import mca.core.MCA;
 import mca.data.PlayerMemory;
 import mca.data.TransitiveVillagerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumGender;
 import mca.enums.EnumMemorialType;

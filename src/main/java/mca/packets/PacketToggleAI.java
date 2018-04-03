@@ -10,7 +10,7 @@ import mca.actions.ActionFish;
 import mca.actions.ActionHunt;
 import mca.actions.ActionMine;
 import mca.actions.ActionWoodcut;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumInteraction;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

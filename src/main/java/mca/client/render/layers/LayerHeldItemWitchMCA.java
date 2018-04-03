@@ -3,7 +3,7 @@ package mca.client.render.layers;
 import java.util.Random;
 
 import mca.client.render.RenderWitchMCA;
-import mca.entity.EntityWitchMCA;
+import mca.entity.monster.EntityWitchMCA;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

@@ -2,7 +2,7 @@ package mca.client.model;
 
 import org.lwjgl.opengl.GL11;
 
-import mca.entity.EntityWitchMCA;
+import mca.entity.monster.EntityWitchMCA;
 import mca.enums.EnumGender;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;

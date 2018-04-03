@@ -1,6 +1,6 @@
 package mca.actions;
 
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
 import mca.enums.EnumSleepingState;
 import net.minecraft.nbt.NBTTagCompound;

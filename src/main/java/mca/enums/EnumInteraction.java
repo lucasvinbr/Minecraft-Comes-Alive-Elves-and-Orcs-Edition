@@ -2,7 +2,7 @@ package mca.enums;
 
 import mca.actions.ActionUpdateMood;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 
 public enum EnumInteraction 
 {

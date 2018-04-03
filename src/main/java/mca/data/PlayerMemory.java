@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumRelation;
 import mca.packets.PacketSyncPlayerMemory;

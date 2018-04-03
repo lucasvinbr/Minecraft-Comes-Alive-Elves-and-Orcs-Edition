@@ -3,7 +3,7 @@
  */
 package mca.client.model;
 
-import mca.entity.EntityWolfMCA;
+import mca.entity.passive.EntityWolfMCA;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.model.ModelWolf;
 import net.minecraft.entity.Entity;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mca.core.Constants;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
 import mca.enums.EnumSleepingState;
 import mca.util.Utilities;

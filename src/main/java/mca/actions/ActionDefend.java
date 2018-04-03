@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import mca.core.Constants;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumProfession;
 import mca.enums.EnumProfessionSkinGroup;

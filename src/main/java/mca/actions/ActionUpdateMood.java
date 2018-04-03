@@ -3,7 +3,7 @@ package mca.actions;
 import java.util.Random;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMood;
 import mca.enums.EnumPersonality;
 import net.minecraft.nbt.NBTTagCompound;

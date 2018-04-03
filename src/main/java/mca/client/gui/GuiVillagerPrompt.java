@@ -1,7 +1,7 @@
 package mca.client.gui;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumInteraction;
 import mca.packets.PacketInteract;
 import net.minecraft.client.Minecraft;

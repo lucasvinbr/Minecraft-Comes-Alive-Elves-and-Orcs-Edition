@@ -10,7 +10,7 @@ import mca.api.RegistryMCA;
 import mca.api.enums.EnumCropCategory;
 import mca.api.exception.MappingNotFoundException;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

@@ -28,6 +28,7 @@ import mca.actions.ActionStoryProgression;
 import mca.actions.ActionUpdateMood;
 import mca.actions.ActionWander;
 import mca.actions.ActionWoodcut;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumProgressionStep;
 import mca.enums.EnumSleepingState;

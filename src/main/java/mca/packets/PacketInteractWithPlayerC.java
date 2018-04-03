@@ -7,7 +7,7 @@ import mca.client.gui.GuiPlayerMenu;
 import mca.core.Constants;
 import mca.core.MCA;
 import mca.data.NBTPlayerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMarriageState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

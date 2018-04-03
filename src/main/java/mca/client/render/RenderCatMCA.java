@@ -1,7 +1,7 @@
 package mca.client.render;
 
 import mca.client.model.ModelCatMCA;
-import mca.entity.EntityCatMCA;
+import mca.entity.passive.EntityCatMCA;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

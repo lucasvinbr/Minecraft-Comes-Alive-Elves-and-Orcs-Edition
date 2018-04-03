@@ -9,7 +9,7 @@ import mca.client.gui.GuiVillagerEditor;
 import mca.client.gui.GuiWhistle;
 import mca.core.Constants;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.inventory.ContainerInventory;
 import mca.tile.TileTombstone;
 import net.minecraft.client.gui.GuiScreenBook;

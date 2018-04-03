@@ -28,7 +28,7 @@ import mca.core.Constants;
 import mca.core.MCA;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumCombatBehaviors;
 import mca.enums.EnumGender;
 import mca.enums.EnumInteraction;

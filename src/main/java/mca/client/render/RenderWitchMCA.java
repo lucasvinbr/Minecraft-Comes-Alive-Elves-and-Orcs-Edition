@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import mca.client.model.ModelWitchMCA;
 import mca.client.render.layers.LayerHeldItemWitchMCA;
-import mca.entity.EntityWitchMCA;
+import mca.entity.monster.EntityWitchMCA;
 import mca.enums.EnumGender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

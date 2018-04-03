@@ -52,9 +52,8 @@ public class GuiNameBaby extends GuiScreen
 		{
 			String msg = String.format("Null Pointer Exception occurred!%nMessage: %s%n", e.getLocalizedMessage());
 			FMLLog.severe(msg, e);
-			java.util.logging.LogManager.getLogManager().getLogger(this.getClass().getName()).severe(msg);
 			org.apache.logging.log4j.LogManager.getLogger(this.getClass().getName()).error(msg, e);
-			java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
+			// java.util.logging.Logger.getLogger(this.getClass().getName()).severe(msg);
 		}
 	}
 

@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import radixcore.modules.RadixMath;

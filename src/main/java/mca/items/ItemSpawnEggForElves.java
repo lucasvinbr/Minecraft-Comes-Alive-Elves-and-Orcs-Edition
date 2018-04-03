@@ -1,14 +1,15 @@
 package mca.items;
 
 import mca.core.MCA;
-import mca.entity.EntityElfMCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityElfMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import net.minecraft.entity.passive.EntityParrot;
 import net.minecraft.world.World;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
+import radixcore.modules.RadixMath;
 
 public class ItemSpawnEggForElves extends ItemSpawnEgg {
 	public ItemSpawnEggForElves(boolean isMale) {
@@ -42,6 +43,7 @@ public class ItemSpawnEggForElves extends ItemSpawnEgg {
 			parrot.setOwnerId(elf.getUniqueID());
 			elf.setPet(parrot);
 			parrot.setTamed(true);
+			parrot.setVariant(RadixMath.getNumberInRange(0, 4));
 			parrot.setPosition(elf.posX, elf.posY + 1, elf.posZ);
 			world.spawnEntity(parrot);
 		}

@@ -1,6 +1,6 @@
 package mca.actions;
 
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import net.minecraft.nbt.NBTTagCompound;
 import radixcore.constant.Time;
 

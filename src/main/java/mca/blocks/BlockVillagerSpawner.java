@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

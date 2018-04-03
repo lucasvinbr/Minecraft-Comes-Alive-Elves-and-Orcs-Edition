@@ -7,12 +7,11 @@ import mca.core.Constants;
 import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.data.NBTPlayerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumInteraction;
 import mca.enums.EnumMarriageState;
 import mca.util.Either;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
@@ -83,7 +82,7 @@ public class PacketInteractWithPlayerS extends AbstractPacket<PacketInteractWith
 								.getString("interactionp.marry.sent", target.getName())));
 						MCA.getPacketHandler()
 								.sendPacketToPlayer(new PacketOpenPrompt(sender, target, interaction),
-										(EntityPlayerMP) target);
+										target);
 					}
 
 					break;
@@ -108,7 +107,7 @@ public class PacketInteractWithPlayerS extends AbstractPacket<PacketInteractWith
 								.getString("interactionp.havebaby.sent", target.getName())));
 						MCA.getPacketHandler()
 								.sendPacketToPlayer(new PacketOpenPrompt(sender, target, interaction),
-										(EntityPlayerMP) target);
+										target);
 					}
 
 					break;
@@ -146,9 +145,11 @@ public class PacketInteractWithPlayerS extends AbstractPacket<PacketInteractWith
 					//sender.addStat(achievement);
 					//target.addStat(achievement);
 
-					MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenBabyNameGUI(isMale), (EntityPlayerMP) target);
+					MCA.getPacketHandler().sendPacketToPlayer(new PacketOpenBabyNameGUI(isMale), target);
 
 					break;
+			default:
+				break;
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 package mca.items;
 
-import mca.entity.EntityCatMCA;
-import mca.entity.EntityVillagerMCA;
-import mca.entity.EntityWolfMCA;
+import mca.entity.passive.EntityCatMCA;
+import mca.entity.passive.EntityVillagerMCA;
+import mca.entity.passive.EntityWolfMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import net.minecraft.entity.player.EntityPlayer;

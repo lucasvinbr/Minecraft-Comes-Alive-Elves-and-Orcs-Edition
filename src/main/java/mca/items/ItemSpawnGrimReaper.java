@@ -1,7 +1,7 @@
 package mca.items;
 
 import mca.core.MCA;
-import mca.entity.EntityGrimReaper;
+import mca.entity.monster.EntityGrimReaper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumActionResult;

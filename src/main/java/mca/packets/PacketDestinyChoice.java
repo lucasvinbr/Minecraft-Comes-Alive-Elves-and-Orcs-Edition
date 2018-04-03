@@ -6,7 +6,7 @@ import mca.core.minecraft.BlocksMCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumDestinyChoice;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumGender;

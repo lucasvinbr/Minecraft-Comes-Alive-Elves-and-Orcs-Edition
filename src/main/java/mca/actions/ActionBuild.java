@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 import mca.api.CropEntry;
 import mca.api.enums.EnumCropCategory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;

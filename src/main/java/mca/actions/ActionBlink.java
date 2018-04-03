@@ -1,7 +1,7 @@
 package mca.actions;
 
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import radixcore.constant.Time;
 import radixcore.modules.RadixMath;
 

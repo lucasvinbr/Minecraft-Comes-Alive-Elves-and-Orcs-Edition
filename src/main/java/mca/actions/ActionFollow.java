@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.google.common.base.Optional;
 
 import mca.core.Constants;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumMovementState;
 import mca.enums.EnumSleepingState;
 import net.minecraft.block.Block;

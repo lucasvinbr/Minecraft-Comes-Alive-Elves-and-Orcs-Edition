@@ -4,7 +4,7 @@ import mca.api.RegistryMCA;
 import mca.api.WoodcuttingEntry;
 import mca.api.exception.MappingNotFoundException;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumPersonality;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

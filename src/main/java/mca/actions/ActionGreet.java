@@ -3,7 +3,7 @@ package mca.actions;
 import mca.core.MCA;
 import mca.data.NBTPlayerData;
 import mca.data.PlayerMemory;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumDialogueType;
 import mca.enums.EnumInteraction;
 import mca.packets.PacketOpenVillagerPrompt;

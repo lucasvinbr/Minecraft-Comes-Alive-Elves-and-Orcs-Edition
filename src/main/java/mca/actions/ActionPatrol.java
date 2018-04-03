@@ -2,7 +2,7 @@ package mca.actions;
 
 import java.util.List;
 
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.util.Utilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;

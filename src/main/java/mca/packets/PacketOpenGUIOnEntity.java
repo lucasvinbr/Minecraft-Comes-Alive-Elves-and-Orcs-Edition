@@ -5,7 +5,7 @@ import mca.client.gui.GuiInteraction;
 import mca.client.gui.GuiInventory;
 import mca.client.gui.GuiVillagerEditor;
 import mca.core.Constants;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.items.ItemVillagerEditor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

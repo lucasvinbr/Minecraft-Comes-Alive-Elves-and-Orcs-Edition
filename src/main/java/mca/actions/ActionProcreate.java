@@ -6,7 +6,7 @@ import mca.core.MCA;
 import mca.core.minecraft.ItemsMCA;
 import mca.core.minecraft.SoundsMCA;
 import mca.data.NBTPlayerData;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
 import mca.items.ItemBaby;

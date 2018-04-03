@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import mca.core.Constants;
 import mca.core.MCA;
-import mca.entity.EntityVillagerMCA;
+import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumMarriageState;
 import mca.enums.EnumRace;

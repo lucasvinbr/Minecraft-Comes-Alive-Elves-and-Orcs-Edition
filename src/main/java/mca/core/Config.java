@@ -76,7 +76,7 @@ public final class Config implements Serializable {
 	public boolean allowUpdateChecking;
 	public boolean showPlayerDataMigrationErrors;
 	private int matingSeasonDuration;
-
+	private boolean breakBlock;
 	private List<EnumRace> seasonalBreeders = new ArrayList<EnumRace>();
 
 	public Config(FMLPreInitializationEvent event) {
@@ -353,7 +353,8 @@ public final class Config implements Serializable {
 						new String[]{"#<EXAMPLE> fermented_spider_eye|25", "#<EXAMPLE> poisonous_potato|12"},
 						"The names of the items/blocks that can be gifted in addition to the default items. Include hearts value preceded by |. 10 hearts points equals 1 heart.")
 						.getStringList();
-
+		// Property otherPro1 = config.get("Titan", "SpawnTitan", 5);
+		setBreakBlock(config.get("Titan", "BreakBlock", true).getBoolean(true));
 		config.save();
 	}
 
@@ -408,5 +409,19 @@ public final class Config implements Serializable {
 
 	public void setSeasonalBreeders(List<EnumRace> seasonalBreeders) {
 		this.seasonalBreeders = seasonalBreeders;
+	}
+
+	/**
+	 * @return the breakBlock
+	 */
+	public boolean isBreakBlock() {
+		return breakBlock;
+	}
+
+	/**
+	 * @param breakBlock the breakBlock to set
+	 */
+	public void setBreakBlock(boolean breakBlock) {
+		this.breakBlock = breakBlock;
 	}
 }
