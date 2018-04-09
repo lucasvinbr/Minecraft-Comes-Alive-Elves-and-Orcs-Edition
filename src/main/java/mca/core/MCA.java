@@ -673,6 +673,12 @@ public class MCA {
 			parrot.setTamed(true);
 			parrot.setVariant(RadixMath.getNumberInRange(0, 4));
 			parrot.setPosition(elf.posX, elf.posY + 1, elf.posZ);
+			if (RadixLogic.getBooleanWithProbability(50)) {
+				// parrot.setEntityOnShoulder(elf);
+			}
+			else {
+				parrot.setRider(elf);
+			}
 			world.spawnEntity(parrot);
 		}
 		if (RadixLogic.getBooleanWithProbability(50)) {
@@ -696,11 +702,17 @@ public class MCA {
 			husband.attributes.assignRandomPersonality();
 			husband.setPosition(elf.posX, elf.posY, elf.posZ - 1);
 			if (RadixLogic.getBooleanWithProbability(50)) {
-				EntityParrot parrot = new EntityParrot(husband.world);
+				EntityParrotMCA parrot = new EntityParrotMCA(husband.world);
 				parrot.setOwnerId(husband.getUniqueID());
 				husband.setPet(parrot);
 				parrot.setTamed(true);
 				parrot.setPosition(husband.posX, husband.posY + 1, husband.posZ);
+				if (RadixLogic.getBooleanWithProbability(50)) {
+					// parrot.setEntityOnShoulder(elf);
+				}
+				else {
+					parrot.setRider(elf);
+				}
 				world.spawnEntity(parrot);
 			}
 			else {

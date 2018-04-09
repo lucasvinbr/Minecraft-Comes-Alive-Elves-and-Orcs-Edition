@@ -107,6 +107,14 @@ public class VillagerAttributes {
 			.<Integer>createKey(EntityVillagerMCA.class, DataSerializers.VARINT);
 	private static final DataParameter<Boolean> IS_BEING_CHASED = EntityDataManager
 			.<Boolean>createKey(EntityVillagerMCA.class, DataSerializers.BOOLEAN);
+	// protected static final DataParameter<NBTTagCompound> LEFT_SHOULDER_ENTITY =
+	// EntityDataManager
+	// .<NBTTagCompound>createKey(EntityVillagerMCA.class,
+	// DataSerializers.COMPOUND_TAG);
+	// protected static final DataParameter<NBTTagCompound> RIGHT_SHOULDER_ENTITY =
+	// EntityDataManager
+	// .<NBTTagCompound>createKey(EntityVillagerMCA.class,
+	// DataSerializers.COMPOUND_TAG);
 
 	private int timesWarnedForLowHearts;
 	private int ticksAlive;
@@ -159,6 +167,8 @@ public class VillagerAttributes {
 		dataManager.register(IS_INFECTED, Boolean.valueOf(false));
 		dataManager.register(DO_OPEN_INVENTORY, Boolean.valueOf(false));
 		dataManager.register(MARRIAGE_STATE, Integer.valueOf(0));
+		// dataManager.register(LEFT_SHOULDER_ENTITY, new NBTTagCompound());
+		// dataManager.register(RIGHT_SHOULDER_ENTITY, new NBTTagCompound());
 		Logger.getLogger(this.getClass().getName()).info(dataManager.toString());
 	}
 
@@ -208,36 +218,39 @@ public class VillagerAttributes {
 
 	public String getHeadTexture() {
 		EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
-		
+
 		String skin = null;
 		skin = dataManager.get(HEAD_TEXTURE);
-		if(skin == null || skin.isEmpty()) {
-//			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
-//					: skinGroup.getRandomFemaleSkin(getRaceEnum());
+		if (skin == null || skin.isEmpty()) {
+			// skin = this.getGender() == EnumGender.MALE ?
+			// skinGroup.getRandomMaleSkin(getRaceEnum())
+			// : skinGroup.getRandomFemaleSkin(getRaceEnum());
 			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRace());
 			setHeadTexture(skin);
 		}
-		
+
 		return skin;
 	}
 
 	public void setHeadTexture(String texture) {
-		if(texture == null || texture.isEmpty()) {
+		if (texture == null || texture.isEmpty()) {
 			LogManager.getLogger(this.getClass()).warn("Setting a null head texture.");
-		} else {
+		}
+		else {
 			dataManager.set(HEAD_TEXTURE, texture);
 		}
-		
+
 	}
 
 	public String getClothesTexture() {
 		EnumProfessionSkinGroup skinGroup = this.getProfessionSkinGroup();
 		String skin = null;
 		skin = dataManager.get(CLOTHES_TEXTURE);
-		if(skin == null || skin.isEmpty()) {
-//			skin = this.getGender() == EnumGender.MALE ? skinGroup.getRandomMaleSkin(getRaceEnum())
-//					: skinGroup.getRandomFemaleSkin(getRaceEnum());
-			
+		if (skin == null || skin.isEmpty()) {
+			// skin = this.getGender() == EnumGender.MALE ?
+			// skinGroup.getRandomMaleSkin(getRaceEnum())
+			// : skinGroup.getRandomFemaleSkin(getRaceEnum());
+
 			skin = skinGroup.getSkin(this.getGender() == EnumGender.MALE, getRace());
 			setClothesTexture(skin);
 		}
@@ -245,9 +258,10 @@ public class VillagerAttributes {
 	}
 
 	public void setClothesTexture(String texture) {
-		if(texture == null || texture.isEmpty()) {
+		if (texture == null || texture.isEmpty()) {
 			LogManager.getLogger(this.getClass()).warn("Setting a null clothes texture.");
-		} else {
+		}
+		else {
 			dataManager.set(CLOTHES_TEXTURE, texture);
 		}
 	}
@@ -929,6 +943,10 @@ public class VillagerAttributes {
 		}
 	}
 
+	/**
+	 * @param nbt
+	 *            NBT Tag Compound
+	 */
 	public void writeToNBT(NBTTagCompound nbt) {
 		// Auto save data manager values to NBT by reflection
 		for (Field f : this.getClass().getDeclaredFields()) {
@@ -985,6 +1003,10 @@ public class VillagerAttributes {
 		}
 	}
 
+	/**
+	 * @param nbt
+	 *            NBT Tag Compound
+	 */
 	public void readFromNBT(NBTTagCompound nbt) {
 		// Auto read data manager values
 		for (Field f : this.getClass().getDeclaredFields()) {
@@ -1014,6 +1036,9 @@ public class VillagerAttributes {
 					else if (typeName.contains("Optional<java.util.UUID>")) {
 						DataParameter<Optional<UUID>> uuParam = param;
 						dataManager.set(uuParam, Optional.of(nbt.getUniqueId(paramName)));
+					}
+					else if (typeName.contains("NBTTagCompound")) {
+
 					}
 					else {
 						throw new RuntimeException("Field type not handled while saving to NBT: " + f.getName());
@@ -1062,6 +1087,10 @@ public class VillagerAttributes {
 		RadixNettyIO.writeObject(buffer, playerMemories);
 	}
 
+	/**
+	 * @param buffer
+	 *            Byte Buffer
+	 */
 	public void readSpawnData(ByteBuf buffer) {
 		Map<UUID, PlayerMemory> recvMemories = (Map<UUID, PlayerMemory>) RadixNettyIO.readObject(buffer);
 		playerMemories = recvMemories;
@@ -1080,10 +1109,17 @@ public class VillagerAttributes {
 		return villager.getPersistentID();
 	}
 
-	public void setIsBeingChased(boolean isBeingChased) {
-		dataManager.set(IS_BEING_CHASED, isBeingChased);
+	/**
+	 * @param beingChased
+	 *            boolean value
+	 */
+	public void setIsBeingChased(boolean beingChased) {
+		dataManager.set(IS_BEING_CHASED, beingChased);
 	}
 
+	/**
+	 * @return beingChased boolean value
+	 */
 	public boolean getIsBeingChased() {
 		return dataManager.get(IS_BEING_CHASED);
 	}

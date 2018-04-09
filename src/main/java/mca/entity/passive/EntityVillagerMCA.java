@@ -761,11 +761,17 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		addAI();
 	}
 
+	/**
+	 * @see net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData#writeSpawnData(io.netty.buffer.ByteBuf)
+	 */
 	@Override
 	public void writeSpawnData(ByteBuf buffer) {
 		attributes.writeSpawnData(buffer);
 	}
 
+	/**
+	 * @see net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData#readSpawnData(io.netty.buffer.ByteBuf)
+	 */
 	@Override
 	public void readSpawnData(ByteBuf buffer) {
 		try {

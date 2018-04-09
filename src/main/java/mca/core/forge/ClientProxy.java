@@ -34,6 +34,8 @@ public class ClientProxy extends ServerProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityWolfMCA.class, RenderWolfFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityCatMCA.class, RenderCatFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBatMCA.class, RenderBatFactory.INSTANCE);
+		// RenderingRegistry.registerEntityRenderingHandler(EntityParrotMCA.class,
+		// RenderParrotFactory.INSTANCE);
 		RenderingRegistry.registerEntityRenderingHandler(EntityWitchMCA.class, RenderWitchFactory.INSTANCE);
 
 		/*

@@ -2,10 +2,10 @@ package mca.items;
 
 import mca.core.MCA;
 import mca.entity.passive.EntityElfMCA;
+import mca.entity.passive.EntityParrotMCA;
 import mca.entity.passive.EntityVillagerMCA;
 import mca.enums.EnumGender;
 import mca.enums.EnumRace;
-import net.minecraft.entity.passive.EntityParrot;
 import net.minecraft.world.World;
 import radixcore.math.Point3D;
 import radixcore.modules.RadixLogic;
@@ -39,12 +39,18 @@ public class ItemSpawnEggForElves extends ItemSpawnEgg {
 		// world.spawnEntity(horse);
 		// }
 		if (RadixLogic.getBooleanWithProbability(100)) {
-			EntityParrot parrot = new EntityParrot(elf.world);
+			EntityParrotMCA parrot = new EntityParrotMCA(elf.world);
 			parrot.setOwnerId(elf.getUniqueID());
 			elf.setPet(parrot);
 			parrot.setTamed(true);
 			parrot.setVariant(RadixMath.getNumberInRange(0, 4));
 			parrot.setPosition(elf.posX, elf.posY + 1, elf.posZ);
+			if (RadixLogic.getBooleanWithProbability(50)) {
+				// parrot.setEntityOnShoulder(elf);
+			}
+			else {
+				parrot.setRider(elf);
+			}
 			world.spawnEntity(parrot);
 		}
 		if (RadixLogic.getBooleanWithProbability(10)) {
