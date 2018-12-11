@@ -6,8 +6,6 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.ibm.icu.text.MessageFormat;
-
 import mca.api.CookableFood;
 import mca.api.CropEntry;
 import mca.api.FishingEntry;
@@ -136,7 +134,7 @@ public class MCA {
 		java.util.logging.Logger.getLogger("global").setLevel(java.util.logging.Level.FINEST);
 		java.util.logging.Logger.getLogger(this.getClass().getName()).setLevel(java.util.logging.Level.FINEST);
 		LogManager.getRootLogger()
-				.debug(MessageFormat.format("Pre-Initialization... FMLPreInitializationEvent: {0}", event));
+				.debug("Pre-Initialization... FMLPreInitializationEvent: " + event.description());
 		metadata = event.getModMetadata();
 		// logger = event.getModLog();
 		config = new Config(event);
@@ -1050,14 +1048,14 @@ public class MCA {
 		EntityWolfMCA wolf = new EntityWolfMCA(world);
 		wolf.setPosition(pointOfSpawn.dX(), pointOfSpawn.dY(), pointOfSpawn.dZ());
 		Biome biome = wolf.world.getBiome(wolf.getPosition());
-		logger.info(String.format("Spawning dog in %s biome ", biome.getBiomeName()));
+		logger.info(String.format("Spawning dog in biome. Likely cold doggo? %s ", (biome.getTemperature() <= 0.25D)));
 		String texture;
 		String angryTexture;
-		if (biome.getBiomeName().toLowerCase().contains("plain")) {
+		if (biome.getTemperature() >= 0.7D && biome.getRainfall() <= 0.45D) {
 			texture = "mca:textures/doggy.png";
 			angryTexture = "mca:textures/doggy.png";
 		}
-		else if (biome.getBiomeName().toLowerCase().contains("ice")) {
+		else if (biome.getTemperature() <= 0.25D) {
 			texture = "mca:textures/husky_untamed.png";
 			angryTexture = "mca:textures/husky_angry.png";
 		}

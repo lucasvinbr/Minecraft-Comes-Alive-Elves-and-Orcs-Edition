@@ -492,18 +492,18 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 		this.damageSource = damageSource;
 		if (!world.isRemote) {
 			ItemTombstone tombstone = new ItemTombstone();
-			EntityDataManager data = getDataManager();
-			List<String> stats = new ArrayList<String>();
-			if(data.getAll() != null) {
-				for (int i = 0; i < data.getAll().size() - 1; i++) {
-					if (data.getAll().get(i) != null) {
-						String value = data.getAll().get(i).toString();
-						stats.add(value);
-					}
-				}
-			}
+//			EntityDataManager data = getDataManager();
+//			List<String> stats = new ArrayList<String>();
+//			if(data.getAll() != null) {
+//				for (int i = 0; i < data.getAll().size() - 1; i++) {
+//					if (data.getAll().get(i) != null) {
+//						String value = data.getAll().get(i).toString();
+//						stats.add(value);
+//					}
+//				}
+//			}
 			ItemStack tombStack = new ItemStack(tombstone);
-			tombstone.addInformation(tombStack, world, stats, ITooltipFlag.TooltipFlags.NORMAL);
+			//tombstone.addInformation(tombStack, world, stats, ITooltipFlag.TooltipFlags.NORMAL);
 			getVillagerInventory().addItem(tombStack);
 			playDeathSound();
 			// Switch to the sleeping skin and disable all chores/toggle AIs so they won't

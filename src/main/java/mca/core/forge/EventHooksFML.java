@@ -194,12 +194,12 @@ public class EventHooksFML {
 							if (villager.getProfession() == 5) {
 
 								// Biome biome = villager.world.getBiome(villager.getPos());
-								logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
-								if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+								logger.info(String.format("Spawning villager in biome. Likely Non-human? %s ", (biome.getRainfall() >= 0.6D && biome.getTemperature() >= 0.7D)));
+								if (biome.isHighHumidity()) {
 									doOverwriteVillagerWithOrc(villager);
 									continue;
 								}
-								else if (biome.getBiomeName().toLowerCase().contains("forest")) {
+								else if (biome.getRainfall() >= 0.6D && biome.getTemperature() >= 0.7D) {
 									doOverwriteVillagerWithElf(villager);
 									continue;
 								}
@@ -226,7 +226,7 @@ public class EventHooksFML {
 					else if (entity instanceof EntityWitch && !(entity instanceof EntityWitchMCA)) {
 						EntityWitch witch = (EntityWitch) entity;
 						if (RadixLogic.getBooleanWithProbability(1)) {
-							logger.info(String.format("Spawning witch in %s biome ", biome.getBiomeName()));
+							logger.info("Spawning prettywitch");
 							doOverwriteWitchWithPrettyWitch(witch);
 						}
 					}
@@ -428,12 +428,13 @@ public class EventHooksFML {
 
 	public void doOverwriteVillager(EntityVillager villager) {
 		Biome biome = villager.world.getBiome(villager.getPos());
-		logger.info(String.format("Spawning villager in %s biome ", biome.getBiomeName()));
+		logger.info(String.format("Spawning villager in biome. Likely Non-human? %s ", (biome.getRainfall() >= 0.6D && biome.getTemperature() >= 0.7D)));
+		
 		if (villager.getProfession() % 5 == 5) {
-			if (biome.getBiomeName().toLowerCase().contains("swamp")) {
+			if (biome.isHighHumidity()) {
 				doOverwriteVillagerWithOrc(villager);
 			}
-			else if (biome.getBiomeName().toLowerCase().contains("forest")) {
+			else if (biome.getRainfall() >= 0.6D && biome.getTemperature() >= 0.7D) {
 				doOverwriteVillagerWithElf(villager);
 			}
 		}
