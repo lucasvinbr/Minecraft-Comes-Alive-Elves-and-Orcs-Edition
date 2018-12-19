@@ -1446,6 +1446,11 @@ public class EntityVillagerMCA extends EntityVillager implements IEntityAddition
 
 	@Override
 	public boolean startRiding(Entity entityIn, boolean force) {
+		String className = entityIn.getClass().getSimpleName();
+		if(className.contains("Dragon") || className.contains("Cyclops")) {
+			return false;
+		}
+		
 		boolean flag = super.startRiding(entityIn, force);
 
 		if (flag && this.getLeashed()) {
